@@ -34,6 +34,7 @@ web on :3000. `docker compose up -d` → `npm install` → `npm run db:migrate &
 | Date | Change | Requested by | Sections touched |
 |---|---|---|---|
 | 2026-07-10 | Initial build started from this spec; added this Status & Change Log section as a living tracker | Mehdi | §0 (new) |
+| 2026-07-10 | **Account type is chosen at registration**, not self-service from the dashboard. Signup (OTP or email) offers Customer / Owner / Solo Agent / Agency / Developer; everyone still gets the customer baseline, professional types start `pending`. The dashboard "Add a role" cards and the `POST /users/me/roles` endpoint were removed; granting additional roles later is an admin action. Multi-role support in the data model (§2.2) is unchanged. | Mehdi | §2.2 (note), §10.1 step 2 |
 
 ---
 
@@ -90,6 +91,8 @@ Rental/Moving Company, Insurance, Property Management, Notary/Translation. See �
 - `roles` table + `permissions` table + `role_permissions` join. Seed the 6 launch roles.
 - A user can hold MULTIPLE role assignments (`user_roles`), each with its own verification status
   (e.g., an Owner who is also a Customer).
+  *(Change 2026-07-10: the account type is selected at registration; users cannot self-add roles
+  from the dashboard. Additional role grants are an admin action.)*
 - Every role has a **Profile Extension** — a dedicated table (e.g., `agent_profiles`, `developer_profiles`)
   joined 1:1 to the user. Adding a Lawyer later = new row in `roles`, new `lawyer_profiles` table,
   new permission rows, new dashboard module. Zero changes to core.

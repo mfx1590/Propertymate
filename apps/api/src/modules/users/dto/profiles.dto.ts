@@ -1,13 +1,8 @@
-import { ArrayMaxSize, IsArray, IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsOptional, IsString, MaxLength } from 'class-validator';
 
-/** Roles a user can apply for. customer is automatic; admin is granted by admins only. */
+/** Grantable non-customer roles. customer is automatic; admin is granted by admins only. */
 export const APPLICABLE_ROLE_KEYS = ['owner', 'solo_agent', 'agency', 'developer'] as const;
 export type ApplicableRoleKey = (typeof APPLICABLE_ROLE_KEYS)[number];
-
-export class ApplyRoleDto {
-  @IsIn(APPLICABLE_ROLE_KEYS as unknown as string[])
-  roleKey: ApplicableRoleKey;
-}
 
 export class UpdateAgentProfileDto {
   @IsOptional()

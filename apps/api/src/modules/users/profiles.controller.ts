@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Ip, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Ip, Param, Put } from '@nestjs/common';
 import { AuthUser, CurrentUser } from '../../common/decorators/current-user.decorator';
 import { ProfilesService } from './profiles.service';
-import { ApplyRoleDto } from './dto/profiles.dto';
 
+// NOTE: no self-service role endpoint — account type is chosen at registration
+// (change log 2026-07-10); further role grants are an admin action (Phase 1 step 4+).
 @Controller('users/me')
 export class ProfilesController {
   constructor(private readonly profilesService: ProfilesService) {}
@@ -10,11 +11,6 @@ export class ProfilesController {
   @Get('roles')
   listMyRoles(@CurrentUser() user: AuthUser) {
     return this.profilesService.listMyRoles(user.sub);
-  }
-
-  @Post('roles')
-  applyForRole(@CurrentUser() user: AuthUser, @Body() dto: ApplyRoleDto, @Ip() ip: string) {
-    return this.profilesService.applyForRole(user.sub, dto.roleKey, ip);
   }
 
   @Get('profile/:roleKey')

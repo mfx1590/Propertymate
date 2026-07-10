@@ -10,8 +10,10 @@ import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
+import { ProfilesService } from '../users/profiles.service';
 import { TokenService, TokenPair } from './token.service';
 import { OTP_PROVIDER, OtpProvider } from './otp/otp.provider';
+import { AccountType } from './dto/auth.dto';
 
 const OTP_TTL_MS = 5 * 60 * 1000;
 const OTP_MAX_ATTEMPTS = 5;
@@ -24,6 +26,7 @@ export class AuthService {
     private readonly tokenService: TokenService,
     private readonly audit: AuditService,
     private readonly config: ConfigService,
+    private readonly profilesService: ProfilesService,
     @Inject(OTP_PROVIDER) private readonly otpProvider: OtpProvider,
   ) {}
 
@@ -45,7 +48,12 @@ export class AuthService {
     return { sent: true, ...(isMock ? { devCode: code } : {}) };
   }
 
-  async verifyOtp(phone: string, code: string, ip?: string): Promise<TokenPair & { isNewUser: boolean }> {
+  async verifyOtp(
+    phone: string,
+    code: string,
+    ip?: string,
+    accountType?: AccountType,
+  ): Promise<TokenPair & { isNewUser: boolean }> {
     const otp = await this.prisma.otpCode.findFirst({
       where: { phone, usedAt: null, expiresAt: { gt: new Date() } },
       orderBy: { createdAt: 'desc' },
@@ -69,11 +77,13 @@ export class AuthService {
         data: { phone, phoneVerifiedAt: new Date() },
       });
       await this.assignDefaultCustomerRole(user.id);
+      await this.assignAccountType(user.id, accountType, ip);
       await this.audit.log({
         actorId: user.id,
         action: 'user.register.otp',
         entityType: 'user',
         entityId: user.id,
+        after: { accountType: accountType ?? 'customer' },
         ip,
       });
     } else {
@@ -97,7 +107,13 @@ export class AuthService {
     return { ...pair, isNewUser };
   }
 
-  async register(email: string, password: string, locale = 'en', ip?: string): Promise<TokenPair> {
+  async register(
+    email: string,
+    password: string,
+    locale = 'en',
+    ip?: string,
+    accountType?: AccountType,
+  ): Promise<TokenPair> {
     const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) throw new ConflictException('Email already registered');
 
@@ -105,15 +121,23 @@ export class AuthService {
       data: { email, passwordHash: await bcrypt.hash(password, 10), locale },
     });
     await this.assignDefaultCustomerRole(user.id);
+    await this.assignAccountType(user.id, accountType, ip);
     await this.audit.log({
       actorId: user.id,
       action: 'user.register.email',
       entityType: 'user',
       entityId: user.id,
+      after: { accountType: accountType ?? 'customer' },
       ip,
     });
 
     return this.tokenService.issuePair(user, ip);
+  }
+
+  /** Grants the account type chosen at registration (customer baseline is separate). */
+  private async assignAccountType(userId: string, accountType?: AccountType, ip?: string) {
+    if (!accountType || accountType === 'customer') return;
+    await this.profilesService.applyForRole(userId, accountType, ip);
   }
 
   async login(email: string, password: string, ip?: string): Promise<TokenPair> {

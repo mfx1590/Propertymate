@@ -22,7 +22,16 @@
     "signIn": "Sign in",
     "register": "Create account",
     "switchToRegister": "New here? Create an account",
-    "switchToLogin": "Already have an account? Sign in"
+    "switchToLogin": "Already have an account? Sign in",
+    "accountTypeLabel": "Account type",
+    "accountTypeHint": "Only used when creating a new account. Professional accounts are reviewed before going live.",
+    "accountTypes": {
+      "customer": "Customer — I'm looking to buy or rent",
+      "owner": "Owner — I want to sell or rent out my property",
+      "solo_agent": "Solo Agent — I work independently with a license",
+      "agency": "Agency — I run an office with agents",
+      "developer": "Developer — I market construction projects"
+    }
   },
   "dashboard": {
     "appName": "PropVerify",
@@ -47,12 +56,6 @@
       "developer": "Developer",
       "admin": "Admin"
     },
-    "roleDescriptions": {
-      "owner": "Sell or rent out your own property",
-      "solo_agent": "List and manage properties for owners (license required)",
-      "agency": "Run an agency with a team of agents",
-      "developer": "Market your projects and unit inventory"
-    },
     "status": {
       "verified": "Verified",
       "pending": "Pending review",
@@ -62,8 +65,6 @@
     "overview": {
       "title": "Overview",
       "yourRoles": "Your roles",
-      "becomeTitle": "Add a role",
-      "apply": "Apply",
       "optional": "optional",
       "pendingHint": "Your documents will be reviewed once uploaded — verification takes up to 24h.",
       "requirementsTitle": "Documents needed for {role}",

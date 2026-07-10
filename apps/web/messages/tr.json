@@ -22,7 +22,16 @@
     "signIn": "Giriş yap",
     "register": "Hesap oluştur",
     "switchToRegister": "Yeni misiniz? Hesap oluşturun",
-    "switchToLogin": "Zaten hesabınız var mı? Giriş yapın"
+    "switchToLogin": "Zaten hesabınız var mı? Giriş yapın",
+    "accountTypeLabel": "Hesap türü",
+    "accountTypeHint": "Yalnızca yeni hesap oluştururken kullanılır. Profesyonel hesaplar yayına girmeden önce incelenir.",
+    "accountTypes": {
+      "customer": "Müşteri — Almak veya kiralamak istiyorum",
+      "owner": "Mal sahibi — Mülkümü satmak veya kiraya vermek istiyorum",
+      "solo_agent": "Bağımsız danışman — Lisanslı olarak bağımsız çalışıyorum",
+      "agency": "Emlak ofisi — Danışmanlardan oluşan bir ofis işletiyorum",
+      "developer": "Müteahhit — İnşaat projeleri pazarlıyorum"
+    }
   },
   "dashboard": {
     "appName": "PropVerify",
@@ -47,12 +56,6 @@
       "developer": "Müteahhit",
       "admin": "Yönetici"
     },
-    "roleDescriptions": {
-      "owner": "Kendi mülkünüzü satın veya kiraya verin",
-      "solo_agent": "Mal sahipleri adına ilan yönetin (lisans gerekli)",
-      "agency": "Danışman ekibinizle bir ofis yönetin",
-      "developer": "Projelerinizi ve daire stoğunuzu pazarlayın"
-    },
     "status": {
       "verified": "Doğrulandı",
       "pending": "İncelemede",
@@ -62,8 +65,6 @@
     "overview": {
       "title": "Genel bakış",
       "yourRoles": "Rolleriniz",
-      "becomeTitle": "Rol ekle",
-      "apply": "Başvur",
       "optional": "isteğe bağlı",
       "pendingHint": "Belgeleriniz yüklendikten sonra incelenecek — doğrulama en fazla 24 saat sürer.",
       "requirementsTitle": "{role} için gereken belgeler",

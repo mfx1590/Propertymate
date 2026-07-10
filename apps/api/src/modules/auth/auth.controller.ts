@@ -19,14 +19,14 @@ export class AuthController {
   @Throttle({ default: { ttl: 60_000, limit: 10 } })
   @Post('otp/verify')
   verifyOtp(@Body() dto: VerifyOtpDto, @Ip() ip: string) {
-    return this.authService.verifyOtp(dto.phone, dto.code, ip);
+    return this.authService.verifyOtp(dto.phone, dto.code, ip, dto.accountType);
   }
 
   @Public()
   @Throttle({ default: { ttl: 60_000, limit: 10 } })
   @Post('register')
   register(@Body() dto: RegisterDto, @Ip() ip: string) {
-    return this.authService.register(dto.email, dto.password, dto.locale, ip);
+    return this.authService.register(dto.email, dto.password, dto.locale, ip, dto.accountType);
   }
 
   @Public()

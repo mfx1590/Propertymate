@@ -17,6 +17,9 @@ export default function AuthPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  // account type — chosen once, at registration
+  const [accountType, setAccountType] = useState('customer');
+
   // phone flow
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
@@ -27,6 +30,25 @@ export default function AuthPage() {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const ACCOUNT_TYPES = ['customer', 'owner', 'solo_agent', 'agency', 'developer'] as const;
+
+  const accountTypeSelect = (
+    <label className="block">
+      <span className="text-sm font-medium text-gray-700">{t('accountTypeLabel')}</span>
+      <select
+        className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-4 py-3"
+        value={accountType}
+        onChange={(e) => setAccountType(e.target.value)}
+      >
+        {ACCOUNT_TYPES.map((k) => (
+          <option key={k} value={k}>
+            {t(`accountTypes.${k}`)}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
 
   async function run(fn: () => Promise<void>) {
     setError(null);
@@ -55,13 +77,14 @@ export default function AuthPage() {
 
   const verifyCode = () =>
     run(async () => {
-      await finishAuth(await apiPost<TokenPair>('/auth/otp/verify', { phone, code }));
+      await finishAuth(await apiPost<TokenPair>('/auth/otp/verify', { phone, code, accountType }));
     });
 
   const submitEmail = () =>
     run(async () => {
-      const path = mode === 'login' ? '/auth/login' : '/auth/register';
-      await finishAuth(await apiPost<TokenPair>(path, { email, password }));
+      const body =
+        mode === 'login' ? { email, password } : { email, password, accountType };
+      await finishAuth(await apiPost<TokenPair>(mode === 'login' ? '/auth/login' : '/auth/register', body));
     });
 
   const inputCls = 'w-full rounded-lg border border-gray-300 px-4 py-3';
@@ -96,6 +119,8 @@ export default function AuthPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
               />
+              {accountTypeSelect}
+              <p className="text-xs text-gray-400">{t('accountTypeHint')}</p>
               <button className={buttonCls} disabled={busy || !phone} onClick={requestCode}>
                 {t('sendCode')}
               </button>
@@ -143,6 +168,7 @@ export default function AuthPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            {mode === 'register' && accountTypeSelect}
             <button className={buttonCls} disabled={busy || !email || !password} onClick={submitEmail}>
               {mode === 'login' ? t('signIn') : t('register')}
             </button>
