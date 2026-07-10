@@ -7,6 +7,88 @@
     "signIn": "Giriş yap",
     "register": "Kayıt ol"
   },
+  "auth": {
+    "title": "PropVerify'e hoş geldiniz",
+    "subtitle": "Giriş yapın veya hesap oluşturun",
+    "tab": { "phone": "Telefon", "email": "E-posta" },
+    "phonePlaceholder": "+90 533 123 45 67",
+    "sendCode": "Kod gönder",
+    "codeSentTo": "{phone} numarasına 6 haneli kod gönderdik",
+    "devCodeHint": "Geliştirme modu — kodunuz",
+    "verify": "Doğrula",
+    "changePhone": "Farklı bir numara kullan",
+    "emailPlaceholder": "siz@ornek.com",
+    "passwordPlaceholder": "Şifre (en az 8 karakter)",
+    "signIn": "Giriş yap",
+    "register": "Hesap oluştur",
+    "switchToRegister": "Yeni misiniz? Hesap oluşturun",
+    "switchToLogin": "Zaten hesabınız var mı? Giriş yapın"
+  },
+  "dashboard": {
+    "appName": "PropVerify",
+    "signOut": "Çıkış yap",
+    "menu": {
+      "overview": "Genel bakış",
+      "myListings": "İlanlarım",
+      "leads": "Talepler",
+      "mandates": "Yetki belgeleri",
+      "team": "Ekip",
+      "projects": "Projeler",
+      "profile": "Profil",
+      "verificationQueue": "Doğrulama kuyruğu",
+      "users": "Kullanıcılar",
+      "disputes": "İtirazlar"
+    },
+    "roles": {
+      "customer": "Müşteri",
+      "owner": "Mal sahibi",
+      "solo_agent": "Bağımsız danışman",
+      "agency": "Emlak ofisi",
+      "developer": "Müteahhit",
+      "admin": "Yönetici"
+    },
+    "roleDescriptions": {
+      "owner": "Kendi mülkünüzü satın veya kiraya verin",
+      "solo_agent": "Mal sahipleri adına ilan yönetin (lisans gerekli)",
+      "agency": "Danışman ekibinizle bir ofis yönetin",
+      "developer": "Projelerinizi ve daire stoğunuzu pazarlayın"
+    },
+    "status": {
+      "verified": "Doğrulandı",
+      "pending": "İncelemede",
+      "unverified": "Doğrulanmadı",
+      "rejected": "Reddedildi"
+    },
+    "overview": {
+      "title": "Genel bakış",
+      "yourRoles": "Rolleriniz",
+      "becomeTitle": "Rol ekle",
+      "apply": "Başvur",
+      "optional": "isteğe bağlı",
+      "pendingHint": "Belgeleriniz yüklendikten sonra incelenecek — doğrulama en fazla 24 saat sürer.",
+      "requirementsTitle": "{role} için gereken belgeler",
+      "uploadComingSoon": "Belge yükleme bir sonraki geliştirme adımında açılacak."
+    },
+    "profile": {
+      "title": "{role} profili",
+      "save": "Kaydet",
+      "saved": "Kaydedildi",
+      "notEditable": "Bu rolün düzenlenebilir profili yok.",
+      "fields": {
+        "licenseNo": "Lisans numarası",
+        "bio": "Hakkında",
+        "companyName": "Şirket adı",
+        "regNo": "Sicil numarası",
+        "taxNo": "Vergi numarası",
+        "address": "Adres",
+        "about": "Hakkında"
+      }
+    },
+    "comingSoon": {
+      "title": "Yapım aşamasında",
+      "body": "Bu bölüm sonraki geliştirme adımında gelecek."
+    }
+  },
   "home": {
     "heroTitle": "Her ilan doğrulanmış. Her satıcı gerçek.",
     "heroSubtitle": "Kuzey Kıbrıs'ta güven odaklı gayrimenkul alım, satım ve kiralama — ilk görüntülemeden anahtar teslimine kadar.",

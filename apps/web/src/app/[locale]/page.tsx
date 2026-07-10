@@ -30,10 +30,12 @@ export default async function HomePage({ params: { locale } }: { params: { local
                 </Link>
               ))}
             </div>
-            <span className="cursor-pointer text-gray-700">{t('common.signIn')}</span>
-            <span className="cursor-pointer rounded-lg bg-brand-600 px-4 py-2 font-medium text-white">
+            <Link href="/auth" className="text-gray-700">
+              {t('common.signIn')}
+            </Link>
+            <Link href="/auth" className="rounded-lg bg-brand-600 px-4 py-2 font-medium text-white">
               {t('common.register')}
-            </span>
+            </Link>
           </nav>
         </div>
       </header>

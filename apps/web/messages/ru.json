@@ -7,6 +7,88 @@
     "signIn": "Sign in",
     "register": "Register"
   },
+  "auth": {
+    "title": "Welcome to PropVerify",
+    "subtitle": "Sign in or create an account",
+    "tab": { "phone": "Phone", "email": "Email" },
+    "phonePlaceholder": "+90 533 123 45 67",
+    "sendCode": "Send code",
+    "codeSentTo": "We sent a 6-digit code to {phone}",
+    "devCodeHint": "Dev mode — your code",
+    "verify": "Verify",
+    "changePhone": "Use a different number",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "Password (min 8 characters)",
+    "signIn": "Sign in",
+    "register": "Create account",
+    "switchToRegister": "New here? Create an account",
+    "switchToLogin": "Already have an account? Sign in"
+  },
+  "dashboard": {
+    "appName": "PropVerify",
+    "signOut": "Sign out",
+    "menu": {
+      "overview": "Overview",
+      "myListings": "My listings",
+      "leads": "Leads",
+      "mandates": "Mandates",
+      "team": "Team",
+      "projects": "Projects",
+      "profile": "Profile",
+      "verificationQueue": "Verification queue",
+      "users": "Users",
+      "disputes": "Disputes"
+    },
+    "roles": {
+      "customer": "Customer",
+      "owner": "Owner",
+      "solo_agent": "Solo Agent",
+      "agency": "Agency",
+      "developer": "Developer",
+      "admin": "Admin"
+    },
+    "roleDescriptions": {
+      "owner": "Sell or rent out your own property",
+      "solo_agent": "List and manage properties for owners (license required)",
+      "agency": "Run an agency with a team of agents",
+      "developer": "Market your projects and unit inventory"
+    },
+    "status": {
+      "verified": "Verified",
+      "pending": "Pending review",
+      "unverified": "Unverified",
+      "rejected": "Rejected"
+    },
+    "overview": {
+      "title": "Overview",
+      "yourRoles": "Your roles",
+      "becomeTitle": "Add a role",
+      "apply": "Apply",
+      "optional": "optional",
+      "pendingHint": "Your documents will be reviewed once uploaded — verification takes up to 24h.",
+      "requirementsTitle": "Documents needed for {role}",
+      "uploadComingSoon": "Document upload opens in the next build step."
+    },
+    "profile": {
+      "title": "{role} profile",
+      "save": "Save",
+      "saved": "Saved",
+      "notEditable": "This role has no editable profile.",
+      "fields": {
+        "licenseNo": "License number",
+        "bio": "Bio",
+        "companyName": "Company name",
+        "regNo": "Registration number",
+        "taxNo": "Tax number",
+        "address": "Address",
+        "about": "About"
+      }
+    },
+    "comingSoon": {
+      "title": "Under construction",
+      "body": "This section arrives in an upcoming build step."
+    }
+  },
   "home": {
     "heroTitle": "Every listing verified. Every seller real.",
     "heroSubtitle": "The trust-first way to buy, sell and rent property in Northern Cyprus — from first viewing to key handover.",

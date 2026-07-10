@@ -18,8 +18,8 @@
 | # | Step | Status | Date | Notes |
 |---|---|---|---|---|
 | 1 | Foundation: monorepo, Docker infra, Prisma schema §5, seeds, auth (OTP mock + rotating JWT), RBAC guard, audit service, CI | ✅ **Done** | 2026-07-10 | Turborepo + **npm workspaces** (no pnpm on dev machine). Auth flows, refresh rotation + reuse detection, audit rows, and EN/TR/FA-RTL rendering verified live. Dev admin: `admin@propverify.local` |
-| 2 | Roles & profiles: per-role registration, profile extensions, role-module dashboard shell, i18n EN/TR | 🔜 **Next** | — | — |
-| 3 | Listings: wizard, media pipeline (EXIF/phash), document upload from config, Meilisearch sync, map search, detail page SSR, favorites, saved searches | ⬜ Pending | — | — |
+| 2 | Roles & profiles: per-role registration, profile extensions, role-module dashboard shell, i18n EN/TR | ✅ **Done** | 2026-07-10 | Apply-for-role API (owner instant, professional roles `pending`), per-role profile CRUD with strict field whitelists, requirements served from config, web auth (OTP + email, auto-refresh tokens), dashboard shell with nav from typed role-module registry (§2.2). Verified over HTTP incl. field-injection + admin-apply rejection |
+| 3 | Listings: wizard, media pipeline (EXIF/phash), document upload from config, Meilisearch sync, map search, detail page SSR, favorites, saved searches | 🔜 **Next** | — | — |
 | 4 | Verification engine: queue, admin dashboard, signed-URL doc viewer, decisions, freshness job | ⬜ Pending | — | — |
 | 5 | Chat + viewings + offers | ⬜ Pending | — | — |
 | 6 | Deals v1: pipeline engine, deal rooms, journey tracker, snapshots, ratings | ⬜ Pending | — | — |
