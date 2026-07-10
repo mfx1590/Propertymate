@@ -1,0 +1,912 @@
+// PropVerify — core schema (Plan.md §5)
+// Conventions: cuid ids, snake_case table/column mapping, soft deletes via deleted_at,
+// i18n text stored as jsonb {en, tr, ru, fa}.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────── enums ───────────────────────────
+
+enum UserStatus {
+  active
+  suspended
+  banned
+}
+
+enum VerificationStatus {
+  unverified
+  pending
+  verified
+  rejected
+}
+
+enum BadgeTier {
+  unverified
+  pending
+  verified
+  trusted_partner
+}
+
+enum AdminSubRole {
+  super_admin
+  verification_officer
+  support_agent
+  content_moderator
+}
+
+enum ServiceType {
+  lawyer
+  furniture
+  movers
+  insurance
+  property_management
+  notary_translation
+}
+
+enum VerificationContext {
+  profile
+  listing_resale
+  listing_rental
+  project
+}
+
+enum VerificationEntityType {
+  profile
+  listing
+  project
+  document
+}
+
+enum VerificationItemStatus {
+  queued
+  claimed
+  approved
+  rejected
+}
+
+enum DocumentStatus {
+  pending
+  approved
+  rejected
+}
+
+enum RejectReasonCode {
+  illegible
+  expired
+  name_mismatch
+  wrong_type
+  suspected_forgery
+  other
+}
+
+enum PropertyKind {
+  resale
+  rental
+}
+
+enum PropertyStatus {
+  draft
+  pending_verification
+  live
+  paused
+  under_offer
+  sold
+  rented
+  archived
+}
+
+enum DeedType {
+  turkish
+  exchange
+  allocation
+  foreign
+  na
+}
+
+enum MediaType {
+  photo
+  video
+  tour360
+}
+
+enum ProjectStatus {
+  draft
+  pending_verification
+  live
+  paused
+  archived
+}
+
+enum UnitStatus {
+  available
+  reserved
+  sold
+}
+
+enum ViewingStatus {
+  requested
+  confirmed
+  completed
+  cancelled
+  no_show
+}
+
+enum OfferStatus {
+  submitted
+  countered
+  accepted
+  rejected
+  withdrawn
+}
+
+enum DealKind {
+  purchase
+  rental
+}
+
+enum DealStatus {
+  active
+  completed
+  cancelled
+}
+
+enum StageStatus {
+  pending
+  active
+  completed
+  skipped
+}
+
+enum DealPartyRole {
+  buyer
+  seller
+  agent_buyer_side
+  agent_seller_side
+  lawyer
+  service_provider
+}
+
+enum NotificationChannel {
+  in_app
+  push
+  email
+  whatsapp
+}
+
+enum AlertChannel {
+  push
+  email
+  whatsapp
+}
+
+enum DisputeStatus {
+  open
+  investigating
+  resolved_upheld
+  resolved_dismissed
+  withdrawn
+}
+
+// ─────────────────────── users / roles / RBAC ───────────────────────
+
+model User {
+  id              String     @id @default(cuid())
+  phone           String?    @unique
+  phoneVerifiedAt DateTime?  @map("phone_verified_at")
+  email           String?    @unique
+  passwordHash    String?    @map("password_hash")
+  locale          String     @default("en")
+  avatarUrl       String?    @map("avatar_url")
+  status          UserStatus @default(active)
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+  deletedAt       DateTime?  @map("deleted_at")
+
+  userRoles          UserRole[]
+  adminProfile       AdminProfile?
+  agentProfile       AgentProfile?
+  agencyProfile      AgencyProfile?
+  developerProfile   DeveloperProfile?
+  ownerProfile       OwnerProfile?
+  serviceProviders   ServiceProvider[]
+  documents          Document[]
+  refreshTokens      RefreshToken[]
+  otpCodes           OtpCode[]
+  savedSearches      SavedSearch[]
+  favorites          Favorite[]
+  conversationsIn    ConversationParticipant[]
+  messagesSent       Message[]
+  viewingsAsCustomer Viewing[]                 @relation("ViewingCustomer")
+  viewingsAsHost     Viewing[]                 @relation("ViewingHost")
+  offersMade         Offer[]
+  dealParties        DealParty[]
+  ratingsGiven       Rating[]                  @relation("RatingRater")
+  ratingsReceived    Rating[]                  @relation("RatingRatee")
+  notifications      Notification[]
+  propertiesCreated  Property[]                @relation("PropertyCreator")
+  propertiesOwned    Property[]                @relation("PropertyOwner")
+  projects           Project[]
+  agencyMemberships  AgencyAgent[]             @relation("AgencyMemberAgent")
+
+  @@map("users")
+}
+
+model Role {
+  id   String @id @default(cuid())
+  key  String @unique
+  name String
+
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+  requirements    VerificationRequirement[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id  String @id @default(cuid())
+  key String @unique
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  id                 String             @id @default(cuid())
+  userId             String             @map("user_id")
+  roleId             String             @map("role_id")
+  verificationStatus VerificationStatus @default(unverified) @map("verification_status")
+  badgeTier          BadgeTier          @default(unverified) @map("badge_tier")
+  createdAt          DateTime           @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+// ─────────────────────── profile extensions (Plan §2.2) ───────────────────────
+
+model AdminProfile {
+  userId  String       @id @map("user_id")
+  subRole AdminSubRole @map("sub_role")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("admin_profiles")
+}
+
+model AgentProfile {
+  userId             String   @id @map("user_id")
+  licenseNo          String?  @map("license_no")
+  bio                String?
+  regions            String[] @default([])
+  responseTimeAvgSec Int?     @map("response_time_avg_sec")
+  dealCount          Int      @default(0) @map("deal_count")
+  ratingAvg          Float?   @map("rating_avg")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("agent_profiles")
+}
+
+model AgencyProfile {
+  userId      String  @id @map("user_id")
+  companyName String  @map("company_name")
+  regNo       String? @map("reg_no")
+  taxNo       String? @map("tax_no")
+  address     String?
+  logoUrl     String? @map("logo_url")
+  about       String?
+
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agents AgencyAgent[]
+
+  @@map("agency_profiles")
+}
+
+model AgencyAgent {
+  agencyId    String   @map("agency_id")
+  agentUserId String   @map("agent_user_id")
+  status      String   @default("active")
+  joinedAt    DateTime @default(now()) @map("joined_at")
+
+  agency AgencyProfile @relation(fields: [agencyId], references: [userId], onDelete: Cascade)
+  agent  User          @relation("AgencyMemberAgent", fields: [agentUserId], references: [id], onDelete: Cascade)
+
+  @@id([agencyId, agentUserId])
+  @@map("agency_agents")
+}
+
+model DeveloperProfile {
+  userId        String  @id @map("user_id")
+  companyName   String  @map("company_name")
+  regNo         String? @map("reg_no")
+  taxNo         String? @map("tax_no")
+  portfolioJson Json?   @map("portfolio_json")
+  about         String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("developer_profiles")
+}
+
+model OwnerProfile {
+  userId String @id @map("user_id")
+  // thin at launch (Plan §5)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("owner_profiles")
+}
+
+/// Lateral roles (lawyer, furniture, movers…) — empty at launch, the super-app seam (Plan §2.2).
+model ServiceProvider {
+  id                 String             @id @default(cuid())
+  userId             String             @map("user_id")
+  serviceType        ServiceType        @map("service_type")
+  verificationStatus VerificationStatus @default(unverified) @map("verification_status")
+  pricingModel       String?            @map("pricing_model")
+  regions            String[]           @default([])
+  metadata           Json?
+  createdAt          DateTime           @default(now()) @map("created_at")
+  deletedAt          DateTime?          @map("deleted_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, serviceType])
+  @@map("service_providers")
+}
+
+// ─────────────────────── verification engine (Plan §4) ───────────────────────
+
+model VerificationRequirement {
+  id           String              @id @default(cuid())
+  roleId       String?             @map("role_id")
+  context      VerificationContext
+  documentType String              @map("document_type")
+  isRequired   Boolean             @default(true) @map("is_required")
+  titleI18n    Json                @map("title_i18n")
+  helpI18n     Json?               @map("help_i18n")
+  sortOrder    Int                 @default(0) @map("sort_order")
+
+  role Role? @relation(fields: [roleId], references: [id])
+
+  @@map("verification_requirements")
+}
+
+model VerificationItem {
+  id               String                 @id @default(cuid())
+  entityType       VerificationEntityType @map("entity_type")
+  entityId         String                 @map("entity_id")
+  status           VerificationItemStatus @default(queued)
+  claimedByAdminId String?                @map("claimed_by_admin_id")
+  slaDueAt         DateTime               @map("sla_due_at")
+  decidedAt        DateTime?              @map("decided_at")
+  internalNotes    Json?                  @map("internal_notes")
+  createdAt        DateTime               @default(now()) @map("created_at")
+
+  @@index([status, slaDueAt])
+  @@index([entityType, entityId])
+  @@map("verification_items")
+}
+
+model Document {
+  id               String            @id @default(cuid())
+  ownerUserId      String            @map("owner_user_id")
+  entityType       String            @map("entity_type")
+  entityId         String            @map("entity_id")
+  documentType     String            @map("document_type")
+  storageKey       String            @map("storage_key")
+  mime             String
+  size             Int
+  sha256           String
+  status           DocumentStatus    @default(pending)
+  rejectReasonCode RejectReasonCode? @map("reject_reason_code")
+  rejectNote       String?           @map("reject_note")
+  uploadedAt       DateTime          @default(now()) @map("uploaded_at")
+  deletedAt        DateTime?         @map("deleted_at")
+
+  owner         User           @relation(fields: [ownerUserId], references: [id])
+  dealDocuments DealDocument[]
+  mandateFor    Property[]     @relation("PropertyMandate")
+
+  @@index([sha256]) // same-document-across-accounts fraud signal (Plan §4)
+  @@index([entityType, entityId])
+  @@map("documents")
+}
+
+// ─────────────────────── properties & projects ───────────────────────
+
+model Region {
+  id       String  @id @default(cuid())
+  parentId String? @map("parent_id")
+  nameI18n Json    @map("name_i18n")
+  slug     String  @unique
+  lat      Float?
+  lng      Float?
+
+  parent     Region?    @relation("RegionTree", fields: [parentId], references: [id])
+  children   Region[]   @relation("RegionTree")
+  properties Property[]
+  projects   Project[]
+
+  @@map("regions")
+}
+
+model Property {
+  id                      String         @id @default(cuid())
+  kind                    PropertyKind
+  createdByUserId         String         @map("created_by_user_id")
+  onBehalfOfOwnerId       String?        @map("on_behalf_of_owner_id")
+  mandateDocumentId       String?        @map("mandate_document_id")
+  titleI18n               Json           @map("title_i18n")
+  descriptionI18n         Json           @map("description_i18n")
+  regionId                String         @map("region_id")
+  district                String?
+  lat                     Float?
+  lng                     Float?
+  priceAmount             Decimal        @map("price_amount") @db.Decimal(14, 2)
+  priceCurrency           String         @map("price_currency")
+  priceBaseGbp            Decimal        @map("price_base_gbp") @db.Decimal(14, 2)
+  bedrooms                Int?
+  bathrooms               Int?
+  areaM2                  Float?         @map("area_m2")
+  plotM2                  Float?         @map("plot_m2")
+  deedType                DeedType       @default(na) @map("deed_type")
+  furnished               Boolean        @default(false)
+  features                Json?
+  status                  PropertyStatus @default(draft)
+  availabilityConfirmedAt DateTime?      @map("availability_confirmed_at")
+  viewCount               Int            @default(0) @map("view_count")
+  saveCount               Int            @default(0) @map("save_count")
+  createdAt               DateTime       @default(now()) @map("created_at")
+  updatedAt               DateTime       @updatedAt @map("updated_at")
+  deletedAt               DateTime?      @map("deleted_at")
+
+  createdBy       User           @relation("PropertyCreator", fields: [createdByUserId], references: [id])
+  onBehalfOfOwner User?          @relation("PropertyOwner", fields: [onBehalfOfOwnerId], references: [id])
+  mandateDocument Document?      @relation("PropertyMandate", fields: [mandateDocumentId], references: [id])
+  region          Region         @relation(fields: [regionId], references: [id])
+  media           PropertyMedia[]
+  favorites       Favorite[]
+  conversations   Conversation[]
+  viewings        Viewing[]
+  offers          Offer[]
+  deals           Deal[]
+
+  @@index([status, regionId, priceBaseGbp])
+  @@index([lat, lng])
+  @@map("properties")
+}
+
+model PropertyMedia {
+  id         String    @id @default(cuid())
+  propertyId String    @map("property_id")
+  type       MediaType @default(photo)
+  url        String
+  phash      String? // perceptual hash for duplicate detection (Plan §2.4)
+  sortOrder  Int       @default(0) @map("sort_order")
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([phash])
+  @@map("property_media")
+}
+
+model Project {
+  id              String        @id @default(cuid())
+  developerUserId String        @map("developer_user_id")
+  nameI18n        Json          @map("name_i18n")
+  regionId        String        @map("region_id")
+  lat             Float?
+  lng             Float?
+  descriptionI18n Json          @map("description_i18n")
+  deliveryDate    DateTime?     @map("delivery_date")
+  paymentPlans    Json?         @map("payment_plans")
+  status          ProjectStatus @default(draft)
+  createdAt       DateTime      @default(now()) @map("created_at")
+  deletedAt       DateTime?     @map("deleted_at")
+
+  developer User            @relation(fields: [developerUserId], references: [id])
+  region    Region          @relation(fields: [regionId], references: [id])
+  media     ProjectMedia[]
+  units     ProjectUnit[]
+  updates   ProjectUpdate[]
+
+  @@map("projects")
+}
+
+model ProjectMedia {
+  id        String    @id @default(cuid())
+  projectId String    @map("project_id")
+  type      MediaType @default(photo)
+  url       String
+  sortOrder Int       @default(0) @map("sort_order")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_media")
+}
+
+model ProjectUnit {
+  id            String     @id @default(cuid())
+  projectId     String     @map("project_id")
+  unitNo        String     @map("unit_no")
+  type          String?
+  bedrooms      Int?
+  areaM2        Float?     @map("area_m2")
+  floor         Int?
+  priceAmount   Decimal    @map("price_amount") @db.Decimal(14, 2)
+  priceCurrency String     @map("price_currency")
+  status        UnitStatus @default(available)
+  planMediaId   String?    @map("plan_media_id")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  deals   Deal[]
+
+  @@unique([projectId, unitNo])
+  @@map("project_units")
+}
+
+model ProjectUpdate {
+  id          String   @id @default(cuid())
+  projectId   String   @map("project_id")
+  titleI18n   Json     @map("title_i18n")
+  bodyI18n    Json     @map("body_i18n")
+  media       Json?
+  publishedAt DateTime @default(now()) @map("published_at")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@map("project_updates")
+}
+
+// ─────────────────────── discovery ───────────────────────
+
+model SavedSearch {
+  id           String       @id @default(cuid())
+  userId       String       @map("user_id")
+  name         String?
+  query        Json
+  alertChannel AlertChannel @default(email) @map("alert_channel")
+  lastAlertAt  DateTime?    @map("last_alert_at")
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("saved_searches")
+}
+
+model Favorite {
+  userId     String   @map("user_id")
+  propertyId String   @map("property_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@id([userId, propertyId])
+  @@map("favorites")
+}
+
+// ─────────────────────── chat ───────────────────────
+
+model Conversation {
+  id         String   @id @default(cuid())
+  propertyId String?  @map("property_id")
+  dealId     String?  @map("deal_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  property     Property?                 @relation(fields: [propertyId], references: [id])
+  deal         Deal?                     @relation(fields: [dealId], references: [id])
+  participants ConversationParticipant[]
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  conversationId String @map("conversation_id")
+  userId         String @map("user_id")
+  roleInConvo    String @map("role_in_convo")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String    @id @default(cuid())
+  conversationId String    @map("conversation_id")
+  senderId       String    @map("sender_id")
+  body           String
+  bodyScrubbed   Boolean   @default(false) @map("body_scrubbed") // contact-info masking applied (Plan §2.4)
+  attachments    Json?
+  readAt         DateTime? @map("read_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id])
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+// ─────────────────────── viewings & offers ───────────────────────
+
+model Viewing {
+  id          String        @id @default(cuid())
+  propertyId  String        @map("property_id")
+  customerId  String        @map("customer_id")
+  hostUserId  String        @map("host_user_id")
+  scheduledAt DateTime      @map("scheduled_at")
+  status      ViewingStatus @default(requested)
+  notes       String?
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  property Property @relation(fields: [propertyId], references: [id])
+  customer User     @relation("ViewingCustomer", fields: [customerId], references: [id])
+  host     User     @relation("ViewingHost", fields: [hostUserId], references: [id])
+
+  @@map("viewings")
+}
+
+model Offer {
+  id            String      @id @default(cuid())
+  propertyId    String      @map("property_id")
+  customerId    String      @map("customer_id")
+  amount        Decimal     @db.Decimal(14, 2)
+  currency      String
+  termsNote     String?     @map("terms_note")
+  status        OfferStatus @default(submitted)
+  parentOfferId String?     @map("parent_offer_id")
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  property      Property @relation(fields: [propertyId], references: [id])
+  customer      User     @relation(fields: [customerId], references: [id])
+  parentOffer   Offer?   @relation("OfferCounter", fields: [parentOfferId], references: [id])
+  counterOffers Offer[]  @relation("OfferCounter")
+
+  @@map("offers")
+}
+
+// ─────────────────────── deals (Plan §7) ───────────────────────
+
+model PipelineTemplate {
+  id     String   @id @default(cuid())
+  kind   DealKind @unique
+  stages Json // ordered PipelineStageDef[] incl. injectable_service_types
+
+  @@map("pipeline_templates")
+}
+
+model Deal {
+  id              String     @id @default(cuid())
+  propertyId      String?    @map("property_id")
+  projectUnitId   String?    @map("project_unit_id")
+  kind            DealKind
+  status          DealStatus @default(active)
+  currentStageKey String     @map("current_stage_key")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  completedAt     DateTime?  @map("completed_at")
+
+  property      Property?      @relation(fields: [propertyId], references: [id])
+  projectUnit   ProjectUnit?   @relation(fields: [projectUnitId], references: [id])
+  parties       DealParty[]
+  stages        DealStage[]
+  documents     DealDocument[]
+  snapshot      DealSnapshot?
+  events        DealEvent[]
+  ratings       Rating[]
+  disputes      Dispute[]
+  conversations Conversation[]
+
+  @@map("deals")
+}
+
+model DealParty {
+  dealId    String        @map("deal_id")
+  userId    String        @map("user_id")
+  partyRole DealPartyRole @map("party_role")
+  joinedAt  DateTime      @default(now()) @map("joined_at")
+
+  deal Deal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([dealId, userId, partyRole])
+  @@map("deal_parties")
+}
+
+model DealStage {
+  id          String      @id @default(cuid())
+  dealId      String      @map("deal_id")
+  stageKey    String      @map("stage_key")
+  status      StageStatus @default(pending)
+  completedAt DateTime?   @map("completed_at")
+  completedBy String?     @map("completed_by")
+
+  deal Deal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@unique([dealId, stageKey])
+  @@map("deal_stages")
+}
+
+model DealDocument {
+  dealId     String @map("deal_id")
+  documentId String @map("document_id")
+  stageKey   String @map("stage_key")
+
+  deal     Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  document Document @relation(fields: [documentId], references: [id])
+
+  @@id([dealId, documentId])
+  @@map("deal_documents")
+}
+
+/// Frozen at offer acceptance (Plan §7): immutable record of what was agreed.
+model DealSnapshot {
+  dealId           String  @id @map("deal_id")
+  propertySnapshot Json    @map("property_snapshot")
+  priceAgreed      Decimal @map("price_agreed") @db.Decimal(14, 2)
+  currency         String
+  commissionSplit  Json?   @map("commission_split")
+
+  deal Deal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@map("deal_snapshot")
+}
+
+/// Immutable timeline — never updated or deleted, only appended.
+model DealEvent {
+  id        String   @id @default(cuid())
+  dealId    String   @map("deal_id")
+  actorId   String?  @map("actor_id")
+  eventType String   @map("event_type")
+  payload   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  deal Deal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+
+  @@index([dealId, createdAt])
+  @@map("deal_events")
+}
+
+// ─────────────────────── reputation ───────────────────────
+
+model Rating {
+  id         String    @id @default(cuid())
+  dealId     String    @map("deal_id")
+  raterId    String    @map("rater_id")
+  rateeId    String    @map("ratee_id")
+  stars      Int
+  tags       String[]  @default([])
+  comment    String?
+  revealedAt DateTime? @map("revealed_at") // both-submit-or-14-days rule (Plan §6.5)
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  deal  Deal @relation(fields: [dealId], references: [id])
+  rater User @relation("RatingRater", fields: [raterId], references: [id])
+  ratee User @relation("RatingRatee", fields: [rateeId], references: [id])
+
+  @@unique([dealId, raterId, rateeId])
+  @@map("ratings")
+}
+
+model Dispute {
+  id                  String        @id @default(cuid())
+  dealId              String        @map("deal_id")
+  openedBy            String        @map("opened_by")
+  againstUserId       String        @map("against_user_id")
+  reason              String
+  status              DisputeStatus @default(open)
+  resolutionNote      String?       @map("resolution_note")
+  resolvedByAdminId   String?       @map("resolved_by_admin_id")
+  createdAt           DateTime      @default(now()) @map("created_at")
+
+  deal Deal @relation(fields: [dealId], references: [id])
+
+  @@map("disputes")
+}
+
+// ─────────────────────── notifications / audit / misc ───────────────────────
+
+model Notification {
+  id          String              @id @default(cuid())
+  userId      String              @map("user_id")
+  channel     NotificationChannel
+  templateKey String              @map("template_key")
+  payload     Json?
+  sentAt      DateTime?           @map("sent_at")
+  readAt      DateTime?           @map("read_at")
+  createdAt   DateTime            @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt])
+  @@map("notifications")
+}
+
+/// Append-only (Plan §2.4). No update/delete paths in application code.
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?  @map("actor_id")
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String?  @map("entity_id")
+  before     Json?
+  after      Json?
+  ip         String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@map("audit_logs")
+}
+
+model FxRate {
+  base      String
+  quote     String
+  rate      Decimal  @db.Decimal(18, 8)
+  fetchedAt DateTime @default(now()) @map("fetched_at")
+
+  @@id([base, quote])
+  @@map("fx_rates")
+}
+
+// ─────────────────────── auth support ───────────────────────
+
+/// Rotating refresh tokens (Plan §2.1: access 15min / refresh 30d rotating).
+/// Only the sha256 of the token is stored; rotation revokes the used token.
+model RefreshToken {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  replacedByTokenId String? @map("replaced_by_token_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  ip        String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model OtpCode {
+  id        String    @id @default(cuid())
+  userId    String?   @map("user_id")
+  phone     String
+  codeHash  String    @map("code_hash")
+  attempts  Int       @default(0)
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([phone, createdAt])
+  @@map("otp_codes")
+}

@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+
+# builds
+dist/
+.next/
+.turbo/
+out/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# database
+*.sqlite
+
+# logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# local object storage (minio)
+.minio-data/
+
+# test artifacts
+coverage/
+playwright-report/
+test-results/

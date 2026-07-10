@@ -1,0 +1,23 @@
+{
+  "name": "@propverify/ui",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.tsx",
+  "types": "./src/index.tsx",
+  "scripts": {
+    "build": "echo \"consumed as source by Next.js (transpilePackages)\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "echo \"no lint configured yet\""
+  },
+  "dependencies": {
+    "@propverify/shared": "*"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "react": "^18.3.1",
+    "typescript": "^5.5.4"
+  }
+}

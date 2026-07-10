@@ -1,0 +1,23 @@
+{
+  "common": {
+    "appName": "PropVerify",
+    "tagline": "Platformdaysa, gerçektir.",
+    "verified": "Doğrulanmış",
+    "search": "Ara",
+    "signIn": "Giriş yap",
+    "register": "Kayıt ol"
+  },
+  "home": {
+    "heroTitle": "Her ilan doğrulanmış. Her satıcı gerçek.",
+    "heroSubtitle": "Kuzey Kıbrıs'ta güven odaklı gayrimenkul alım, satım ve kiralama — ilk görüntülemeden anahtar teslimine kadar.",
+    "searchPlaceholder": "Bölgeye göre ara, örn. Girne",
+    "browseByRegion": "Bölgeye göre keşfet",
+    "howItWorks": "Nasıl çalışır",
+    "step1Title": "Belgeler kontrol edilir",
+    "step1Body": "Koçanlar, kimlikler ve lisanslar, ilan yayına girmeden önce doğrulama ekibimizce incelenir.",
+    "step2Title": "Koçan türü gösterilir",
+    "step2Body": "Türk, Eşdeğer, Tahsis veya Yabancı — ne aldığınızı her zaman bilirsiniz.",
+    "step3Title": "Tamamlanana kadar rehberlik",
+    "step3Body": "Görüntülemeler, teklifler, sözleşmeler ve teslim tek bir işlem odasında adım adım takip edilir."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "common": {
+    "appName": "PropVerify",
+    "tagline": "If it's on the platform, it's real.",
+    "verified": "Verified",
+    "search": "Search",
+    "signIn": "Sign in",
+    "register": "Register"
+  },
+  "home": {
+    "heroTitle": "Every listing verified. Every seller real.",
+    "heroSubtitle": "The trust-first way to buy, sell and rent property in Northern Cyprus — from first viewing to key handover.",
+    "searchPlaceholder": "Search by region, e.g. Kyrenia",
+    "browseByRegion": "Browse by region",
+    "howItWorks": "How it works",
+    "step1Title": "Documents checked",
+    "step1Body": "Title deeds, IDs and licenses are reviewed by our verification team before any listing goes live.",
+    "step2Title": "Deed type shown",
+    "step2Body": "Turkish, Exchange, Allocation or Foreign — you always know what you're buying.",
+    "step3Title": "Guided to completion",
+    "step3Body": "Viewings, offers, contracts and handover tracked step by step in one deal room."
+  }
+}
