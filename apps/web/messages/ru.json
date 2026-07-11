@@ -68,7 +68,12 @@
       "optional": "optional",
       "pendingHint": "Your documents will be reviewed once uploaded — verification takes up to 24h.",
       "requirementsTitle": "Documents needed for {role}",
-      "uploadComingSoon": "Document upload opens in the next build step."
+      "notifications": "Notifications",
+      "markAllRead": "Mark all read",
+      "upload": "Upload",
+      "reupload": "Re-upload",
+      "docApproved": "Approved",
+      "docPending": "In review"
     },
     "profile": {
       "title": "{role} profile",
@@ -88,6 +93,65 @@
     "comingSoon": {
       "title": "Under construction",
       "body": "This section arrives in an upcoming build step."
+    },
+    "notifications": {
+      "verification.approved": "Your listing \"{title}\" is verified and live 🎉",
+      "verification.rejected": "Your listing \"{title}\" needs attention — some documents were rejected",
+      "profile.verified": "Your {title} profile is verified — you can now list",
+      "profile.rejected": "Your {title} profile application was rejected — check your documents",
+      "availability.confirm_needed": "Please confirm \"{title}\" is still available",
+      "availability.paused": "\"{title}\" was paused — confirm availability to relist"
+    },
+    "reasons": {
+      "illegible": "Document illegible",
+      "expired": "Document expired",
+      "name_mismatch": "Name does not match",
+      "wrong_type": "Wrong document type",
+      "suspected_forgery": "Suspected forgery",
+      "other": "Other"
+    }
+  },
+  "admin": {
+    "queue": {
+      "title": "Verification queue",
+      "depth": "In queue",
+      "overdue": "Overdue",
+      "approvalRate": "Approval rate",
+      "turnaround": "Avg turnaround",
+      "all": "All",
+      "type": { "listing": "Listing", "profile": "Profile" },
+      "empty": "Queue is empty — all caught up ✓",
+      "slaIn": "SLA in",
+      "overdueBy": "Overdue by",
+      "claim": "Claim",
+      "claimed": "Claimed",
+      "review": "Review"
+    },
+    "review": {
+      "title": "Verification review",
+      "lister": "Lister",
+      "profileApplication": "application",
+      "memberSince": "member since",
+      "fraudTitle": "Fraud signals",
+      "documents": "Documents",
+      "noDocs": "No documents uploaded yet.",
+      "open": "Open ↗",
+      "approved": "Approve",
+      "rejected": "Reject",
+      "pickReason": "Reason…",
+      "rejectNote": "Note to the applicant (optional)",
+      "internalNote": "Internal note (not shown to the applicant)",
+      "submitDecision": "Submit decision",
+      "submitHint": "All approved → entity goes live/verified. Any rejection → applicant is notified and re-uploads only the rejected documents.",
+      "alreadyDecided": "This item was already decided: {status}"
+    },
+    "reasons": {
+      "illegible": "Illegible",
+      "expired": "Expired",
+      "name_mismatch": "Name mismatch",
+      "wrong_type": "Wrong type",
+      "suspected_forgery": "Suspected forgery",
+      "other": "Other"
     }
   },
   "listings": {

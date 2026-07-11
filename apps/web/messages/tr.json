@@ -68,7 +68,12 @@
       "optional": "isteğe bağlı",
       "pendingHint": "Belgeleriniz yüklendikten sonra incelenecek — doğrulama en fazla 24 saat sürer.",
       "requirementsTitle": "{role} için gereken belgeler",
-      "uploadComingSoon": "Belge yükleme bir sonraki geliştirme adımında açılacak."
+      "notifications": "Bildirimler",
+      "markAllRead": "Tümünü okundu işaretle",
+      "upload": "Yükle",
+      "reupload": "Yeniden yükle",
+      "docApproved": "Onaylandı",
+      "docPending": "İncelemede"
     },
     "profile": {
       "title": "{role} profili",
@@ -88,6 +93,65 @@
     "comingSoon": {
       "title": "Yapım aşamasında",
       "body": "Bu bölüm sonraki geliştirme adımında gelecek."
+    },
+    "notifications": {
+      "verification.approved": "\"{title}\" ilanınız doğrulandı ve yayında 🎉",
+      "verification.rejected": "\"{title}\" ilanınız ilgi bekliyor — bazı belgeler reddedildi",
+      "profile.verified": "{title} profiliniz doğrulandı — artık ilan verebilirsiniz",
+      "profile.rejected": "{title} profil başvurunuz reddedildi — belgelerinizi kontrol edin",
+      "availability.confirm_needed": "\"{title}\" hâlâ mevcut mu, lütfen onaylayın",
+      "availability.paused": "\"{title}\" duraklatıldı — yeniden yayınlamak için müsaitliği onaylayın"
+    },
+    "reasons": {
+      "illegible": "Belge okunaksız",
+      "expired": "Belgenin süresi dolmuş",
+      "name_mismatch": "İsim uyuşmuyor",
+      "wrong_type": "Yanlış belge türü",
+      "suspected_forgery": "Sahtecilik şüphesi",
+      "other": "Diğer"
+    }
+  },
+  "admin": {
+    "queue": {
+      "title": "Doğrulama kuyruğu",
+      "depth": "Kuyrukta",
+      "overdue": "Süresi geçen",
+      "approvalRate": "Onay oranı",
+      "turnaround": "Ort. işlem süresi",
+      "all": "Tümü",
+      "type": { "listing": "İlan", "profile": "Profil" },
+      "empty": "Kuyruk boş — her şey güncel ✓",
+      "slaIn": "SLA süresi",
+      "overdueBy": "Gecikme",
+      "claim": "Üstlen",
+      "claimed": "Üstlenildi",
+      "review": "İncele"
+    },
+    "review": {
+      "title": "Doğrulama incelemesi",
+      "lister": "İlan sahibi",
+      "profileApplication": "başvurusu",
+      "memberSince": "üyelik tarihi",
+      "fraudTitle": "Sahtecilik sinyalleri",
+      "documents": "Belgeler",
+      "noDocs": "Henüz belge yüklenmedi.",
+      "open": "Aç ↗",
+      "approved": "Onayla",
+      "rejected": "Reddet",
+      "pickReason": "Neden…",
+      "rejectNote": "Başvurana not (isteğe bağlı)",
+      "internalNote": "Dahili not (başvurana gösterilmez)",
+      "submitDecision": "Kararı gönder",
+      "submitHint": "Hepsi onaylanırsa → yayına girer/doğrulanır. Herhangi bir ret → başvuran bilgilendirilir ve yalnızca reddedilen belgeleri yeniden yükler.",
+      "alreadyDecided": "Bu öğe zaten karara bağlandı: {status}"
+    },
+    "reasons": {
+      "illegible": "Okunaksız",
+      "expired": "Süresi dolmuş",
+      "name_mismatch": "İsim uyuşmazlığı",
+      "wrong_type": "Yanlış tür",
+      "suspected_forgery": "Sahtecilik şüphesi",
+      "other": "Diğer"
     }
   },
   "listings": {

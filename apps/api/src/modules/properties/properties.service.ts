@@ -188,6 +188,27 @@ export class PropertiesService {
         status: 'pending',
       },
     });
+    // re-upload of a rejected doc requeues the listing for review (Plan §4 step 6/7)
+    const property = await this.prisma.property.findUnique({
+      where: { id: propertyId },
+      select: { status: true },
+    });
+    if (property?.status === 'pending_verification' || property?.status === 'live') {
+      const open = await this.prisma.verificationItem.count({
+        where: { entityType: 'listing', entityId: propertyId, status: { in: ['queued', 'claimed'] } },
+      });
+      if (open === 0) {
+        await this.prisma.verificationItem.create({
+          data: {
+            entityType: 'listing',
+            entityId: propertyId,
+            status: 'queued',
+            slaDueAt: new Date(Date.now() + 24 * 3_600_000),
+          },
+        });
+      }
+    }
+
     await this.audit.log({
       actorId: userId,
       action: 'document.upload',

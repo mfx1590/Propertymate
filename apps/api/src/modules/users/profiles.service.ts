@@ -4,10 +4,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { createHash } from 'crypto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
+import { StorageService } from '../../common/storage/storage.service';
 import {
   ApplicableRoleKey,
   UpdateAgencyProfileDto,
@@ -28,6 +30,7 @@ export class ProfilesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
+    private readonly storage: StorageService,
   ) {}
 
   async applyForRole(userId: string, roleKey: ApplicableRoleKey, ip?: string) {
@@ -51,6 +54,18 @@ export class ProfilesService {
     });
 
     await this.createProfileExtension(userId, roleKey);
+
+    // professional roles enter the admin verification queue (Plan §4)
+    if (!immediate) {
+      await this.prisma.verificationItem.create({
+        data: {
+          entityType: 'profile',
+          entityId: userRole.id,
+          status: 'queued',
+          slaDueAt: new Date(Date.now() + 24 * 3_600_000),
+        },
+      });
+    }
 
     await this.audit.log({
       actorId: userId,
@@ -162,6 +177,81 @@ export class ProfilesService {
         sortOrder: true,
       },
       orderBy: { sortOrder: 'asc' },
+    });
+  }
+
+  /** Profile verification docs — private bucket, tied to the user_role under review. */
+  async addProfileDocument(
+    userId: string,
+    roleKey: string,
+    documentType: string,
+    file: { buffer: Buffer; mimetype: string; size: number },
+    ip?: string,
+  ) {
+    const userRole = await this.prisma.userRole.findFirst({
+      where: { userId, role: { key: roleKey } },
+    });
+    if (!userRole) throw new NotFoundException(`You do not hold the ${roleKey} role`);
+    if (file.size > 20 * 1024 * 1024) throw new BadRequestException('Document exceeds 20MB limit');
+
+    const key = `profiles/${userRole.id}/${documentType}-${Date.now()}`;
+    await this.storage.putPrivateDocument(key, file.buffer, file.mimetype);
+    const doc = await this.prisma.document.create({
+      data: {
+        ownerUserId: userId,
+        entityType: 'profile',
+        entityId: userRole.id,
+        documentType,
+        storageKey: key,
+        mime: file.mimetype,
+        size: file.size,
+        sha256: createHash('sha256').update(file.buffer).digest('hex'),
+        status: 'pending',
+      },
+    });
+
+    // re-upload after a rejection requeues the profile for review
+    const open = await this.prisma.verificationItem.count({
+      where: { entityType: 'profile', entityId: userRole.id, status: { in: ['queued', 'claimed'] } },
+    });
+    if (open === 0 && userRole.verificationStatus !== 'verified') {
+      await this.prisma.verificationItem.create({
+        data: {
+          entityType: 'profile',
+          entityId: userRole.id,
+          status: 'queued',
+          slaDueAt: new Date(Date.now() + 24 * 3_600_000),
+        },
+      });
+    }
+
+    await this.audit.log({
+      actorId: userId,
+      action: 'document.upload',
+      entityType: 'document',
+      entityId: doc.id,
+      after: { roleKey, documentType },
+      ip,
+    });
+    return { id: doc.id, documentType: doc.documentType, status: doc.status, uploadedAt: doc.uploadedAt };
+  }
+
+  async listProfileDocuments(userId: string, roleKey: string) {
+    const userRole = await this.prisma.userRole.findFirst({
+      where: { userId, role: { key: roleKey } },
+    });
+    if (!userRole) throw new NotFoundException(`You do not hold the ${roleKey} role`);
+    return this.prisma.document.findMany({
+      where: { entityType: 'profile', entityId: userRole.id, deletedAt: null },
+      select: {
+        id: true,
+        documentType: true,
+        status: true,
+        rejectReasonCode: true,
+        rejectNote: true,
+        uploadedAt: true,
+      },
+      orderBy: { uploadedAt: 'desc' },
     });
   }
 
