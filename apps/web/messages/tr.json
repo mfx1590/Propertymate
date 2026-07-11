@@ -90,6 +90,137 @@
       "body": "Bu bölüm sonraki geliştirme adımında gelecek."
     }
   },
+  "listings": {
+    "kind": { "resale": "Satılık", "rental": "Kiralık" },
+    "kindHint": {
+      "resale": "Sahibi olduğunuz veya yönettiğiniz bir mülkü satın",
+      "rental": "Bir mülkü kiraya verin"
+    },
+    "deed": {
+      "turkish": "Türk koçanı",
+      "exchange": "Eşdeğer koçan",
+      "allocation": "Tahsis koçanı",
+      "foreign": "Yabancı koçan",
+      "na": "Belirtilmedi"
+    },
+    "status": {
+      "draft": "Taslak",
+      "pending_verification": "İncelemede",
+      "live": "Yayında",
+      "paused": "Duraklatıldı",
+      "under_offer": "Teklif alındı",
+      "sold": "Satıldı",
+      "rented": "Kiralandı",
+      "archived": "Arşivlendi"
+    },
+    "fields": {
+      "title": "İlan başlığı",
+      "description": "Açıklama",
+      "price": "Fiyat",
+      "currency": "Para birimi",
+      "bedrooms": "Yatak odası",
+      "bathrooms": "Banyo",
+      "areaM2": "Yaşam alanı (m²)",
+      "plotM2": "Arsa (m²)",
+      "deedType": "Koçan türü",
+      "furnished": "Eşyalı",
+      "region": "Bölge",
+      "district": "Semt / mahalle"
+    },
+    "features": {
+      "pool": "Havuz",
+      "sea_view": "Deniz manzarası",
+      "mountain_view": "Dağ manzarası",
+      "garden": "Bahçe",
+      "garage": "Garaj",
+      "balcony": "Balkon",
+      "air_conditioning": "Klima",
+      "solar_water": "Güneş enerjili su ısıtma",
+      "generator": "Jeneratör",
+      "white_goods": "Beyaz eşya",
+      "elevator": "Asansör",
+      "fireplace": "Şömine"
+    },
+    "steps": {
+      "details": "Detaylar",
+      "location": "Konum",
+      "features": "Özellikler",
+      "photos": "Fotoğraflar",
+      "documents": "Belgeler",
+      "review": "Önizleme"
+    },
+    "wizard": {
+      "title": "Yeni ilan",
+      "chooseKind": "Ne ilan ediyorsunuz?",
+      "mapHint": "Mülkün konumunu işaretlemek için haritaya tıklayın.",
+      "photosHint": "En az 5 fotoğraf. İlk fotoğraf kapak olur. EXIF konum verileri otomatik silinir.",
+      "dropPhotos": "Fotoğraf eklemek için tıklayın",
+      "photoCount": "Gerekli 5 fotoğraftan {count} tanesi yüklendi",
+      "cover": "KAPAK",
+      "duplicate": "Benzer fotoğraf başka bir ilanda mevcut",
+      "documentsHint": "Bu belgeler ilanınız yayına girmeden önce doğrulama ekibimizce incelenir. Gizli saklanır, asla herkese açık gösterilmez.",
+      "upload": "Yükle",
+      "uploadedCount": "{count} yüklendi",
+      "photos": "Fotoğraflar",
+      "documents": "Belgeler",
+      "reviewHint": "Gönderdiğinizde ilanınız doğrulamaya gider (en fazla 24 saat). Karar size bildirilir.",
+      "back": "Geri",
+      "saveContinue": "Kaydet ve devam et",
+      "submit": "Doğrulamaya gönder"
+    },
+    "board": {
+      "title": "İlanlarım",
+      "newListing": "Yeni ilan",
+      "empty": "Henüz ilan yok. İlkini oluşturun!",
+      "untitled": "Başlıksız taslak",
+      "views": "görüntülenme",
+      "saves": "kayıt",
+      "continue": "Taslağa devam et",
+      "confirmAvailability": "Hâlâ satılık/kiralık onayla",
+      "view": "Görüntüle"
+    },
+    "detail": {
+      "verified": "Doğrulanmış",
+      "deed": "Koçan",
+      "listed": "İlan tarihi",
+      "about": "Bu mülk hakkında",
+      "features": "Özellikler",
+      "location": "Konum",
+      "save": "Favorilere ekle",
+      "saved": "Kaydedildi",
+      "trustTitle": "PropVerify tarafından doğrulandı",
+      "trustBody": "Koçan, mal sahibi kimliği ve belgeler bu ilan yayına girmeden önce doğrulama ekibimizce kontrol edildi.",
+      "contactSoon": "Sohbet, görüntüleme ve teklifler sonraki geliştirme adımında açılacak."
+    }
+  },
+  "search": {
+    "title": "Mülkünüzü bulun",
+    "searchPlaceholder": "Ara…",
+    "anyKind": "Satılık veya kiralık",
+    "kind": { "resale": "Satılık", "rental": "Kiralık" },
+    "anyRegion": "Tüm bölgeler",
+    "minPrice": "Min £",
+    "maxPrice": "Maks £",
+    "anyBeds": "Oda sayısı",
+    "anyDeed": "Koçan türü",
+    "deed": {
+      "turkish": "Türk",
+      "exchange": "Eşdeğer",
+      "allocation": "Tahsis",
+      "foreign": "Yabancı"
+    },
+    "sortNewest": "En yeni",
+    "sortPriceAsc": "Fiyat ↑",
+    "sortPriceDesc": "Fiyat ↓",
+    "results": "{count} doğrulanmış ilan",
+    "verified": "Doğrulanmış",
+    "beds": "oda",
+    "baths": "banyo",
+    "mapView": "Harita",
+    "listView": "Liste",
+    "saveSearch": "Aramayı kaydet",
+    "saved": "Kaydedildi ✓"
+  },
   "home": {
     "heroTitle": "Her ilan doğrulanmış. Her satıcı gerçek.",
     "heroSubtitle": "Kuzey Kıbrıs'ta güven odaklı gayrimenkul alım, satım ve kiralama — ilk görüntülemeden anahtar teslimine kadar.",

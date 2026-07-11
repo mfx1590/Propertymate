@@ -94,6 +94,36 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
 }
 
 export const apiGet = <T>(path: string) => api<T>(path);
+export const apiDelete = <T>(path: string) => api<T>(path, { method: 'DELETE' });
+
+/** Multipart upload — browser sets the Content-Type boundary itself. */
+export async function apiUpload<T>(path: string, form: FormData): Promise<T> {
+  const doUpload = async () => {
+    const token = getAccessToken();
+    const res = await fetch(`${BASE_URL}${path}`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: form,
+    });
+    if (!res.ok) {
+      let message = res.statusText;
+      try {
+        const body = await res.json();
+        message = Array.isArray(body.message) ? body.message.join(', ') : (body.message ?? message);
+      } catch {
+        /* ignore */
+      }
+      throw new ApiError(res.status, message);
+    }
+    return res.json() as Promise<T>;
+  };
+  try {
+    return await doUpload();
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401 && (await tryRefresh())) return doUpload();
+    throw err;
+  }
+}
 export const apiPost = <T>(path: string, body?: unknown) =>
   api<T>(path, { method: 'POST', body: body === undefined ? undefined : JSON.stringify(body) });
 export const apiPut = <T>(path: string, body: unknown) =>

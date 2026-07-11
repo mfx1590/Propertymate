@@ -90,6 +90,137 @@
       "body": "This section arrives in an upcoming build step."
     }
   },
+  "listings": {
+    "kind": { "resale": "For sale", "rental": "For rent" },
+    "kindHint": {
+      "resale": "Sell a property you own or manage",
+      "rental": "Rent out a property"
+    },
+    "deed": {
+      "turkish": "Turkish deed",
+      "exchange": "Exchange (Eşdeğer)",
+      "allocation": "Allocation (Tahsis)",
+      "foreign": "Foreign deed",
+      "na": "Not specified"
+    },
+    "status": {
+      "draft": "Draft",
+      "pending_verification": "In review",
+      "live": "Live",
+      "paused": "Paused",
+      "under_offer": "Under offer",
+      "sold": "Sold",
+      "rented": "Rented",
+      "archived": "Archived"
+    },
+    "fields": {
+      "title": "Listing title",
+      "description": "Description",
+      "price": "Price",
+      "currency": "Currency",
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "areaM2": "Living area (m²)",
+      "plotM2": "Plot (m²)",
+      "deedType": "Title deed type",
+      "furnished": "Furnished",
+      "region": "Region",
+      "district": "District / neighborhood"
+    },
+    "features": {
+      "pool": "Pool",
+      "sea_view": "Sea view",
+      "mountain_view": "Mountain view",
+      "garden": "Garden",
+      "garage": "Garage",
+      "balcony": "Balcony",
+      "air_conditioning": "Air conditioning",
+      "solar_water": "Solar water heating",
+      "generator": "Generator",
+      "white_goods": "White goods",
+      "elevator": "Elevator",
+      "fireplace": "Fireplace"
+    },
+    "steps": {
+      "details": "Details",
+      "location": "Location",
+      "features": "Features",
+      "photos": "Photos",
+      "documents": "Documents",
+      "review": "Review"
+    },
+    "wizard": {
+      "title": "New listing",
+      "chooseKind": "What are you listing?",
+      "mapHint": "Click the map to drop a pin on the property.",
+      "photosHint": "At least 5 photos. The first photo is your cover. EXIF location data is removed automatically.",
+      "dropPhotos": "Click to add photos",
+      "photoCount": "{count} of 5 required photos",
+      "cover": "COVER",
+      "duplicate": "Similar photo exists on another listing",
+      "documentsHint": "These documents are reviewed by our verification team before your listing goes live. They are stored privately and never shown publicly.",
+      "upload": "Upload",
+      "uploadedCount": "{count} uploaded",
+      "photos": "Photos",
+      "documents": "Documents",
+      "reviewHint": "Submitting sends your listing to verification (up to 24h). You'll be notified of the decision.",
+      "back": "Back",
+      "saveContinue": "Save & continue",
+      "submit": "Submit for verification"
+    },
+    "board": {
+      "title": "My listings",
+      "newListing": "New listing",
+      "empty": "No listings yet. Create your first one!",
+      "untitled": "Untitled draft",
+      "views": "views",
+      "saves": "saves",
+      "continue": "Continue draft",
+      "confirmAvailability": "Confirm still available",
+      "view": "View"
+    },
+    "detail": {
+      "verified": "Verified",
+      "deed": "Deed",
+      "listed": "Listed",
+      "about": "About this property",
+      "features": "Features",
+      "location": "Location",
+      "save": "Save to favorites",
+      "saved": "Saved",
+      "trustTitle": "Verified by PropVerify",
+      "trustBody": "Title deed, owner identity and documents were checked by our verification team before this listing went live.",
+      "contactSoon": "Chat, viewings and offers open in an upcoming build step."
+    }
+  },
+  "search": {
+    "title": "Find your property",
+    "searchPlaceholder": "Search…",
+    "anyKind": "Buy or rent",
+    "kind": { "resale": "For sale", "rental": "For rent" },
+    "anyRegion": "All regions",
+    "minPrice": "Min £",
+    "maxPrice": "Max £",
+    "anyBeds": "Any beds",
+    "anyDeed": "Any deed",
+    "deed": {
+      "turkish": "Turkish",
+      "exchange": "Exchange",
+      "allocation": "Allocation",
+      "foreign": "Foreign"
+    },
+    "sortNewest": "Newest",
+    "sortPriceAsc": "Price ↑",
+    "sortPriceDesc": "Price ↓",
+    "results": "{count} verified listings",
+    "verified": "Verified",
+    "beds": "bd",
+    "baths": "ba",
+    "mapView": "Map",
+    "listView": "List",
+    "saveSearch": "Save search",
+    "saved": "Saved ✓"
+  },
   "home": {
     "heroTitle": "Every listing verified. Every seller real.",
     "heroSubtitle": "The trust-first way to buy, sell and rent property in Northern Cyprus — from first viewing to key handover.",

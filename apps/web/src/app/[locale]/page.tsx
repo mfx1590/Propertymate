@@ -47,15 +47,16 @@ export default async function HomePage({ params: { locale } }: { params: { local
             {t('home.heroTitle')}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">{t('home.heroSubtitle')}</p>
-          <div className="mx-auto mt-8 flex max-w-xl gap-2">
+          <form action={`/${locale}/search`} className="mx-auto mt-8 flex max-w-xl gap-2">
             <input
+              name="q"
               className="w-full rounded-lg border border-gray-300 px-4 py-3"
               placeholder={t('home.searchPlaceholder')}
             />
-            <button className="rounded-lg bg-brand-600 px-6 py-3 font-medium text-white">
+            <button type="submit" className="rounded-lg bg-brand-600 px-6 py-3 font-medium text-white">
               {t('common.search')}
             </button>
-          </div>
+          </form>
         </div>
       </section>
 
@@ -64,12 +65,13 @@ export default async function HomePage({ params: { locale } }: { params: { local
         <h2 className="text-2xl font-bold">{t('home.browseByRegion')}</h2>
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
           {REGIONS.map((r) => (
-            <div
+            <Link
               key={r.slug}
+              href={`/search?region=${r.slug}`}
               className="rounded-xl border border-gray-200 p-6 font-medium transition hover:border-brand-500 hover:shadow-sm"
             >
               {r.en}
-            </div>
+            </Link>
           ))}
         </div>
       </section>

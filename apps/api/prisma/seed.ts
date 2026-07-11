@@ -221,6 +221,16 @@ async function main() {
     create: { kind: DealKind.rental, stages: RENTAL_STAGES as object[] },
   });
 
+  // FX rates: GBP base (Plan §1) — static seed; daily-refresh job comes with hardening
+  const FX: Array<[string, number]> = [['GBP', 1], ['EUR', 1.17], ['USD', 1.27], ['TRY', 52.0]];
+  for (const [quote, rate] of FX) {
+    await prisma.fxRate.upsert({
+      where: { base_quote: { base: 'GBP', quote } },
+      update: { rate, fetchedAt: new Date() },
+      create: { base: 'GBP', quote, rate },
+    });
+  }
+
   // super admin (dev credentials — change in production)
   const adminEmail = 'admin@propverify.local';
   const admin = await prisma.user.upsert({
