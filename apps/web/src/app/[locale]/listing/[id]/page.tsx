@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { API_BASE, fmtGbp, fmtMoney, type Property } from '../../../../lib/listings';
-import { DetailMap, FavoriteButton } from './parts';
+import { ActionBox, DetailMap, FavoriteButton } from './parts';
 
 async function fetchListing(id: string): Promise<Property | null> {
   const res = await fetch(`${API_BASE}/properties/${id}`, { cache: 'no-store' });
@@ -179,9 +179,7 @@ export default async function ListingDetailPage({
             <p className="font-semibold text-gray-700">{t('detail.trustTitle')}</p>
             <p className="mt-1">{t('detail.trustBody')}</p>
           </div>
-          <div className="rounded-xl bg-gray-50 p-4 text-sm text-gray-400">
-            {t('detail.contactSoon')}
-          </div>
+          <ActionBox propertyId={p.id} />
         </aside>
       </div>
     </main>

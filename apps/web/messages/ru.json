@@ -38,6 +38,9 @@
     "signOut": "Sign out",
     "menu": {
       "overview": "Overview",
+      "messages": "Messages",
+      "viewings": "Viewings",
+      "offers": "Offers",
       "myListings": "My listings",
       "leads": "Leads",
       "mandates": "Mandates",
@@ -108,7 +111,18 @@
       "assignment.invited": "New mandate invitation: \"{title}\"",
       "assignment.accepted": "An agent accepted your property assignment",
       "assignment.rejected": "An agent declined your property assignment",
-      "assignment.published": "Your property \"{title}\" was published by your agent 🎉"
+      "assignment.published": "Your property \"{title}\" was published by your agent 🎉",
+      "chat.new_inquiry": "New inquiry about \"{title}\"",
+      "chat.new_message": "New message in your inbox",
+      "viewing.requested": "New viewing request for \"{title}\"",
+      "viewing.confirmed": "Your viewing was confirmed",
+      "viewing.completed": "Viewing marked completed",
+      "viewing.cancelled": "A viewing was cancelled",
+      "viewing.no_show": "A viewing was marked no-show",
+      "offer.received": "New offer on \"{title}\"",
+      "offer.countered": "You received a counter-offer",
+      "offer.accepted": "Your offer was accepted 🎉",
+      "offer.rejected": "Your offer was declined"
     },
     "reasons": {
       "illegible": "Document illegible",
@@ -329,9 +343,68 @@
       "save": "Save to favorites",
       "saved": "Saved",
       "trustTitle": "Verified by PropVerify",
-      "trustBody": "Title deed, owner identity and documents were checked by our verification team before this listing went live.",
-      "contactSoon": "Chat, viewings and offers open in an upcoming build step."
+      "trustBody": "Title deed, owner identity and documents were checked by our verification team before this listing went live."
+    },
+    "actions": {
+      "inquire": "Message",
+      "viewing": "Viewing",
+      "offer": "Offer",
+      "messagePlaceholder": "Ask about this property…",
+      "send": "Send message",
+      "sent": "Message sent — check your inbox",
+      "requestViewing": "Request viewing",
+      "viewingRequested": "Viewing requested — the host will confirm",
+      "amountGbp": "Your offer (GBP)",
+      "makeOffer": "Submit offer",
+      "offerSent": "Offer submitted",
+      "antiBypassNote": "For your safety, contact details are hidden in chat until a viewing is confirmed. All deals are protected by the platform."
     }
+  },
+  "chat": {
+    "title": "Messages",
+    "empty": "No conversations yet. Message a lister from any listing page.",
+    "anonymousNote": "🔒 Anonymous channel — identities and contact details always stay hidden. A platform representative assists at the deal stage.",
+    "scrubNote": "Contact details are hidden until a confirmed viewing.",
+    "scrubbedFlag": "Contact info was hidden in this message",
+    "placeholder": "Type a message…",
+    "send": "Send",
+    "pickConversation": "Select a conversation"
+  },
+  "viewings": {
+    "title": "Viewings",
+    "empty": "No viewings yet.",
+    "asHost": "You host",
+    "asCustomer": "You visit",
+    "status": {
+      "requested": "Requested",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "no_show": "No-show"
+    },
+    "confirm": "Confirm",
+    "complete": "Mark completed",
+    "noShow": "No-show",
+    "cancel": "Cancel"
+  },
+  "offers": {
+    "title": "Offers",
+    "received": "Received",
+    "sent": "Sent",
+    "none": "None yet.",
+    "counterOf": "counter-offer",
+    "status": {
+      "submitted": "Submitted",
+      "countered": "Countered",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "withdrawn": "Withdrawn"
+    },
+    "accept": "Accept",
+    "reject": "Reject",
+    "counter": "Counter",
+    "counterAmount": "Counter (GBP)",
+    "withdraw": "Withdraw"
   },
   "search": {
     "title": "Find your property",

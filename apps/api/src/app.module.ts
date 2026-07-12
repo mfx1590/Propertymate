@@ -20,6 +20,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { VerificationModule } from './modules/verification/verification.module';
 import { MarketplaceModule } from './modules/marketplace/marketplace.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { MarketplaceModule } from './modules/marketplace/marketplace.module';
     NotificationsModule,
     VerificationModule,
     MarketplaceModule,
+    ChatModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

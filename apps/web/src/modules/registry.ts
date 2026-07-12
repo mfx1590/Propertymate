@@ -83,6 +83,9 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
 /** Menu shown to everyone regardless of role. */
 export const COMMON_MENU: MenuItem[] = [
   { labelKey: 'overview', href: '/dashboard' },
+  { labelKey: 'messages', href: '/dashboard/messages' },
+  { labelKey: 'viewings', href: '/dashboard/viewings' },
+  { labelKey: 'offers', href: '/dashboard/offers' },
 ];
 
 export function menuForRoles(roleKeys: RoleKey[]): MenuItem[] {

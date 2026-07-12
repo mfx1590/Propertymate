@@ -38,6 +38,9 @@
     "signOut": "Çıkış yap",
     "menu": {
       "overview": "Genel bakış",
+      "messages": "Mesajlar",
+      "viewings": "Görüntülemeler",
+      "offers": "Teklifler",
       "myListings": "İlanlarım",
       "leads": "Talepler",
       "mandates": "Yetki belgeleri",
@@ -108,7 +111,18 @@
       "assignment.invited": "Yeni yetki daveti: \"{title}\"",
       "assignment.accepted": "Bir danışman mülk atamanızı kabul etti",
       "assignment.rejected": "Bir danışman mülk atamanızı reddetti",
-      "assignment.published": "\"{title}\" mülkünüz danışmanınız tarafından yayınlandı 🎉"
+      "assignment.published": "\"{title}\" mülkünüz danışmanınız tarafından yayınlandı 🎉",
+      "chat.new_inquiry": "\"{title}\" hakkında yeni talep",
+      "chat.new_message": "Gelen kutunuzda yeni mesaj",
+      "viewing.requested": "\"{title}\" için yeni görüntüleme talebi",
+      "viewing.confirmed": "Görüntülemeniz onaylandı",
+      "viewing.completed": "Görüntüleme tamamlandı olarak işaretlendi",
+      "viewing.cancelled": "Bir görüntüleme iptal edildi",
+      "viewing.no_show": "Bir görüntüleme gelmedi olarak işaretlendi",
+      "offer.received": "\"{title}\" için yeni teklif",
+      "offer.countered": "Karşı teklif aldınız",
+      "offer.accepted": "Teklifiniz kabul edildi 🎉",
+      "offer.rejected": "Teklifiniz reddedildi"
     },
     "reasons": {
       "illegible": "Belge okunaksız",
@@ -329,9 +343,68 @@
       "save": "Favorilere ekle",
       "saved": "Kaydedildi",
       "trustTitle": "PropVerify tarafından doğrulandı",
-      "trustBody": "Koçan, mal sahibi kimliği ve belgeler bu ilan yayına girmeden önce doğrulama ekibimizce kontrol edildi.",
-      "contactSoon": "Sohbet, görüntüleme ve teklifler sonraki geliştirme adımında açılacak."
+      "trustBody": "Koçan, mal sahibi kimliği ve belgeler bu ilan yayına girmeden önce doğrulama ekibimizce kontrol edildi."
+    },
+    "actions": {
+      "inquire": "Mesaj",
+      "viewing": "Görüntüleme",
+      "offer": "Teklif",
+      "messagePlaceholder": "Bu mülk hakkında soru sorun…",
+      "send": "Mesaj gönder",
+      "sent": "Mesaj gönderildi — gelen kutunuzu kontrol edin",
+      "requestViewing": "Görüntüleme talep et",
+      "viewingRequested": "Görüntüleme talep edildi — ev sahibi onaylayacak",
+      "amountGbp": "Teklifiniz (GBP)",
+      "makeOffer": "Teklif ver",
+      "offerSent": "Teklif gönderildi",
+      "antiBypassNote": "Güvenliğiniz için, görüntüleme onaylanana kadar iletişim bilgileri sohbette gizlenir. Tüm işlemler platform güvencesindedir."
     }
+  },
+  "chat": {
+    "title": "Mesajlar",
+    "empty": "Henüz sohbet yok. Herhangi bir ilan sayfasından ilan sahibine mesaj gönderin.",
+    "anonymousNote": "🔒 Anonim kanal — kimlikler ve iletişim bilgileri her zaman gizli kalır. Anlaşma aşamasında platform temsilcisi yardımcı olur.",
+    "scrubNote": "Görüntüleme onaylanana kadar iletişim bilgileri gizlenir.",
+    "scrubbedFlag": "Bu mesajdaki iletişim bilgileri gizlendi",
+    "placeholder": "Bir mesaj yazın…",
+    "send": "Gönder",
+    "pickConversation": "Bir sohbet seçin"
+  },
+  "viewings": {
+    "title": "Görüntülemeler",
+    "empty": "Henüz görüntüleme yok.",
+    "asHost": "Ev sahibisiniz",
+    "asCustomer": "Ziyaretçisiniz",
+    "status": {
+      "requested": "Talep edildi",
+      "confirmed": "Onaylandı",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal edildi",
+      "no_show": "Gelmedi"
+    },
+    "confirm": "Onayla",
+    "complete": "Tamamlandı işaretle",
+    "noShow": "Gelmedi",
+    "cancel": "İptal"
+  },
+  "offers": {
+    "title": "Teklifler",
+    "received": "Alınan",
+    "sent": "Gönderilen",
+    "none": "Henüz yok.",
+    "counterOf": "karşı teklif",
+    "status": {
+      "submitted": "Gönderildi",
+      "countered": "Karşı teklif verildi",
+      "accepted": "Kabul edildi",
+      "rejected": "Reddedildi",
+      "withdrawn": "Geri çekildi"
+    },
+    "accept": "Kabul et",
+    "reject": "Reddet",
+    "counter": "Karşı teklif",
+    "counterAmount": "Karşı teklif (GBP)",
+    "withdraw": "Geri çek"
   },
   "search": {
     "title": "Mülkünüzü bulun",
