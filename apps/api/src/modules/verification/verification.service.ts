@@ -279,12 +279,24 @@ export class VerificationService {
   private async applyListingOutcome(propertyId: string, outcome: string, decisions: DocumentDecision[]) {
     const property = await this.prisma.property.findUnique({
       where: { id: propertyId },
-      select: { createdByUserId: true, titleI18n: true },
+      select: { createdByUserId: true, titleI18n: true, kind: true },
     });
     if (!property) return;
     const title = (property.titleI18n as { en?: string })?.en ?? 'your listing';
 
     if (outcome === 'approved') {
+      // §13.4: resale stays PRIVATE until an assigned agent publishes; rental goes live
+      if (property.kind === 'resale') {
+        await this.prisma.property.update({
+          where: { id: propertyId },
+          data: { status: 'verified_private' },
+        });
+        await this.notifications.notify(property.createdByUserId, 'verification.approved_private', {
+          propertyId,
+          title,
+        });
+        return;
+      }
       await this.prisma.property.update({
         where: { id: propertyId },
         data: { status: 'live', availabilityConfirmedAt: new Date() },

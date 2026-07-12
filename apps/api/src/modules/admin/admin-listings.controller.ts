@@ -27,10 +27,15 @@ export class AdminListingsController {
       throw new BadRequestException(`Listing is ${property.status}, not pending_verification`);
     }
 
+    // §13.4: resale approvals go verified_private; only rentals go straight live
+    const nextStatus = property.kind === 'resale' ? ('verified_private' as const) : ('live' as const);
     await this.prisma.$transaction([
       this.prisma.property.update({
         where: { id },
-        data: { status: 'live', availabilityConfirmedAt: new Date() },
+        data: {
+          status: nextStatus,
+          ...(nextStatus === 'live' ? { availabilityConfirmedAt: new Date() } : {}),
+        },
       }),
       this.prisma.document.updateMany({
         where: { entityType: 'listing', entityId: id, status: 'pending' },
@@ -48,10 +53,10 @@ export class AdminListingsController {
       entityType: 'property',
       entityId: id,
       before: { status: property.status },
-      after: { status: 'live' },
+      after: { status: nextStatus },
       ip,
     });
-    this.events.emit('listing.live', { propertyId: id });
-    return { id, status: 'live' };
+    if (nextStatus === 'live') this.events.emit('listing.live', { propertyId: id });
+    return { id, status: nextStatus };
   }
 }

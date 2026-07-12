@@ -159,7 +159,8 @@ export class SearchService implements OnModuleInit {
     });
     if (!p || p.status !== 'live') return null;
 
-    const priceBaseGbp = Number(p.priceBaseGbp);
+    // §13.5 buyer-pays: mediated resales index at the FINAL list price
+    const priceBaseGbp = p.listPriceGbp ? Number(p.listPriceGbp) : Number(p.priceBaseGbp);
     return {
       id: p.id,
       kind: p.kind,
@@ -169,8 +170,8 @@ export class SearchService implements OnModuleInit {
       regionName: (p.region.nameI18n as { en?: string })?.en ?? p.region.slug,
       district: p.district,
       priceBaseGbp,
-      priceAmount: Number(p.priceAmount),
-      priceCurrency: p.priceCurrency,
+      priceAmount: p.listPriceGbp ? priceBaseGbp : Number(p.priceAmount),
+      priceCurrency: p.listPriceGbp ? 'GBP' : p.priceCurrency,
       pricePerM2: p.areaM2 ? Math.round(priceBaseGbp / p.areaM2) : null,
       bedrooms: p.bedrooms,
       bathrooms: p.bathrooms,

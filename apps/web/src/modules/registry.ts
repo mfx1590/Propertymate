@@ -69,6 +69,9 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
     requiresVerification: false,
     menu: [
       { labelKey: 'verificationQueue', href: '/dashboard/admin/queue' },
+      { labelKey: 'mediated', href: '/dashboard/admin/mediated' },
+      { labelKey: 'subscriptions', href: '/dashboard/admin/subscriptions' },
+      { labelKey: 'platformSettings', href: '/dashboard/admin/settings' },
       { labelKey: 'users', href: '/dashboard/admin/users' },
       { labelKey: 'disputes', href: '/dashboard/admin/disputes' },
     ],

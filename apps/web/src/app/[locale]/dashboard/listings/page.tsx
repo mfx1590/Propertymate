@@ -9,6 +9,7 @@ import { fmtMoney, type Property } from '../../../../lib/listings';
 const STATUS_STYLES: Record<string, string> = {
   draft: 'bg-gray-100 text-gray-600',
   pending_verification: 'bg-amber-50 text-amber-700',
+  verified_private: 'bg-indigo-50 text-indigo-700',
   live: 'bg-emerald-50 text-emerald-700',
   paused: 'bg-gray-100 text-gray-500',
   under_offer: 'bg-blue-50 text-blue-700',
@@ -79,6 +80,11 @@ export default function MyListingsPage() {
                 {p.status === 'draft' && (
                   <Link href={`/dashboard/listings/new?id=${p.id}`} className="font-medium text-brand-600">
                     {t('board.continue')}
+                  </Link>
+                )}
+                {p.status === 'verified_private' && (
+                  <Link href={`/dashboard/listings/${p.id}/find-agent`} className="font-medium text-indigo-600">
+                    {t('board.findAgent')}
                   </Link>
                 )}
                 {(p.status === 'live' || p.status === 'paused') && (

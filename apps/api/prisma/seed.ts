@@ -231,6 +231,47 @@ async function main() {
     });
   }
 
+  // ── marketplace core (§13) defaults ──────────────────────────────
+  const SETTINGS: Array<[string, unknown]> = [
+    ['assignment.max_agents', 3],            // owner picks up to N agents (§13.4)
+    ['assignment.min_term_months', 1],
+    ['assignment.max_term_months', 6],
+    ['resale.mode', 'agent_only'],           // future toggle: 'owner_direct_allowed'
+    ['reviews.warnings_before_ban', 3],
+  ];
+  for (const [key, value] of SETTINGS) {
+    await prisma.platformSetting.upsert({
+      where: { key },
+      update: {},
+      create: { key, value: value as object },
+    });
+  }
+
+  // §13.5 example profit bands — fully editable in the main admin dashboard
+  if ((await prisma.profitBand.count()) === 0) {
+    await prisma.profitBand.createMany({
+      data: [
+        { minPriceGbp: 0, maxPriceGbp: 50_000, profitGbp: 1_000 },
+        { minPriceGbp: 50_000, maxPriceGbp: 100_000, profitGbp: 2_000 },
+        { minPriceGbp: 100_000, maxPriceGbp: 200_000, profitGbp: 4_000 },
+        { minPriceGbp: 200_000, maxPriceGbp: 500_000, profitGbp: 8_000 },
+        { minPriceGbp: 500_000, maxPriceGbp: 100_000_000, profitGbp: 15_000 },
+      ],
+    });
+  }
+
+  // §13.3 basic plan per user type (tiers TBD; admin-granted until Phase 3)
+  const PLANS = [
+    { key: 'customer_free', name: 'Customer Free', roleKey: 'customer', tier: 0 },
+    { key: 'owner_basic', name: 'Owner Basic', roleKey: 'owner', tier: 1 },
+    { key: 'agent_basic', name: 'Agent Basic', roleKey: 'solo_agent', tier: 1 },
+    { key: 'agency_basic', name: 'Agency Basic', roleKey: 'agency', tier: 1 },
+    { key: 'developer_basic', name: 'Developer Basic', roleKey: 'developer', tier: 1 },
+  ];
+  for (const p of PLANS) {
+    await prisma.plan.upsert({ where: { key: p.key }, update: { name: p.name, tier: p.tier }, create: p });
+  }
+
   // super admin (dev credentials — change in production)
   const adminEmail = 'admin@propverify.local';
   const admin = await prisma.user.upsert({

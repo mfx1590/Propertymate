@@ -19,6 +19,7 @@ import { SearchModule } from './modules/search/search.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { VerificationModule } from './modules/verification/verification.module';
+import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { VerificationModule } from './modules/verification/verification.module';
     AdminModule,
     NotificationsModule,
     VerificationModule,
+    MarketplaceModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

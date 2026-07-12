@@ -12,6 +12,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
 import { StorageService } from '../../common/storage/storage.service';
 import { MediaService } from '../media/media.service';
+import { SubscriptionsService } from '../marketplace/subscriptions.service';
 import { UpdatePropertyDto } from './dto/properties.dto';
 
 /** Statuses in which the lister may still edit core fields. */
@@ -26,12 +27,17 @@ export class PropertiesService {
     private readonly audit: AuditService,
     private readonly storage: StorageService,
     private readonly media: MediaService,
+    private readonly subscriptions: SubscriptionsService,
     private readonly events: EventEmitter2,
   ) {}
 
   // ── drafts & editing ─────────────────────────────────────────────
 
   async createDraft(userId: string, kind: 'resale' | 'rental', ip?: string) {
+    // §13.3: listing uploads require an active subscription (admin-granted until Phase 3)
+    if (!(await this.subscriptions.hasActive(userId))) {
+      throw new ForbiddenException('SUBSCRIPTION_REQUIRED: an active subscription is needed to create listings');
+    }
     const region = await this.prisma.region.findFirstOrThrow(); // placeholder until step 2 of wizard
     const property = await this.prisma.property.create({
       data: {
@@ -385,7 +391,20 @@ export class PropertiesService {
     }
 
     const { createdBy, ...rest } = property;
-    return { ...rest, isOwner: Boolean(isOwner) };
+    // §13.5: the public sees ONLY the final buyer price — never the profit/commission breakdown
+    if (!isOwner) {
+      const { platformProfitGbp, agentCommissionGbp, priceBaseGbp, priceAmount, priceCurrency, ...pub } = rest;
+      const finalGbp = rest.listPriceGbp ?? priceBaseGbp;
+      return {
+        ...pub,
+        priceAmount: finalGbp,
+        priceCurrency: 'GBP',
+        priceBaseGbp: finalGbp,
+        listPriceGbp: rest.listPriceGbp,
+        isOwner: false,
+      };
+    }
+    return { ...rest, isOwner: true };
   }
 
   // ── favorites ────────────────────────────────────────────────────

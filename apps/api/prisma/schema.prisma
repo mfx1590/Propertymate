@@ -93,12 +93,27 @@ enum PropertyKind {
 enum PropertyStatus {
   draft
   pending_verification
+  verified_private // resale approved but NOT public — awaiting agent assignment (§13.4)
   live
   paused
   under_offer
   sold
   rented
   archived
+}
+
+enum AssignmentStatus {
+  invited
+  accepted
+  rejected
+  expired
+  cancelled
+}
+
+enum SubscriptionStatus {
+  active
+  cancelled
+  expired
 }
 
 enum DeedType {
@@ -476,6 +491,11 @@ model Property {
   furnished               Boolean        @default(false)
   features                Json?
   status                  PropertyStatus @default(draft)
+  // §13.4/§13.5 mediated-resale pricing (buyer-pays): list = ask + band + commission
+  platformProfitGbp       Decimal?       @map("platform_profit_gbp") @db.Decimal(14, 2)
+  agentCommissionGbp      Decimal?       @map("agent_commission_gbp") @db.Decimal(14, 2)
+  listPriceGbp            Decimal?       @map("list_price_gbp") @db.Decimal(14, 2)
+  publishedByAgentId      String?        @map("published_by_agent_id")
   availabilityConfirmedAt DateTime?      @map("availability_confirmed_at")
   viewCount               Int            @default(0) @map("view_count")
   saveCount               Int            @default(0) @map("save_count")
@@ -873,6 +893,77 @@ model FxRate {
 
   @@id([base, quote])
   @@map("fx_rates")
+}
+
+// ─────────────────── marketplace core (§13) ───────────────────
+
+/// Main-admin configurable platform settings (agent count, resale mode…).
+model PlatformSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("platform_settings")
+}
+
+/// §13.5 price-range → fixed platform profit (GBP, buyer-pays).
+model ProfitBand {
+  id          String  @id @default(cuid())
+  minPriceGbp Decimal @map("min_price_gbp") @db.Decimal(14, 2)
+  maxPriceGbp Decimal @map("max_price_gbp") @db.Decimal(14, 2)
+  profitGbp   Decimal @map("profit_gbp") @db.Decimal(14, 2)
+  active      Boolean @default(true)
+
+  @@map("profit_bands")
+}
+
+model Plan {
+  id       String  @id @default(cuid())
+  key      String  @unique
+  name     String
+  roleKey  String  @map("role_key") // which user type this plan is for
+  tier     Int     @default(1)
+  active   Boolean @default(true)
+  metadata Json?
+
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+/// Admin-granted until Phase 3 payments (§13.3 decision).
+model Subscription {
+  id               String             @id @default(cuid())
+  userId           String             @map("user_id")
+  planId           String             @map("plan_id")
+  status           SubscriptionStatus @default(active)
+  startsAt         DateTime           @default(now()) @map("starts_at")
+  endsAt           DateTime?          @map("ends_at")
+  grantedByAdminId String?            @map("granted_by_admin_id")
+  createdAt        DateTime           @default(now()) @map("created_at")
+
+  plan Plan @relation(fields: [planId], references: [id])
+
+  @@index([userId, status])
+  @@map("subscriptions")
+}
+
+/// §13.4 find-my-agent: owner invites agents to work a private resale.
+/// The agent NEVER receives owner contact details.
+model AgentAssignment {
+  id             String           @id @default(cuid())
+  propertyId     String           @map("property_id")
+  ownerUserId    String           @map("owner_user_id")
+  agentUserId    String           @map("agent_user_id")
+  termMonths     Int              @map("term_months")
+  status         AssignmentStatus @default(invited)
+  invitedAt      DateTime         @default(now()) @map("invited_at")
+  respondedAt    DateTime?        @map("responded_at")
+  expiresAt      DateTime         @map("expires_at")
+
+  @@index([agentUserId, status])
+  @@index([propertyId, status])
+  @@map("agent_assignments")
 }
 
 // ─────────────────────── auth support ───────────────────────

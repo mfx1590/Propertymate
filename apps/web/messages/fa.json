@@ -45,6 +45,9 @@
       "projects": "Projects",
       "profile": "Profile",
       "verificationQueue": "Verification queue",
+      "mediated": "Mediated listings",
+      "subscriptions": "Subscriptions",
+      "platformSettings": "Platform settings",
       "users": "Users",
       "disputes": "Disputes"
     },
@@ -100,7 +103,12 @@
       "profile.verified": "Your {title} profile is verified — you can now list",
       "profile.rejected": "Your {title} profile application was rejected — check your documents",
       "availability.confirm_needed": "Please confirm \"{title}\" is still available",
-      "availability.paused": "\"{title}\" was paused — confirm availability to relist"
+      "availability.paused": "\"{title}\" was paused — confirm availability to relist",
+      "verification.approved_private": "\"{title}\" is verified! Now choose agents in Find-my-agent to bring it to market",
+      "assignment.invited": "New mandate invitation: \"{title}\"",
+      "assignment.accepted": "An agent accepted your property assignment",
+      "assignment.rejected": "An agent declined your property assignment",
+      "assignment.published": "Your property \"{title}\" was published by your agent 🎉"
     },
     "reasons": {
       "illegible": "Document illegible",
@@ -110,6 +118,72 @@
       "suspected_forgery": "Suspected forgery",
       "other": "Other"
     }
+  },
+  "findAgent": {
+    "title": "Find my agent",
+    "subtitle": "Choose up to {max} verified agents to work on your property. Your contact details are never shared with them — everything runs through the platform.",
+    "agent": "Solo agent",
+    "agency": "Agency",
+    "deals": "Deals closed",
+    "noAgents": "No verified agents available yet.",
+    "term": "Assignment term",
+    "months": "months",
+    "send": "Send to {count} agent(s)",
+    "privacyNote": "After the term ends you can reassign your property to different agents. The final buyer price will include the platform fee and the agent's commission — you receive your full asking price."
+  },
+  "mandates": {
+    "title": "Mandates",
+    "subtitle": "Private resale properties assigned to you. Owner identity stays confidential — the platform mediates all communication.",
+    "empty": "No assignments yet. Owners choose agents from the directory.",
+    "ownerAsk": "Owner asking price",
+    "termLabel": "Term",
+    "months": "months",
+    "until": "until",
+    "anonymityNote": "Owner contact details are not shared. A platform representative attends the physical deal stage.",
+    "accept": "Accept mandate",
+    "reject": "Decline",
+    "commissionLabel": "Your commission (GBP)",
+    "publish": "Publish listing",
+    "publishHint": "Final price = owner ask + platform fee + your commission",
+    "alreadyPublished": "Published",
+    "publishedTitle": "Your published listings",
+    "listPrice": "List price",
+    "yourCommission": "Your commission"
+  },
+  "adminSettings": {
+    "title": "Platform settings",
+    "platform": "Settings",
+    "bands": "Profit bands (buyer-pays, GBP)",
+    "bandsHint": "Published price = owner ask + band profit + agent commission. Bands are applied by asking price.",
+    "from": "From (£)",
+    "to": "To (£)",
+    "profit": "Platform profit (£)",
+    "add": "Add",
+    "delete": "Delete"
+  },
+  "mediated": {
+    "title": "Mediated listings",
+    "summary": "{count} resale properties in the pipeline",
+    "projectedProfit": "Projected platform profit",
+    "cols": {
+      "property": "Property",
+      "owner": "Owner",
+      "status": "Status",
+      "ask": "Owner ask",
+      "profit": "Platform profit",
+      "commission": "Agent commission",
+      "listPrice": "List price",
+      "agents": "Assignments"
+    }
+  },
+  "adminSubs": {
+    "title": "Subscriptions",
+    "subtitle": "Admin-granted until payments launch (Phase 3).",
+    "identifier": "User email or phone",
+    "months": "Months",
+    "grant": "Grant",
+    "granted": "Subscription granted ✓",
+    "revoke": "Revoke"
   },
   "admin": {
     "queue": {
@@ -170,6 +244,7 @@
     "status": {
       "draft": "Draft",
       "pending_verification": "In review",
+      "verified_private": "Verified — private",
       "live": "Live",
       "paused": "Paused",
       "under_offer": "Under offer",
@@ -240,6 +315,7 @@
       "views": "views",
       "saves": "saves",
       "continue": "Continue draft",
+      "findAgent": "Find my agent →",
       "confirmAvailability": "Confirm still available",
       "view": "View"
     },

@@ -45,6 +45,9 @@
       "projects": "Projeler",
       "profile": "Profil",
       "verificationQueue": "Doğrulama kuyruğu",
+      "mediated": "Aracılı ilanlar",
+      "subscriptions": "Abonelikler",
+      "platformSettings": "Platform ayarları",
       "users": "Kullanıcılar",
       "disputes": "İtirazlar"
     },
@@ -100,7 +103,12 @@
       "profile.verified": "{title} profiliniz doğrulandı — artık ilan verebilirsiniz",
       "profile.rejected": "{title} profil başvurunuz reddedildi — belgelerinizi kontrol edin",
       "availability.confirm_needed": "\"{title}\" hâlâ mevcut mu, lütfen onaylayın",
-      "availability.paused": "\"{title}\" duraklatıldı — yeniden yayınlamak için müsaitliği onaylayın"
+      "availability.paused": "\"{title}\" duraklatıldı — yeniden yayınlamak için müsaitliği onaylayın",
+      "verification.approved_private": "\"{title}\" doğrulandı! Piyasaya sunmak için Danışmanımı bul bölümünden danışman seçin",
+      "assignment.invited": "Yeni yetki daveti: \"{title}\"",
+      "assignment.accepted": "Bir danışman mülk atamanızı kabul etti",
+      "assignment.rejected": "Bir danışman mülk atamanızı reddetti",
+      "assignment.published": "\"{title}\" mülkünüz danışmanınız tarafından yayınlandı 🎉"
     },
     "reasons": {
       "illegible": "Belge okunaksız",
@@ -110,6 +118,72 @@
       "suspected_forgery": "Sahtecilik şüphesi",
       "other": "Diğer"
     }
+  },
+  "findAgent": {
+    "title": "Danışmanımı bul",
+    "subtitle": "Mülkünüz üzerinde çalışacak en fazla {max} doğrulanmış danışman seçin. İletişim bilgileriniz onlarla asla paylaşılmaz — her şey platform üzerinden yürür.",
+    "agent": "Bağımsız danışman",
+    "agency": "Emlak ofisi",
+    "deals": "Tamamlanan işlem",
+    "noAgents": "Henüz doğrulanmış danışman yok.",
+    "term": "Görev süresi",
+    "months": "ay",
+    "send": "{count} danışmana gönder",
+    "privacyNote": "Süre bittiğinde mülkünüzü farklı danışmanlara atayabilirsiniz. Nihai alıcı fiyatı platform ücreti ve danışman komisyonunu içerir — siz istediğiniz fiyatın tamamını alırsınız."
+  },
+  "mandates": {
+    "title": "Yetki belgeleri",
+    "subtitle": "Size atanan özel satılık mülkler. Mal sahibi kimliği gizli kalır — tüm iletişim platform aracılığıyla yürür.",
+    "empty": "Henüz atama yok. Mal sahipleri danışmanları dizinden seçer.",
+    "ownerAsk": "Mal sahibi fiyatı",
+    "termLabel": "Süre",
+    "months": "ay",
+    "until": "bitiş",
+    "anonymityNote": "Mal sahibi iletişim bilgileri paylaşılmaz. Fiziki anlaşma aşamasında platform temsilcisi hazır bulunur.",
+    "accept": "Yetkiyi kabul et",
+    "reject": "Reddet",
+    "commissionLabel": "Komisyonunuz (GBP)",
+    "publish": "İlanı yayınla",
+    "publishHint": "Nihai fiyat = mal sahibi fiyatı + platform ücreti + komisyonunuz",
+    "alreadyPublished": "Yayınlandı",
+    "publishedTitle": "Yayınladığınız ilanlar",
+    "listPrice": "Liste fiyatı",
+    "yourCommission": "Komisyonunuz"
+  },
+  "adminSettings": {
+    "title": "Platform ayarları",
+    "platform": "Ayarlar",
+    "bands": "Kâr dilimleri (alıcı öder, GBP)",
+    "bandsHint": "Yayın fiyatı = mal sahibi fiyatı + dilim kârı + danışman komisyonu. Dilimler istenen fiyata göre uygulanır.",
+    "from": "Başlangıç (£)",
+    "to": "Bitiş (£)",
+    "profit": "Platform kârı (£)",
+    "add": "Ekle",
+    "delete": "Sil"
+  },
+  "mediated": {
+    "title": "Aracılı ilanlar",
+    "summary": "Süreçte {count} satılık mülk",
+    "projectedProfit": "Öngörülen platform kârı",
+    "cols": {
+      "property": "Mülk",
+      "owner": "Mal sahibi",
+      "status": "Durum",
+      "ask": "İstenen fiyat",
+      "profit": "Platform kârı",
+      "commission": "Danışman komisyonu",
+      "listPrice": "Liste fiyatı",
+      "agents": "Atamalar"
+    }
+  },
+  "adminSubs": {
+    "title": "Abonelikler",
+    "subtitle": "Ödemeler açılana kadar (Faz 3) yönetici tarafından verilir.",
+    "identifier": "Kullanıcı e-postası veya telefonu",
+    "months": "Ay",
+    "grant": "Ver",
+    "granted": "Abonelik verildi ✓",
+    "revoke": "İptal et"
   },
   "admin": {
     "queue": {
@@ -170,6 +244,7 @@
     "status": {
       "draft": "Taslak",
       "pending_verification": "İncelemede",
+      "verified_private": "Doğrulandı — özel",
       "live": "Yayında",
       "paused": "Duraklatıldı",
       "under_offer": "Teklif alındı",
@@ -240,6 +315,7 @@
       "views": "görüntülenme",
       "saves": "kayıt",
       "continue": "Taslağa devam et",
+      "findAgent": "Danışmanımı bul →",
       "confirmAvailability": "Hâlâ satılık/kiralık onayla",
       "view": "Görüntüle"
     },
