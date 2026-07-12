@@ -21,7 +21,8 @@
 | 2 | Roles & profiles: per-role registration, profile extensions, role-module dashboard shell, i18n EN/TR | ✅ **Done** | 2026-07-10 | Apply-for-role API (owner instant, professional roles `pending`), per-role profile CRUD with strict field whitelists, requirements served from config, web auth (OTP + email, auto-refresh tokens), dashboard shell with nav from typed role-module registry (§2.2). Verified over HTTP incl. field-injection + admin-apply rejection |
 | 3 | Listings: wizard, media pipeline (EXIF/phash), document upload from config, Meilisearch sync, map search, detail page SSR, favorites, saved searches | ✅ **Done** | 2026-07-11 | 6-step wizard (kind → details → map-pin location → features → photos → config-driven doc boxes → review), sharp pipeline (EXIF strip, thumbnails, aHash dedupe warning across listings), private-bucket docs + 5-min signed URLs (stranger access verified denied), FX→GBP base pricing, submit validation, event-driven Meilisearch sync, filtered search + Leaflet map view, SSR detail with schema.org JSON-LD, favorites, saved searches. Temporary admin approve endpoint until step 4. 15-check API e2e green |
 | 4 | Verification engine: queue, admin dashboard, signed-URL doc viewer, decisions, freshness job | ✅ **Done** | 2026-07-11 | Admin queue (SLA timers, claim, listing/profile filters, metrics), review screen with 5-min signed doc URLs + VERIFICATION COPY overlay, per-document approve/reject with §4 reason codes, fraud signals (sha256 reuse across accounts, phash photo dupes, ±40% price/m² anomaly), profile verification for professional roles, rejected-doc re-upload auto-requeues, in-app notifications, 90-day freshness cron (nudge 83/88, pause 90; @nestjs/schedule now, BullMQ in hardening). 11-check e2e green incl. full reject→re-upload→approve cycle and pause→confirm→relist |
-| 5 | Chat + viewings + offers | 🔜 **Next** | — | — |
+| 4b | Marketplace core (§13): platform settings (agent count, profit bands, resale-mode toggle), subscription gating (admin-granted), find-my-agent private resale flow with owner-anonymous agent assignment, agent commission + publish, main-admin mediated-listings board | 🔜 **Next** | — | Added 2026-07-12; must precede chat/deals because it changes how resale listings publish |
+| 5 | Chat + viewings + offers (scrubbing incl. social-media handles per §13.6) | ⬜ Pending | — | — |
 | 6 | Deals v1: pipeline engine, deal rooms, journey tracker, snapshots, ratings | ⬜ Pending | — | — |
 | 7 | Hardening: rate limits, e2e tests, load test, security pass, 50 demo listings | ⬜ Pending | — | — |
 
@@ -391,7 +392,8 @@ Service-provider marketplace activation (Lawyer first: directory, attach-to-deal
 ### 13.2 Public performance & reputation
 - Each agency member's activity is **publicly visible**: number of rentals closed, number of sales
   closed; agency page shows per-member stats + org totals. Same principle for solo agents.
-- **Profile reviews:** any authenticated user can write a review on a professional profile.
+- **Profile reviews (decision 2026-07-12: interaction-gated):** only users who actually
+  interacted with the professional (completed deal, viewing, or accepted assignment) can review.
   Profile owners can NEVER delete reviews. They can **report** a review → admin moderation queue →
   admin may remove the message; repeat offenders get warnings; after 2–3 warnings (configurable)
   the user is **banned** — and because identities are verified, the ban is durable (same ID/phone
@@ -405,7 +407,9 @@ Service-provider marketplace activation (Lawyer first: directory, attach-to-deal
 - Tiered plans, different per user type (customer/owner/agent/agency/developer).
 - Higher tiers ⇒ access to more **premium properties** and greater accessibility/visibility.
 - Exact tiers, pricing and premium-property definition TBD; `plans` + `subscriptions` tables (§9)
-  carry this. Until payments (Phase 3), subscriptions are admin-grantable for testing.
+  carry this. **Decision 2026-07-12:** until payments (Phase 3), subscription checks are enforced
+  in code and admins grant/revoke subscriptions manually from the main dashboard — payment
+  collection plugs in later without rework.
 
 ### 13.4 Find-my-agent — private resale flow
 - Rentals: verified rental listings go straight to the public rent section (unchanged).
@@ -417,6 +421,10 @@ Service-provider marketplace activation (Lawyer first: directory, attach-to-deal
 - The accepting agent works the property; when ready, the agent **adds their commission and
   publishes** it.
 - After the term expires, the owner can **reassign** to different agents.
+- **Decisions 2026-07-12:** (1) agent-mediated resale is **mandatory for now**; a main-admin
+  dashboard toggle may later allow owner-direct resale publishing. (2) The assigned agent
+  **never sees the owner's contact details** — all owner↔agent communication is platform-mediated;
+  at the physical deal stage a **platform-side agent attends in person** to assist and protect the deal.
 
 ### 13.5 Platform profit configuration
 - Main admin dashboard has a **fully customizable profit-band table** keyed by price range, e.g.:
@@ -424,6 +432,9 @@ Service-provider marketplace activation (Lawyer first: directory, attach-to-deal
 - Agent adds their own commission on top and publishes.
 - All mediated listings appear in a **main-admin dashboard section** (property, owner, agent,
   platform profit, agent commission); each agent sees their own listings with the commission they added.
+- **Decision 2026-07-12: buyer-pays model.** Published price = owner asking price + platform
+  profit band + agent commission. The owner receives their full asking price. Competing agents
+  on the same property keep commissions market-honest.
 
 ### 13.6 Chat anti-bypass (extends §2.4/§6.4)
 - Built-in chat detection expands beyond phone/email to **social media IDs/handles**
