@@ -35,6 +35,7 @@ web on :3000. `docker compose up -d` → `npm install` → `npm run db:migrate &
 |---|---|---|---|
 | 2026-07-10 | Initial build started from this spec; added this Status & Change Log section as a living tracker | Mehdi | §0 (new) |
 | 2026-07-10 | **Account type is chosen at registration**, not self-service from the dashboard. Signup (OTP or email) offers Customer / Owner / Solo Agent / Agency / Developer; everyone still gets the customer baseline, professional types start `pending`. The dashboard "Add a role" cards and the `POST /users/me/roles` endpoint were removed; granting additional roles later is an admin action. Multi-role support in the data model (§2.2) is unchanged. | Mehdi | §2.2 (note), §10.1 step 2 |
+| 2026-07-12 | **Major mechanics expansion** (full detail in new §13): (a) Developer & Agency become **organization accounts** — an org admin manages member accounts (create/edit/remove), members maintain portfolio/listings; (b) professional **analytics dashboards** incl. developer project comparison within and across regions; (c) **public performance stats** per agency member + agency totals (rents/sales counts); (d) **profile reviews** writable by users, non-deletable by the profile owner, report → admin moderation → warnings → identity-backed ban; (e) **star/reward tiers** from performance data (rules TBD, future update); (f) **subscription-gated listing uploads**, tiered subscriptions per user type, higher tiers unlock premium properties (details TBD); (g) **Find-my-agent private resale flow** — verified resale stays non-public, owner assigns N agents (N admin-configurable, default 2–3) for 1–6 months, agents accept/reject, reassignment after expiry; (h) **platform profit bands by price range**, fully admin-configurable, agent adds own commission then publishes; all mediated listings visible in main admin dashboard; (i) chat contact-detection extended to **social-media IDs** in addition to phone/email. | Mehdi | §13 (new), §2.2, §6.4, §6.5, §9 |
 
 ---
 
@@ -373,3 +374,58 @@ Service-provider marketplace activation (Lawyer first: directory, attach-to-deal
 > **How to add a lateral role later (must be documented in README):**
 > 1) seed `roles` + permissions, 2) create `<role>_profiles` table + migration, 3) seed `verification_requirements`,
 > 4) register dashboard module, 5) if service provider: add `service_type` + declare injection stages in pipeline template. No core changes.
+
+---
+
+## 13. Marketplace Mechanics Expansion (added 2026-07-12, requested by Mehdi)
+
+### 13.1 Organization accounts (Developer & Agency)
+- Developer and Agency accounts are **organizations**: one **org admin** user plus member users.
+- Org admin capabilities: create / edit / deactivate-remove member accounts, manage org profile,
+  see org-wide analytics. Members: maintain portfolio/listings/leads within the org.
+- Data model: reuse `agency_agents` pattern; add `developer_members`. Member accounts are normal
+  users linked to the org with an org-role (`org_admin` / `member`) — permissions stay data-driven (§2.2).
+- **Government legality verification:** org uploads registration documents in its profile section;
+  admin approval ⇒ **verified tick** shown publicly on the org account (existing verification engine, §4).
+
+### 13.2 Public performance & reputation
+- Each agency member's activity is **publicly visible**: number of rentals closed, number of sales
+  closed; agency page shows per-member stats + org totals. Same principle for solo agents.
+- **Profile reviews:** any authenticated user can write a review on a professional profile.
+  Profile owners can NEVER delete reviews. They can **report** a review → admin moderation queue →
+  admin may remove the message; repeat offenders get warnings; after 2–3 warnings (configurable)
+  the user is **banned** — and because identities are verified, the ban is durable (same ID/phone
+  cannot re-register).
+- **Star / reward tiers (future update):** from accumulated performance data, solo agents,
+  agencies and their members earn stars; each star level unlocks defined rewards. Rules TBD —
+  build the data collection now (deal counts, ratings, response times already tracked).
+
+### 13.3 Subscriptions (details TBD — build the seams)
+- **Listing uploads require an active subscription** (rent and resale).
+- Tiered plans, different per user type (customer/owner/agent/agency/developer).
+- Higher tiers ⇒ access to more **premium properties** and greater accessibility/visibility.
+- Exact tiers, pricing and premium-property definition TBD; `plans` + `subscriptions` tables (§9)
+  carry this. Until payments (Phase 3), subscriptions are admin-grantable for testing.
+
+### 13.4 Find-my-agent — private resale flow
+- Rentals: verified rental listings go straight to the public rent section (unchanged).
+- **Resale:** after the owner enters all information and passes verification, the listing is
+  **NOT publicly visible**. The owner opens **"Find my agent"** and selects N verified agents
+  (N configurable in the main admin dashboard, default 2–3) for a fixed **term of 1–6 months**.
+- Selected agents see the request in their dashboard and **accept or reject**. The file stays
+  private — never broadcast to everyone.
+- The accepting agent works the property; when ready, the agent **adds their commission and
+  publishes** it.
+- After the term expires, the owner can **reassign** to different agents.
+
+### 13.5 Platform profit configuration
+- Main admin dashboard has a **fully customizable profit-band table** keyed by price range, e.g.:
+  `£50,000–£100,000 ⇒ £2,000 platform profit; £100,000–£200,000 ⇒ £4,000; …`
+- Agent adds their own commission on top and publishes.
+- All mediated listings appear in a **main-admin dashboard section** (property, owner, agent,
+  platform profit, agent commission); each agent sees their own listings with the commission they added.
+
+### 13.6 Chat anti-bypass (extends §2.4/§6.4)
+- Built-in chat detection expands beyond phone/email to **social media IDs/handles**
+  (Instagram/Telegram/WhatsApp mentions, @handles, t.me/wa.me links, obfuscated digits) —
+  masked until the allowed stage, attempts logged for admin review.
