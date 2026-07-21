@@ -21,6 +21,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { VerificationModule } from './modules/verification/verification.module';
 import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { DealsModule } from './modules/deals/deals.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { ChatModule } from './modules/chat/chat.module';
     NotificationsModule,
     VerificationModule,
     MarketplaceModule,
+    DealsModule,
     ChatModule,
   ],
   providers: [

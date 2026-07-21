@@ -24,7 +24,9 @@ const PERMISSIONS: Record<string, string[]> = {
     'search.saved.manage', 'favorite.manage',
     'viewing.request', 'offer.create',
     'chat.participate',
-    'deal.participate', 'deal.document.upload',
+    // buyers complete their own deal stages (legal_check, deposit_recorded);
+    // the deals service still enforces party + completesBy on every advance
+    'deal.participate', 'deal.stage.complete', 'deal.document.upload',
     'rating.create', 'dispute.open',
   ],
   owner: [

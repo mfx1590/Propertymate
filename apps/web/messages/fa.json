@@ -41,6 +41,7 @@
       "messages": "Messages",
       "viewings": "Viewings",
       "offers": "Offers",
+      "deals": "Deals",
       "myListings": "My listings",
       "leads": "Leads",
       "mandates": "Mandates",
@@ -122,7 +123,10 @@
       "offer.received": "New offer on \"{title}\"",
       "offer.countered": "You received a counter-offer",
       "offer.accepted": "Your offer was accepted 🎉",
-      "offer.rejected": "Your offer was declined"
+"offer.rejected": "Your offer was declined",
+      "deal.created": "Deal room opened for \"{title}\"",
+      "deal.stage_advanced": "Your deal moved to the next stage",
+      "deal.completed": "Your deal is complete 🎉"
     },
     "reasons": {
       "illegible": "Document illegible",
@@ -405,6 +409,97 @@
     "counter": "Counter",
     "counterAmount": "Counter (GBP)",
     "withdraw": "Withdraw"
+  },
+  "deals": {
+    "title": "Deals",
+    "subtitle": "Your transactions, tracked from accepted offer to handover.",
+    "empty": "No deals yet. A deal room opens when an offer is accepted.",
+    "kind": { "purchase": "Purchase", "rental": "Rental" },
+    "status": { "active": "In progress", "completed": "Completed", "cancelled": "Cancelled" },
+    "stages": {
+      "inquiry": "Inquiry",
+      "viewing": "Viewing",
+      "offer": "Offer",
+      "offer_accepted": "Offer accepted",
+      "legal_check": "Legal check",
+      "contract_signing": "Contract signing",
+      "deposit_recorded": "Deposit",
+      "permit_process": "Purchase permit",
+      "completion": "Completion",
+      "post_deal": "Post-deal services",
+      "application": "Application",
+      "landlord_approval": "Landlord approval",
+      "contract": "Contract",
+      "move_in_checklist": "Move-in checklist",
+      "active_tenancy": "Active tenancy",
+      "renewal_or_exit": "Renewal / exit"
+    },
+    "next": {
+      "legal_check": "A lawyer reviews the title deed and legal status. Attach findings if needed, then advance.",
+      "contract_signing": "Both parties sign the sale contract. Upload the signed contract to continue.",
+      "deposit_recorded": "The buyer pays the deposit and uploads the receipt for the record.",
+      "permit_process": "Foreign buyers need a purchase permit. Skip this stage if it doesn't apply.",
+      "completion": "Final payment and key handover. A PropVerify representative attends in person. Mark complete when done.",
+      "post_deal": "Optional services — furniture, movers, insurance.",
+      "application": "The renter submits their application and ID.",
+      "landlord_approval": "The landlord reviews and approves the application.",
+      "contract": "Both parties sign the tenancy contract. Upload the signed contract.",
+      "move_in_checklist": "Confirm the move-in condition together. Completing this finalizes the tenancy.",
+      "active_tenancy": "The tenancy is active.",
+      "renewal_or_exit": "Handle renewal or the exit checklist."
+    },
+    "completesBy": {
+      "buyer": "the buyer",
+      "seller": "the seller side",
+      "both_parties": "both parties",
+      "lawyer": "the lawyer",
+      "system": "the system",
+      "agent_seller_side": "the seller's agent",
+      "agent_buyer_side": "the buyer's agent"
+    },
+    "docTypes": {
+      "contract": "Signed contract",
+      "deposit_receipt": "Deposit receipt",
+      "government_id": "Government ID"
+    },
+    "events": {
+      "deal.created": "Deal room opened",
+      "stage.completed": "Stage completed",
+      "stage.skipped": "Stage skipped",
+      "document.attached": "Document attached",
+      "deal.completed": "Deal completed 🎉"
+    },
+    "tags": {
+      "responsive": "Responsive",
+      "honest": "Honest",
+      "smooth_process": "Smooth process",
+      "knowledgeable": "Knowledgeable",
+      "punctual": "Punctual",
+      "professional": "Professional"
+    },
+    "room": {
+      "title": "Deal room",
+      "priceAgreed": "Agreed price",
+      "ownerAsk": "Owner ask",
+      "platformFee": "Platform fee",
+      "agentCommission": "Agent commission",
+      "journey": "Journey",
+      "skipped": "skipped",
+      "upload": "Upload",
+      "notePlaceholder": "Add a note (optional)",
+      "advance": "Complete stage →",
+      "complete": "Complete deal 🎉",
+      "skip": "Skip",
+      "attachFirst": "Attach the required documents before advancing.",
+      "completesBy": "Completed by {who}",
+      "rate": "Rate your counterparty",
+      "rateHint": "Ratings stay hidden until both sides submit (or after 14 days), so nobody can retaliate.",
+      "rated": "You've rated this party",
+      "commentPlaceholder": "Optional comment…",
+      "submitRating": "Submit rating",
+      "timeline": "Timeline",
+      "openChat": "Open deal chat"
+    }
   },
   "search": {
     "title": "Find your property",

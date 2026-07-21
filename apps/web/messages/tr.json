@@ -41,6 +41,7 @@
       "messages": "Mesajlar",
       "viewings": "Görüntülemeler",
       "offers": "Teklifler",
+      "deals": "İşlemler",
       "myListings": "İlanlarım",
       "leads": "Talepler",
       "mandates": "Yetki belgeleri",
@@ -122,7 +123,10 @@
       "offer.received": "\"{title}\" için yeni teklif",
       "offer.countered": "Karşı teklif aldınız",
       "offer.accepted": "Teklifiniz kabul edildi 🎉",
-      "offer.rejected": "Teklifiniz reddedildi"
+"offer.rejected": "Teklifiniz reddedildi",
+      "deal.created": "\"{title}\" için işlem odası açıldı",
+      "deal.stage_advanced": "İşleminiz bir sonraki aşamaya geçti",
+      "deal.completed": "İşleminiz tamamlandı 🎉"
     },
     "reasons": {
       "illegible": "Belge okunaksız",
@@ -405,6 +409,97 @@
     "counter": "Karşı teklif",
     "counterAmount": "Karşı teklif (GBP)",
     "withdraw": "Geri çek"
+  },
+  "deals": {
+    "title": "İşlemler",
+    "subtitle": "İşlemleriniz — kabul edilen tekliften teslime kadar takip edilir.",
+    "empty": "Henüz işlem yok. Bir teklif kabul edildiğinde işlem odası açılır.",
+    "kind": { "purchase": "Satın alma", "rental": "Kiralama" },
+    "status": { "active": "Devam ediyor", "completed": "Tamamlandı", "cancelled": "İptal edildi" },
+    "stages": {
+      "inquiry": "Talep",
+      "viewing": "Görüntüleme",
+      "offer": "Teklif",
+      "offer_accepted": "Teklif kabul edildi",
+      "legal_check": "Hukuki kontrol",
+      "contract_signing": "Sözleşme imzalama",
+      "deposit_recorded": "Depozito",
+      "permit_process": "Satın alma izni",
+      "completion": "Tamamlama",
+      "post_deal": "Satış sonrası hizmetler",
+      "application": "Başvuru",
+      "landlord_approval": "Ev sahibi onayı",
+      "contract": "Sözleşme",
+      "move_in_checklist": "Taşınma kontrol listesi",
+      "active_tenancy": "Aktif kiracılık",
+      "renewal_or_exit": "Yenileme / çıkış"
+    },
+    "next": {
+      "legal_check": "Bir avukat koçanı ve hukuki durumu inceler. Gerekirse bulguları ekleyip ilerleyin.",
+      "contract_signing": "Her iki taraf satış sözleşmesini imzalar. Devam etmek için imzalı sözleşmeyi yükleyin.",
+      "deposit_recorded": "Alıcı depozitoyu öder ve makbuzu kayıt için yükler.",
+      "permit_process": "Yabancı alıcıların satın alma iznine ihtiyacı vardır. Uygulanmıyorsa bu aşamayı atlayın.",
+      "completion": "Son ödeme ve anahtar teslimi. Bir PropVerify temsilcisi bizzat hazır bulunur. Bitince tamamlandı işaretleyin.",
+      "post_deal": "İsteğe bağlı hizmetler — mobilya, nakliye, sigorta.",
+      "application": "Kiracı başvurusunu ve kimliğini gönderir.",
+      "landlord_approval": "Ev sahibi başvuruyu inceleyip onaylar.",
+      "contract": "Her iki taraf kira sözleşmesini imzalar. İmzalı sözleşmeyi yükleyin.",
+      "move_in_checklist": "Taşınma durumunu birlikte onaylayın. Bunu tamamlamak kiracılığı sonlandırır.",
+      "active_tenancy": "Kiracılık aktif.",
+      "renewal_or_exit": "Yenileme veya çıkış kontrol listesini yönetin."
+    },
+    "completesBy": {
+      "buyer": "alıcı",
+      "seller": "satıcı tarafı",
+      "both_parties": "her iki taraf",
+      "lawyer": "avukat",
+      "system": "sistem",
+      "agent_seller_side": "satıcının danışmanı",
+      "agent_buyer_side": "alıcının danışmanı"
+    },
+    "docTypes": {
+      "contract": "İmzalı sözleşme",
+      "deposit_receipt": "Depozito makbuzu",
+      "government_id": "Kimlik belgesi"
+    },
+    "events": {
+      "deal.created": "İşlem odası açıldı",
+      "stage.completed": "Aşama tamamlandı",
+      "stage.skipped": "Aşama atlandı",
+      "document.attached": "Belge eklendi",
+      "deal.completed": "İşlem tamamlandı 🎉"
+    },
+    "tags": {
+      "responsive": "İlgili",
+      "honest": "Dürüst",
+      "smooth_process": "Sorunsuz süreç",
+      "knowledgeable": "Bilgili",
+      "punctual": "Dakik",
+      "professional": "Profesyonel"
+    },
+    "room": {
+      "title": "İşlem odası",
+      "priceAgreed": "Anlaşılan fiyat",
+      "ownerAsk": "Mal sahibi fiyatı",
+      "platformFee": "Platform ücreti",
+      "agentCommission": "Danışman komisyonu",
+      "journey": "Yolculuk",
+      "skipped": "atlandı",
+      "upload": "Yükle",
+      "notePlaceholder": "Not ekleyin (isteğe bağlı)",
+      "advance": "Aşamayı tamamla →",
+      "complete": "İşlemi tamamla 🎉",
+      "skip": "Atla",
+      "attachFirst": "İlerlemeden önce gerekli belgeleri ekleyin.",
+      "completesBy": "{who} tarafından tamamlanır",
+      "rate": "Karşı tarafı değerlendirin",
+      "rateHint": "Değerlendirmeler iki taraf da gönderene kadar (veya 14 gün sonra) gizli kalır, böylece kimse misilleme yapamaz.",
+      "rated": "Bu tarafı değerlendirdiniz",
+      "commentPlaceholder": "İsteğe bağlı yorum…",
+      "submitRating": "Değerlendirmeyi gönder",
+      "timeline": "Zaman çizelgesi",
+      "openChat": "İşlem sohbetini aç"
+    }
   },
   "search": {
     "title": "Mülkünüzü bulun",

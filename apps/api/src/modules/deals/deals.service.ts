@@ -1,0 +1,419 @@
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
+import { AuditService } from '../../common/audit/audit.service';
+import { StorageService } from '../../common/storage/storage.service';
+import { NotificationsService } from '../notifications/notifications.service';
+
+/** Ordered stage config as stored in pipeline_templates.stages (§7). */
+export interface StageDef {
+  key: string;
+  titleI18n: Record<string, string>;
+  requiredDocuments: string[];
+  completesBy: string; // buyer | seller | both_parties | lawyer | system | agent_*
+  injectableServiceTypes: string[];
+  notifications: string[];
+  skippable?: boolean;
+  createsSnapshot?: boolean;
+}
+
+/** The stage at which the deal record is created (everything up to it is done). */
+const CREATION_STAGE: Record<'purchase' | 'rental', string> = {
+  purchase: 'offer_accepted',
+  rental: 'landlord_approval',
+};
+
+/** Completing this stage finalizes the transaction. */
+const COMPLETION_STAGE: Record<'purchase' | 'rental', string> = {
+  purchase: 'completion',
+  rental: 'move_in_checklist',
+};
+
+@Injectable()
+export class DealsService {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly audit: AuditService,
+    private readonly storage: StorageService,
+    private readonly notifications: NotificationsService,
+    private readonly events: EventEmitter2,
+  ) {}
+
+  /**
+   * Called on offer acceptance. Creates the deal from the pipeline template,
+   * freezes the snapshot, seeds parties + stages, opens the deal room, and
+   * writes the first immutable event.
+   */
+  async createFromAcceptedOffer(offerId: string): Promise<string> {
+    const offer = await this.prisma.offer.findUnique({ where: { id: offerId } });
+    if (!offer) throw new NotFoundException('Offer not found');
+
+    const existing = await this.prisma.deal.findFirst({
+      where: { propertyId: offer.propertyId, status: { in: ['active', 'completed'] } },
+    });
+    if (existing) return existing.id; // idempotent
+
+    const property = await this.prisma.property.findUnique({
+      where: { id: offer.propertyId },
+      include: { media: { orderBy: { sortOrder: 'asc' } }, region: { select: { slug: true, nameI18n: true } } },
+    });
+    if (!property) throw new NotFoundException('Listing not found');
+
+    const kind: 'purchase' | 'rental' = property.kind === 'rental' ? 'rental' : 'purchase';
+    const template = await this.prisma.pipelineTemplate.findUnique({ where: { kind } });
+    if (!template) throw new BadRequestException(`No pipeline template for ${kind}`);
+    const stages = template.stages as unknown as StageDef[];
+
+    const sellerId = property.createdByUserId;
+    const agentId = property.publishedByAgentId;
+
+    // snapshot frozen at acceptance (§7)
+    const commissionSplit: Prisma.InputJsonValue = {
+      listPriceGbp: property.listPriceGbp ? Number(property.listPriceGbp) : null,
+      platformProfitGbp: property.platformProfitGbp ? Number(property.platformProfitGbp) : null,
+      agentCommissionGbp: property.agentCommissionGbp ? Number(property.agentCommissionGbp) : null,
+      ownerAskGbp: Number(property.priceBaseGbp),
+    };
+    const propertySnapshot: Prisma.InputJsonValue = {
+      title: (property.titleI18n as { en?: string })?.en ?? '',
+      kind: property.kind,
+      region: property.region.slug,
+      district: property.district,
+      bedrooms: property.bedrooms,
+      areaM2: property.areaM2,
+      deedType: property.deedType,
+      coverUrl: property.media[0]?.url ?? null,
+    };
+
+    const creationKey = CREATION_STAGE[kind];
+    const creationIdx = stages.findIndex((s) => s.key === creationKey);
+    // stages up to & including the creation stage are completed; next is active
+    const stageRows = stages.map((s, i) => ({
+      stageKey: s.key,
+      status:
+        creationIdx >= 0 && i <= creationIdx
+          ? ('completed' as const)
+          : i === creationIdx + 1
+            ? ('active' as const)
+            : ('pending' as const),
+      completedAt: creationIdx >= 0 && i <= creationIdx ? new Date() : null,
+    }));
+    const currentStageKey = stageRows.find((s) => s.status === 'active')?.stageKey ?? creationKey;
+
+    const parties: { userId: string; partyRole: string }[] = [
+      { userId: offer.customerId, partyRole: 'buyer' },
+      { userId: sellerId, partyRole: 'seller' },
+    ];
+    if (agentId && agentId !== sellerId) parties.push({ userId: agentId, partyRole: 'agent_seller_side' });
+
+    const deal = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.deal.create({
+        data: {
+          propertyId: property.id,
+          kind,
+          status: 'active',
+          currentStageKey,
+          parties: { create: parties.map((p) => ({ userId: p.userId, partyRole: p.partyRole as never })) },
+          stages: { create: stageRows.map((s) => ({ stageKey: s.stageKey, status: s.status, completedAt: s.completedAt })) },
+          snapshot: {
+            create: {
+              propertySnapshot,
+              priceAgreed: offer.amount,
+              currency: offer.currency,
+              commissionSplit,
+            },
+          },
+          events: {
+            create: {
+              actorId: offer.customerId,
+              eventType: 'deal.created',
+              payload: { offerId, priceAgreed: Number(offer.amount), currency: offer.currency } as Prisma.InputJsonValue,
+            },
+          },
+        },
+      });
+
+      // deal room: reuse existing property conversation participants or make one
+      await tx.conversation.create({
+        data: {
+          propertyId: property.id,
+          dealId: created.id,
+          participants: {
+            create: parties.map((p) => ({
+              userId: p.userId,
+              roleInConvo: p.partyRole === 'buyer' ? 'buyer' : 'seller_side',
+            })),
+          },
+        },
+      });
+      return created;
+    });
+
+    for (const p of parties) {
+      await this.notifications.notify(p.userId, 'deal.created', {
+        dealId: deal.id,
+        title: propertySnapshot['title' as keyof typeof propertySnapshot],
+      });
+    }
+    await this.audit.log({
+      actorId: offer.customerId,
+      action: 'deal.created',
+      entityType: 'deal',
+      entityId: deal.id,
+      after: { propertyId: property.id, kind, priceAgreed: Number(offer.amount) },
+    });
+    return deal.id;
+  }
+
+  async listMine(userId: string) {
+    const deals = await this.prisma.deal.findMany({
+      where: { parties: { some: { userId } } },
+      include: {
+        snapshot: true,
+        stages: { orderBy: { id: 'asc' } },
+        property: { select: { id: true, titleI18n: true, media: { take: 1, orderBy: { sortOrder: 'asc' } } } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return deals.map((d) => ({
+      id: d.id,
+      kind: d.kind,
+      status: d.status,
+      currentStageKey: d.currentStageKey,
+      property: d.property,
+      snapshot: d.snapshot,
+      progress: {
+        completed: d.stages.filter((s) => s.status === 'completed' || s.status === 'skipped').length,
+        total: d.stages.length,
+      },
+    }));
+  }
+
+  async getDeal(userId: string, dealId: string) {
+    const deal = await this.prisma.deal.findUnique({
+      where: { id: dealId },
+      include: {
+        snapshot: true,
+        parties: true,
+        stages: { orderBy: { id: 'asc' } },
+        events: { orderBy: { createdAt: 'asc' } },
+        property: { select: { id: true, kind: true } },
+        conversations: { select: { id: true } },
+      },
+    });
+    if (!deal) throw new NotFoundException('Deal not found');
+    const myParty = deal.parties.find((p) => p.userId === userId);
+    if (!myParty && !(await this.isAdmin(userId))) {
+      throw new ForbiddenException('Not a party to this deal');
+    }
+
+    const template = await this.prisma.pipelineTemplate.findUnique({ where: { kind: deal.kind } });
+    const stageDefs = (template?.stages as unknown as StageDef[]) ?? [];
+    const docs = await this.prisma.dealDocument.findMany({
+      where: { dealId },
+      include: { document: { select: { id: true, documentType: true, uploadedAt: true } } },
+    });
+
+    return {
+      ...deal,
+      myPartyRole: myParty?.partyRole ?? null,
+      stageDefs,
+      documents: docs,
+    };
+  }
+
+  /** Complete the current stage and advance the pipeline. */
+  async advanceStage(userId: string, dealId: string, note?: string, ip?: string) {
+    const deal = await this.prisma.deal.findUnique({
+      where: { id: dealId },
+      include: { parties: true, stages: true },
+    });
+    if (!deal) throw new NotFoundException('Deal not found');
+    if (deal.status !== 'active') throw new BadRequestException('Deal is not active');
+
+    const template = await this.prisma.pipelineTemplate.findUnique({ where: { kind: deal.kind } });
+    const stages = (template?.stages as unknown as StageDef[]) ?? [];
+    const curIdx = stages.findIndex((s) => s.key === deal.currentStageKey);
+    if (curIdx < 0) throw new BadRequestException('Current stage not found in template');
+    const cur = stages[curIdx];
+
+    await this.assertCanComplete(userId, deal.parties, cur);
+    await this.assertRequiredDocs(dealId, cur);
+
+    const kind = deal.kind as 'purchase' | 'rental';
+    const isCompletion = cur.key === COMPLETION_STAGE[kind];
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.dealStage.updateMany({
+        where: { dealId, stageKey: cur.key },
+        data: { status: 'completed', completedAt: new Date(), completedBy: userId },
+      });
+      await tx.dealEvent.create({
+        data: {
+          dealId,
+          actorId: userId,
+          eventType: 'stage.completed',
+          payload: { stageKey: cur.key, note: note ?? null } as Prisma.InputJsonValue,
+        },
+      });
+
+      if (isCompletion) {
+        await tx.deal.update({ where: { id: dealId }, data: { status: 'completed', completedAt: new Date() } });
+        await tx.property.update({
+          where: { id: deal.propertyId! },
+          data: { status: kind === 'rental' ? 'rented' : 'sold' },
+        });
+        await tx.dealEvent.create({ data: { dealId, actorId: userId, eventType: 'deal.completed' } });
+      } else {
+        // advance to next non-skipped stage
+        const next = stages[curIdx + 1];
+        if (next) {
+          await tx.dealStage.updateMany({ where: { dealId, stageKey: next.key }, data: { status: 'active' } });
+          await tx.deal.update({ where: { id: dealId }, data: { currentStageKey: next.key } });
+        }
+      }
+    });
+
+    await this.audit.log({
+      actorId: userId,
+      action: isCompletion ? 'deal.completed' : 'deal.stage_advanced',
+      entityType: 'deal',
+      entityId: dealId,
+      after: { stageKey: cur.key },
+      ip,
+    });
+
+    for (const p of deal.parties) {
+      await this.notifications.notify(
+        p.userId,
+        isCompletion ? 'deal.completed' : 'deal.stage_advanced',
+        { dealId },
+      );
+    }
+    if (isCompletion) this.events.emit('deal.completed', { dealId });
+    return this.getDeal(userId, dealId);
+  }
+
+  /** Skip a skippable stage (e.g. permit_process for non-foreign buyers). */
+  async skipStage(userId: string, dealId: string, ip?: string) {
+    const deal = await this.prisma.deal.findUnique({ where: { id: dealId }, include: { parties: true } });
+    if (!deal) throw new NotFoundException('Deal not found');
+    if (!deal.parties.some((p) => p.userId === userId) && !(await this.isAdmin(userId))) {
+      throw new ForbiddenException('Not a party to this deal');
+    }
+    const template = await this.prisma.pipelineTemplate.findUnique({ where: { kind: deal.kind } });
+    const stages = (template?.stages as unknown as StageDef[]) ?? [];
+    const curIdx = stages.findIndex((s) => s.key === deal.currentStageKey);
+    const cur = stages[curIdx];
+    if (!cur?.skippable) throw new BadRequestException('This stage cannot be skipped');
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.dealStage.updateMany({ where: { dealId, stageKey: cur.key }, data: { status: 'skipped', completedAt: new Date() } });
+      await tx.dealEvent.create({ data: { dealId, actorId: userId, eventType: 'stage.skipped', payload: { stageKey: cur.key } } });
+      const next = stages[curIdx + 1];
+      if (next) {
+        await tx.dealStage.updateMany({ where: { dealId, stageKey: next.key }, data: { status: 'active' } });
+        await tx.deal.update({ where: { id: dealId }, data: { currentStageKey: next.key } });
+      }
+    });
+    return this.getDeal(userId, dealId);
+  }
+
+  /** Attach a document (deposit receipt, signed contract…) to the current stage. */
+  async attachDocument(
+    userId: string,
+    dealId: string,
+    documentType: string,
+    file: { buffer: Buffer; mimetype: string; size: number },
+    ip?: string,
+  ) {
+    const deal = await this.prisma.deal.findUnique({ where: { id: dealId }, include: { parties: true } });
+    if (!deal) throw new NotFoundException('Deal not found');
+    if (!deal.parties.some((p) => p.userId === userId)) throw new ForbiddenException('Not a party to this deal');
+    if (file.size > 20 * 1024 * 1024) throw new BadRequestException('Document exceeds 20MB limit');
+
+    const { createHash } = await import('crypto');
+    const key = `deals/${dealId}/${documentType}-${Date.now()}`;
+    await this.storage.putPrivateDocument(key, file.buffer, file.mimetype);
+    const doc = await this.prisma.document.create({
+      data: {
+        ownerUserId: userId,
+        entityType: 'deal',
+        entityId: dealId,
+        documentType,
+        storageKey: key,
+        mime: file.mimetype,
+        size: file.size,
+        sha256: createHash('sha256').update(file.buffer).digest('hex'),
+        status: 'approved', // deal-room docs are party-supplied evidence, not admin-verified
+      },
+    });
+    await this.prisma.dealDocument.create({
+      data: { dealId, documentId: doc.id, stageKey: deal.currentStageKey },
+    });
+    await this.prisma.dealEvent.create({
+      data: { dealId, actorId: userId, eventType: 'document.attached', payload: { documentType, stageKey: deal.currentStageKey } },
+    });
+    await this.audit.log({
+      actorId: userId,
+      action: 'deal.document_attached',
+      entityType: 'deal',
+      entityId: dealId,
+      after: { documentType },
+      ip,
+    });
+    return { id: doc.id, documentType, stageKey: deal.currentStageKey };
+  }
+
+  // ── helpers ──────────────────────────────────────────────────────
+
+  private async assertCanComplete(
+    userId: string,
+    parties: { userId: string; partyRole: string }[],
+    stage: StageDef,
+  ) {
+    if (stage.completesBy === 'system') return; // auto stages never advanced manually here
+    const myRoles = parties.filter((p) => p.userId === userId).map((p) => p.partyRole);
+    if (myRoles.length === 0 && !(await this.isAdmin(userId))) {
+      throw new ForbiddenException('Not a party to this deal');
+    }
+    const sellerSide = ['seller', 'agent_seller_side'];
+    const buyerSide = ['buyer', 'agent_buyer_side'];
+
+    const allowed =
+      stage.completesBy === 'both_parties' ||
+      (stage.completesBy === 'seller' && myRoles.some((r) => sellerSide.includes(r))) ||
+      (stage.completesBy === 'buyer' && myRoles.some((r) => buyerSide.includes(r))) ||
+      myRoles.includes(stage.completesBy) ||
+      (await this.isAdmin(userId));
+    if (!allowed) {
+      throw new ForbiddenException(`This stage is completed by ${stage.completesBy}`);
+    }
+  }
+
+  private async assertRequiredDocs(dealId: string, stage: StageDef) {
+    if (!stage.requiredDocuments?.length) return;
+    const attached = await this.prisma.dealDocument.findMany({
+      where: { dealId, stageKey: stage.key },
+      include: { document: { select: { documentType: true } } },
+    });
+    const have = new Set(attached.map((a) => a.document.documentType));
+    const missing = stage.requiredDocuments.filter((d) => !have.has(d));
+    if (missing.length > 0) {
+      throw new BadRequestException(`Attach required documents first: ${missing.join(', ')}`);
+    }
+  }
+
+  private async isAdmin(userId: string): Promise<boolean> {
+    const count = await this.prisma.userRole.count({
+      where: { userId, role: { key: 'admin' } },
+    });
+    return count > 0;
+  }
+}

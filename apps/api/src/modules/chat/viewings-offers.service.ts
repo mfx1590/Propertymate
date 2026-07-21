@@ -8,6 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { DealsService } from '../deals/deals.service';
 
 const VIEWING_TRANSITIONS: Record<string, string[]> = {
   requested: ['confirmed', 'cancelled'],
@@ -84,6 +85,7 @@ export class OffersService {
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
     private readonly notifications: NotificationsService,
+    private readonly deals: DealsService,
     private readonly events: EventEmitter2,
   ) {}
 
@@ -151,7 +153,7 @@ export class OffersService {
     });
 
     if (action === 'accept') {
-      // §7: lock the listing; the deal room itself arrives in step 6
+      // §7: lock the listing, freeze the snapshot, open the deal room
       await this.prisma.property.update({
         where: { id: offer.propertyId },
         data: { status: 'under_offer' },
@@ -165,6 +167,9 @@ export class OffersService {
         after: { amount: Number(offer.amount), currency: offer.currency },
         ip,
       });
+      const dealId = await this.deals.createFromAcceptedOffer(offerId);
+      await this.notifications.notify(offer.customerId, 'offer.accepted', { offerId, dealId });
+      return { ...updated, dealId };
     }
     await this.notifications.notify(offer.customerId, `offer.${action}ed`, { offerId });
     return updated;

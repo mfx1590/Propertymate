@@ -86,6 +86,7 @@ export const COMMON_MENU: MenuItem[] = [
   { labelKey: 'messages', href: '/dashboard/messages' },
   { labelKey: 'viewings', href: '/dashboard/viewings' },
   { labelKey: 'offers', href: '/dashboard/offers' },
+  { labelKey: 'deals', href: '/dashboard/deals' },
 ];
 
 export function menuForRoles(roleKeys: RoleKey[]): MenuItem[] {
