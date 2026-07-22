@@ -391,9 +391,21 @@ export class PropertiesService {
     }
 
     const { createdBy, ...rest } = property;
-    // §13.5: the public sees ONLY the final buyer price — never the profit/commission breakdown
     if (!isOwner) {
-      const { platformProfitGbp, agentCommissionGbp, priceBaseGbp, priceAmount, priceCurrency, ...pub } = rest;
+      // §13.5: public sees ONLY the final buyer price — never the profit/commission breakdown.
+      // §13.4: strip internal identity fields so owner/agent anonymity holds.
+      const {
+        platformProfitGbp,
+        agentCommissionGbp,
+        priceBaseGbp,
+        priceAmount,
+        priceCurrency,
+        createdByUserId,
+        onBehalfOfOwnerId,
+        publishedByAgentId,
+        mandateDocumentId,
+        ...pub
+      } = rest;
       const finalGbp = rest.listPriceGbp ?? priceBaseGbp;
       return {
         ...pub,

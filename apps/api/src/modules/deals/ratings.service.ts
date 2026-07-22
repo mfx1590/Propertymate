@@ -88,16 +88,16 @@ export class RatingsService {
     return { id: rating.id, revealed };
   }
 
-  /** Public reviews on a profile — only revealed ones (§6.5, §13.2). */
+  /** Public reviews on a profile — only revealed ones, reviewer identity withheld (§6.5, §13.2). */
   async publicReviews(rateeId: string) {
-    const reviews = await this.prisma.rating.findMany({
+    const rows = await this.prisma.rating.findMany({
       where: { rateeId, revealedAt: { not: null } },
-      select: { stars: true, tags: true, comment: true, revealedAt: true, raterId: true },
+      select: { stars: true, tags: true, comment: true, revealedAt: true },
       orderBy: { revealedAt: 'desc' },
       take: 50,
     });
-    const avg = reviews.length ? reviews.reduce((s, r) => s + r.stars, 0) / reviews.length : null;
-    return { count: reviews.length, avgStars: avg, reviews };
+    const avg = rows.length ? rows.reduce((s, r) => s + r.stars, 0) / rows.length : null;
+    return { count: rows.length, avgStars: avg, reviews: rows };
   }
 
   /** Nightly: reveal ratings older than 14 days even if the counterpart never rated. */

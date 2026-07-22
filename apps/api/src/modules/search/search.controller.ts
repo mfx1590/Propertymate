@@ -1,10 +1,18 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Post, Query } from '@nestjs/common';
 import { Public } from '../../common/decorators/public.decorator';
+import { RequirePermissions } from '../../common/decorators/require-permissions.decorator';
 import { SearchService } from './search.service';
 
 @Controller('search')
 export class SearchController {
   constructor(private readonly search: SearchService) {}
+
+  /** Ops: rebuild the whole index from the DB (e.g. after a bulk import). */
+  @RequirePermissions('user.manage')
+  @Post('reindex')
+  reindex() {
+    return this.search.reindexAll();
+  }
 
   @Public()
   @Get('listings')
