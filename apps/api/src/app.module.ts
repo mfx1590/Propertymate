@@ -5,6 +5,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
+import { PinoLoggerModule } from './common/logging/logger.module';
 import { AuditModule } from './common/audit/audit.module';
 import { StorageModule } from './common/storage/storage.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -26,6 +27,7 @@ import { DealsModule } from './modules/deals/deals.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    PinoLoggerModule,
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
     // global default rate limit; auth endpoints tighten further (Plan §2.4)
