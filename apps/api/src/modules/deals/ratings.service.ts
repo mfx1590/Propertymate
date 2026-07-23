@@ -1,5 +1,4 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { RATING_REVEAL_DAYS } from '@propverify/shared';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
@@ -100,8 +99,8 @@ export class RatingsService {
     return { count: rows.length, avgStars: avg, reviews: rows };
   }
 
-  /** Nightly: reveal ratings older than 14 days even if the counterpart never rated. */
-  @Cron(CronExpression.EVERY_DAY_AT_1AM)
+  /** Daily via the BullMQ `maintenance` queue: reveal ratings older than 14 days
+   *  even if the counterpart never rated. */
   async revealStale() {
     const cutoff = new Date(Date.now() - RATING_REVEAL_DAYS * 86_400_000);
     const stale = await this.prisma.rating.findMany({

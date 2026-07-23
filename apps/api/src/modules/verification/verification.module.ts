@@ -9,5 +9,6 @@ import { FreshnessAdminController } from './freshness-admin.controller';
   imports: [MediaModule],
   controllers: [VerificationController, FreshnessAdminController],
   providers: [VerificationService, FreshnessService],
+  exports: [FreshnessService],
 })
 export class VerificationModule {}

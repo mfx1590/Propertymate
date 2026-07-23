@@ -17,6 +17,6 @@ import { SubscriptionsService } from './subscriptions.service';
     AssignmentsController,
   ],
   providers: [SettingsService, SubscriptionsService, AssignmentsService],
-  exports: [SettingsService, SubscriptionsService],
+  exports: [SettingsService, SubscriptionsService, AssignmentsService],
 })
 export class MarketplaceModule {}

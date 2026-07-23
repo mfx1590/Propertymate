@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { PrismaModule } from './prisma/prisma.module';
 import { PinoLoggerModule } from './common/logging/logger.module';
@@ -23,13 +22,13 @@ import { VerificationModule } from './modules/verification/verification.module';
 import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { DealsModule } from './modules/deals/deals.module';
+import { JobsModule } from './jobs/jobs.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     PinoLoggerModule,
     EventEmitterModule.forRoot(),
-    ScheduleModule.forRoot(),
     // global default rate limit; auth endpoints tighten further (Plan §2.4)
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 120 }]),
     PrismaModule,
@@ -48,6 +47,7 @@ import { DealsModule } from './modules/deals/deals.module';
     MarketplaceModule,
     DealsModule,
     ChatModule,
+    JobsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

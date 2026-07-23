@@ -4,7 +4,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
@@ -266,7 +265,7 @@ export class AssignmentsService {
     });
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_5AM)
+  /** Daily via the BullMQ `maintenance` queue: expire elapsed assignment rounds. */
   async expireSweep() {
     const { count } = await this.prisma.agentAssignment.updateMany({
       where: { status: { in: ['invited', 'accepted'] }, expiresAt: { lt: new Date() } },

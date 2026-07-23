@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AVAILABILITY_CONFIRM_DAYS } from '@propverify/shared';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -9,8 +8,8 @@ const DAY_MS = 86_400_000;
 
 /**
  * 90-day freshness rule (Plan §4): nudge at day 83 and 88, auto-pause at 90.
- * Runs as a daily cron; moves to a BullMQ repeatable job in the hardening
- * pass so it survives multi-instance deployments.
+ * Triggered daily by the BullMQ `maintenance` queue (JobsModule) so it runs
+ * exactly once across instances; also invokable via the admin endpoint.
  */
 @Injectable()
 export class FreshnessService {
@@ -22,7 +21,6 @@ export class FreshnessService {
     private readonly events: EventEmitter2,
   ) {}
 
-  @Cron(CronExpression.EVERY_DAY_AT_6AM)
   async run() {
     const now = Date.now();
     const live = await this.prisma.property.findMany({
