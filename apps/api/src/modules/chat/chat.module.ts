@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { DealsModule } from '../deals/deals.module';
 import { ChatController, OffersController, ViewingsController } from './chat.controllers';
+import { ChatGateway } from './chat.gateway';
 import { ChatService } from './chat.service';
 import { ScrubService } from './scrub.service';
 import { OffersService, ViewingsService } from './viewings-offers.service';
@@ -8,6 +9,6 @@ import { OffersService, ViewingsService } from './viewings-offers.service';
 @Module({
   imports: [DealsModule], // OffersService spins up the deal room on acceptance
   controllers: [ChatController, ViewingsController, OffersController],
-  providers: [ChatService, ScrubService, ViewingsService, OffersService],
+  providers: [ChatService, ScrubService, ViewingsService, OffersService, ChatGateway],
 })
 export class ChatModule {}

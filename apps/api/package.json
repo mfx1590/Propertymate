@@ -27,8 +27,10 @@
     "@nestjs/event-emitter": "^2.1.1",
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/platform-express": "^10.4.15",
+    "@nestjs/platform-socket.io": "^10.4.22",
     "@nestjs/schedule": "^6.1.3",
     "@nestjs/throttler": "^6.2.1",
+    "@nestjs/websockets": "^10.4.22",
     "@prisma/client": "^5.22.0",
     "@propverify/shared": "*",
     "bcryptjs": "^2.4.3",
@@ -40,7 +42,8 @@
     "pino-http": "^11.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "sharp": "^0.35.3"
+    "sharp": "^0.35.3",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.9",

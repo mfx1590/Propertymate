@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { apiGet, apiPost } from '../../../../lib/api';
+import { getSocket } from '../../../../lib/socket';
 import { useAuth } from '../../../../lib/auth';
 
 interface Convo {
@@ -41,13 +42,36 @@ export default function MessagesPage() {
     setMessages(await apiGet<Msg[]>(`/conversations/${id}/messages`));
   }, []);
 
-  // simple polling — realtime socket upgrade comes with hardening
+  const refreshConvos = useCallback(async () => {
+    setConvos(await apiGet<Convo[]>('/users/me/conversations'));
+  }, []);
+
+  // realtime: join the active conversation room, append incoming messages live.
+  // A slow 30s poll remains only as a reconnection safety net.
   useEffect(() => {
     if (!active) return;
     void loadMessages(active);
-    const timer = setInterval(() => void loadMessages(active), 4000);
-    return () => clearInterval(timer);
-  }, [active, loadMessages]);
+
+    const socket = getSocket();
+    const onMessage = (m: Msg) => {
+      setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
+    };
+    if (socket) {
+      socket.emit('conversation.join', active);
+      socket.on('message', onMessage);
+      socket.on('notify', () => void refreshConvos());
+    }
+    const fallback = setInterval(() => void loadMessages(active), 30000);
+
+    return () => {
+      clearInterval(fallback);
+      if (socket) {
+        socket.emit('conversation.leave', active);
+        socket.off('message', onMessage);
+        socket.off('notify');
+      }
+    };
+  }, [active, loadMessages, refreshConvos]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });

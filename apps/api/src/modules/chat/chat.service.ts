@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
@@ -16,6 +17,7 @@ export class ChatService {
     private readonly audit: AuditService,
     private readonly notifications: NotificationsService,
     private readonly scrubber: ScrubService,
+    private readonly events: EventEmitter2,
   ) {}
 
   /** Customer opens (or reuses) the inquiry thread on a listing. */
@@ -149,9 +151,12 @@ export class ChatService {
     const message = await this.prisma.message.create({
       data: { conversationId, senderId: userId, body: text, bodyScrubbed: scrubbed },
     });
+    // realtime fan-out to everyone in the conversation room (ChatGateway)
+    this.events.emit('chat.message', { conversationId, message });
     const other = convo.participants.find((p) => p.userId !== userId);
     if (other) {
       await this.notifications.notify(other.userId, 'chat.new_message', { conversationId });
+      this.events.emit('chat.notify', { userId: other.userId, event: 'chat.new_message', data: { conversationId } });
     }
     return message;
   }
