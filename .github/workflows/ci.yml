@@ -35,3 +35,48 @@ jobs:
         run: npm run build
         env:
           DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start infrastructure (postgres, redis, meilisearch, minio + buckets)
+        run: docker compose up -d --wait
+
+      - name: Env files
+        run: |
+          cp .env.example .env
+          cp .env.example apps/api/.env
+
+      - name: Prisma generate + migrate + seed
+        run: |
+          npm run db:generate
+          npm run db:deploy -w apps/api
+          npm run db:seed
+
+      - name: Build API
+        run: npm run build -w apps/api
+
+      - name: Start API
+        run: |
+          node apps/api/dist/main.js > api.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:4000/health >/dev/null; then echo "API up"; break; fi
+            sleep 1
+          done
+
+      - name: Run critical-flow e2e suite
+        run: npm run test:e2e -w apps/api
+
+      - name: API logs on failure
+        if: failure()
+        run: tail -80 api.log || true
