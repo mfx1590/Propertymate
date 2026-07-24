@@ -13,6 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { SkipThrottle } from '@nestjs/throttler';
 import { AuthUser, CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Public } from '../../common/decorators/public.decorator';
 import { RequirePermissions } from '../../common/decorators/require-permissions.decorator';
@@ -127,6 +128,8 @@ export class PropertiesController {
 
   // ── public detail (keep LAST: ':id' would otherwise shadow routes above) ──
 
+  // public browse/SEO path — not rate-limited (§11 targets auth/chat/inquiry)
+  @SkipThrottle()
   @Public()
   @Get(':id')
   getPublic(@Param('id') id: string) {

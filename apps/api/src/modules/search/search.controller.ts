@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Query } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { Public } from '../../common/decorators/public.decorator';
 import { RequirePermissions } from '../../common/decorators/require-permissions.decorator';
 import { SearchService } from './search.service';
@@ -14,6 +15,8 @@ export class SearchController {
     return this.search.reindexAll();
   }
 
+  // high-traffic public browse endpoint — not rate-limited (§11 targets auth/chat/inquiry)
+  @SkipThrottle()
   @Public()
   @Get('listings')
   listings(

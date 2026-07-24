@@ -14,7 +14,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:demo": "ts-node prisma/demo-seed.ts",
-    "test:e2e": "node test/e2e/critical-flows.mjs"
+    "test:e2e": "node test/e2e/critical-flows.mjs",
+    "test:load": "node test/load/search-load.mjs"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
