@@ -152,6 +152,19 @@ const RENTAL_STAGES = [
   { key: 'renewal_or_exit', titleI18n: t('Renewal / exit checklist', 'Yenileme / çıkış kontrol listesi'), requiredDocuments: [], completesBy: 'both_parties', injectableServiceTypes: ['movers'], notifications: ['deal.stage_advanced'] },
 ];
 
+// Off-plan developer sale (§6.3): the reservation IS the deal — there is no
+// offer/counter-offer round, the buyer reserves a unit at the published price.
+const PROJECT_PURCHASE_STAGES = [
+  { key: 'reservation', titleI18n: t('Reservation', 'Rezervasyon'), requiredDocuments: [], completesBy: 'seller', injectableServiceTypes: [], notifications: ['deal.stage_advanced'] },
+  { key: 'legal_check', titleI18n: t('Legal check', 'Hukuki kontrol'), requiredDocuments: [], completesBy: 'buyer', injectableServiceTypes: ['lawyer'], notifications: ['deal.stage_advanced'] },
+  { key: 'contract_signing', titleI18n: t('Contract signing', 'Sözleşme imzalama'), requiredDocuments: ['contract'], completesBy: 'both_parties', injectableServiceTypes: ['lawyer', 'notary_translation'], notifications: ['deal.stage_advanced'] },
+  { key: 'deposit_recorded', titleI18n: t('Down payment recorded', 'Peşinat kaydedildi'), requiredDocuments: ['deposit_receipt'], completesBy: 'buyer', injectableServiceTypes: [], notifications: ['deal.stage_advanced'] },
+  { key: 'permit_process', titleI18n: t('Purchase permit (foreign buyers)', 'Satın alma izni (yabancı alıcılar)'), requiredDocuments: [], completesBy: 'buyer', injectableServiceTypes: ['lawyer'], notifications: ['deal.stage_advanced'], skippable: true },
+  { key: 'construction', titleI18n: t('Construction & installments', 'İnşaat ve taksitler'), requiredDocuments: [], completesBy: 'seller', injectableServiceTypes: [], notifications: ['project.update_published'] },
+  { key: 'completion', titleI18n: t('Completion & handover', 'Tamamlama ve teslim'), requiredDocuments: [], completesBy: 'both_parties', injectableServiceTypes: [], notifications: ['deal.completed'] },
+  { key: 'post_deal', titleI18n: t('Post-deal services', 'Satış sonrası hizmetler'), requiredDocuments: [], completesBy: 'system', injectableServiceTypes: ['furniture', 'movers', 'insurance'], notifications: [], skippable: true },
+];
+
 async function main() {
   // roles
   const roleByKey: Record<string, string> = {};
@@ -211,17 +224,19 @@ async function main() {
     });
   }
 
-  // pipeline templates
-  await prisma.pipelineTemplate.upsert({
-    where: { kind: DealKind.purchase },
-    update: { stages: PURCHASE_STAGES as object[] },
-    create: { kind: DealKind.purchase, stages: PURCHASE_STAGES as object[] },
-  });
-  await prisma.pipelineTemplate.upsert({
-    where: { kind: DealKind.rental },
-    update: { stages: RENTAL_STAGES as object[] },
-    create: { kind: DealKind.rental, stages: RENTAL_STAGES as object[] },
-  });
+  // pipeline templates — resolved by key; project units reuse DealKind.purchase (§6.3)
+  const TEMPLATES: Array<[string, DealKind, object[]]> = [
+    ['purchase', DealKind.purchase, PURCHASE_STAGES],
+    ['rental', DealKind.rental, RENTAL_STAGES],
+    ['project_purchase', DealKind.purchase, PROJECT_PURCHASE_STAGES],
+  ];
+  for (const [key, kind, stages] of TEMPLATES) {
+    await prisma.pipelineTemplate.upsert({
+      where: { key },
+      update: { kind, stages },
+      create: { key, kind, stages },
+    });
+  }
 
   // FX rates: GBP base (Plan §1) — static seed; daily-refresh job comes with hardening
   const FX: Array<[string, number]> = [['GBP', 1], ['EUR', 1.17], ['USD', 1.27], ['TRY', 52.0]];
@@ -306,7 +321,7 @@ async function main() {
   console.log('Seed complete:');
   console.log(`  roles: ${ROLES.length}, permissions: ${allPermissionKeys.length}`);
   console.log(`  regions: ${REGIONS.length}, verification requirements: ${REQUIREMENTS.length}`);
-  console.log('  pipeline templates: purchase, rental');
+  console.log(`  pipeline templates: ${TEMPLATES.map(([key]) => key).join(', ')}`);
   console.log(`  super admin: ${adminEmail} / Admin123!`);
 }
 

@@ -10,5 +10,6 @@ import { OffersService, ViewingsService } from './viewings-offers.service';
   imports: [DealsModule], // OffersService spins up the deal room on acceptance
   controllers: [ChatController, ViewingsController, OffersController],
   providers: [ChatService, ScrubService, ViewingsService, OffersService, ChatGateway],
+  exports: [ChatService], // project inquiries open threads through the same service
 })
 export class ChatModule {}

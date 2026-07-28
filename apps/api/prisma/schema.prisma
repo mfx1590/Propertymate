@@ -547,11 +547,12 @@ model Project {
   createdAt       DateTime      @default(now()) @map("created_at")
   deletedAt       DateTime?     @map("deleted_at")
 
-  developer User            @relation(fields: [developerUserId], references: [id])
-  region    Region          @relation(fields: [regionId], references: [id])
-  media     ProjectMedia[]
-  units     ProjectUnit[]
-  updates   ProjectUpdate[]
+  developer     User            @relation(fields: [developerUserId], references: [id])
+  region        Region          @relation(fields: [regionId], references: [id])
+  media         ProjectMedia[]
+  units         ProjectUnit[]
+  updates       ProjectUpdate[]
+  conversations Conversation[]
 
   @@map("projects")
 }
@@ -634,10 +635,12 @@ model Favorite {
 model Conversation {
   id         String   @id @default(cuid())
   propertyId String?  @map("property_id")
+  projectId  String?  @map("project_id")
   dealId     String?  @map("deal_id")
   createdAt  DateTime @default(now()) @map("created_at")
 
   property     Property?                 @relation(fields: [propertyId], references: [id])
+  project      Project?                  @relation(fields: [projectId], references: [id])
   deal         Deal?                     @relation(fields: [dealId], references: [id])
   participants ConversationParticipant[]
   messages     Message[]
@@ -715,8 +718,11 @@ model Offer {
 // ─────────────────────── deals (Plan §7) ───────────────────────
 
 model PipelineTemplate {
-  id     String   @id @default(cuid())
-  kind   DealKind @unique
+  id String @id @default(cuid())
+  /// resolution key: `purchase`, `rental`, `project_purchase` (§6.3 off-plan units).
+  /// Several templates can share a DealKind — a project-unit deal is still kind=purchase.
+  key    String   @unique
+  kind   DealKind
   stages Json // ordered PipelineStageDef[] incl. injectable_service_types
 
   @@map("pipeline_templates")

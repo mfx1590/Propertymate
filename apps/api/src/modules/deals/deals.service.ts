@@ -23,16 +23,23 @@ export interface StageDef {
   createsSnapshot?: boolean;
 }
 
-/** The stage at which the deal record is created (everything up to it is done). */
-const CREATION_STAGE: Record<'purchase' | 'rental', string> = {
+/**
+ * The stage at which the deal record is created (everything up to it is done).
+ * Keyed by pipeline template key — an off-plan project deal starts at its very
+ * first stage because the reservation IS the deal (§6.3).
+ */
+const CREATION_STAGE: Record<string, string> = {
   purchase: 'offer_accepted',
   rental: 'landlord_approval',
+  // project_purchase is deliberately absent: an off-plan deal is created AT its
+  // first stage (reservation, still open) rather than after a completed one.
 };
 
 /** Completing this stage finalizes the transaction. */
-const COMPLETION_STAGE: Record<'purchase' | 'rental', string> = {
+const COMPLETION_STAGE: Record<string, string> = {
   purchase: 'completion',
   rental: 'move_in_checklist',
+  project_purchase: 'completion',
 };
 
 @Injectable()
@@ -66,7 +73,7 @@ export class DealsService {
     if (!property) throw new NotFoundException('Listing not found');
 
     const kind: 'purchase' | 'rental' = property.kind === 'rental' ? 'rental' : 'purchase';
-    const template = await this.prisma.pipelineTemplate.findUnique({ where: { kind } });
+    const template = await this.prisma.pipelineTemplate.findUnique({ where: { key: kind } });
     if (!template) throw new BadRequestException(`No pipeline template for ${kind}`);
     const stages = template.stages as unknown as StageDef[];
 
@@ -171,6 +178,129 @@ export class DealsService {
     return deal.id;
   }
 
+  /**
+   * Off-plan reservation (§6.3): reserving an available unit IS the deal. It is
+   * created at the still-open `reservation` stage, which the developer completes
+   * once the reservation is honoured, and the unit is held as `reserved`.
+   */
+  async createFromUnitReservation(customerId: string, unitId: string, ip?: string): Promise<string> {
+    const unit = await this.prisma.projectUnit.findUnique({
+      where: { id: unitId },
+      include: {
+        project: {
+          include: {
+            region: { select: { slug: true } },
+            media: { orderBy: { sortOrder: 'asc' }, take: 1 },
+          },
+        },
+      },
+    });
+    if (!unit || unit.project.deletedAt) throw new NotFoundException('Unit not found');
+    if (unit.project.status !== 'live') throw new BadRequestException('Project is not published');
+    if (unit.project.developerUserId === customerId) {
+      throw new BadRequestException('You cannot reserve a unit in your own project');
+    }
+
+    const existing = await this.prisma.deal.findFirst({
+      where: { projectUnitId: unitId, status: { in: ['active', 'completed'] } },
+    });
+    if (existing) throw new BadRequestException('This unit is already reserved');
+    if (unit.status !== 'available') throw new BadRequestException(`Unit is ${unit.status}`);
+
+    const template = await this.prisma.pipelineTemplate.findUnique({ where: { key: 'project_purchase' } });
+    if (!template) throw new BadRequestException('No pipeline template for project_purchase');
+    const stages = template.stages as unknown as StageDef[];
+
+    const developerId = unit.project.developerUserId;
+    const propertySnapshot: Prisma.InputJsonValue = {
+      title: `${(unit.project.nameI18n as { en?: string })?.en ?? 'Project'} — unit ${unit.unitNo}`,
+      kind: 'project_unit',
+      region: unit.project.region.slug,
+      unitNo: unit.unitNo,
+      unitType: unit.type,
+      bedrooms: unit.bedrooms,
+      areaM2: unit.areaM2,
+      floor: unit.floor,
+      deliveryDate: unit.project.deliveryDate,
+      coverUrl: unit.project.media[0]?.url ?? null,
+      projectId: unit.projectId,
+    };
+    const commissionSplit: Prisma.InputJsonValue = {
+      developerSale: true,
+      unitPrice: Number(unit.priceAmount),
+      currency: unit.priceCurrency,
+      paymentPlans: (unit.project.paymentPlans as Prisma.InputJsonValue) ?? null,
+    };
+
+    const deal = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.deal.create({
+        data: {
+          projectUnitId: unitId,
+          kind: 'purchase',
+          status: 'active',
+          currentStageKey: stages[0].key,
+          parties: {
+            create: [
+              { userId: customerId, partyRole: 'buyer' },
+              { userId: developerId, partyRole: 'seller' },
+            ],
+          },
+          stages: {
+            create: stages.map((s, i) => ({
+              stageKey: s.key,
+              status: i === 0 ? ('active' as const) : ('pending' as const),
+            })),
+          },
+          snapshot: {
+            create: {
+              propertySnapshot,
+              priceAgreed: unit.priceAmount,
+              currency: unit.priceCurrency,
+              commissionSplit,
+            },
+          },
+          events: {
+            create: {
+              actorId: customerId,
+              eventType: 'deal.created',
+              payload: { unitId, projectId: unit.projectId, priceAgreed: Number(unit.priceAmount) } as Prisma.InputJsonValue,
+            },
+          },
+        },
+      });
+      await tx.projectUnit.update({ where: { id: unitId }, data: { status: 'reserved' } });
+      await tx.conversation.create({
+        data: {
+          projectId: unit.projectId,
+          dealId: created.id,
+          participants: {
+            create: [
+              { userId: customerId, roleInConvo: 'buyer' },
+              { userId: developerId, roleInConvo: 'seller_side' },
+            ],
+          },
+        },
+      });
+      return created;
+    });
+
+    for (const userId of [customerId, developerId]) {
+      await this.notifications.notify(userId, 'deal.created', {
+        dealId: deal.id,
+        title: propertySnapshot['title' as keyof typeof propertySnapshot],
+      });
+    }
+    await this.audit.log({
+      actorId: customerId,
+      action: 'deal.created',
+      entityType: 'deal',
+      entityId: deal.id,
+      after: { unitId, projectId: unit.projectId, priceAgreed: Number(unit.priceAmount) },
+      ip,
+    });
+    return deal.id;
+  }
+
   async listMine(userId: string) {
     const deals = await this.prisma.deal.findMany({
       where: { parties: { some: { userId } } },
@@ -178,6 +308,13 @@ export class DealsService {
         snapshot: true,
         stages: { orderBy: { id: 'asc' } },
         property: { select: { id: true, titleI18n: true, media: { take: 1, orderBy: { sortOrder: 'asc' } } } },
+        projectUnit: {
+          select: {
+            id: true,
+            unitNo: true,
+            project: { select: { id: true, nameI18n: true, media: { take: 1, orderBy: { sortOrder: 'asc' } } } },
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -187,6 +324,7 @@ export class DealsService {
       status: d.status,
       currentStageKey: d.currentStageKey,
       property: d.property,
+      projectUnit: d.projectUnit,
       snapshot: d.snapshot,
       progress: {
         completed: d.stages.filter((s) => s.status === 'completed' || s.status === 'skipped').length,
@@ -204,6 +342,9 @@ export class DealsService {
         stages: { orderBy: { id: 'asc' } },
         events: { orderBy: { createdAt: 'asc' } },
         property: { select: { id: true, kind: true } },
+        projectUnit: {
+          select: { id: true, unitNo: true, project: { select: { id: true, nameI18n: true } } },
+        },
         conversations: { select: { id: true } },
       },
     });
@@ -213,8 +354,7 @@ export class DealsService {
       throw new ForbiddenException('Not a party to this deal');
     }
 
-    const template = await this.prisma.pipelineTemplate.findUnique({ where: { kind: deal.kind } });
-    const stageDefs = (template?.stages as unknown as StageDef[]) ?? [];
+    const { stages: stageDefs } = await this.pipelineFor(deal);
     const docs = await this.prisma.dealDocument.findMany({
       where: { dealId },
       include: { document: { select: { id: true, documentType: true, uploadedAt: true } } },
@@ -237,8 +377,7 @@ export class DealsService {
     if (!deal) throw new NotFoundException('Deal not found');
     if (deal.status !== 'active') throw new BadRequestException('Deal is not active');
 
-    const template = await this.prisma.pipelineTemplate.findUnique({ where: { kind: deal.kind } });
-    const stages = (template?.stages as unknown as StageDef[]) ?? [];
+    const { templateKey, stages } = await this.pipelineFor(deal);
     const curIdx = stages.findIndex((s) => s.key === deal.currentStageKey);
     if (curIdx < 0) throw new BadRequestException('Current stage not found in template');
     const cur = stages[curIdx];
@@ -246,8 +385,7 @@ export class DealsService {
     await this.assertCanComplete(userId, deal.parties, cur);
     await this.assertRequiredDocs(dealId, cur);
 
-    const kind = deal.kind as 'purchase' | 'rental';
-    const isCompletion = cur.key === COMPLETION_STAGE[kind];
+    const isCompletion = cur.key === COMPLETION_STAGE[templateKey];
 
     await this.prisma.$transaction(async (tx) => {
       await tx.dealStage.updateMany({
@@ -265,10 +403,15 @@ export class DealsService {
 
       if (isCompletion) {
         await tx.deal.update({ where: { id: dealId }, data: { status: 'completed', completedAt: new Date() } });
-        await tx.property.update({
-          where: { id: deal.propertyId! },
-          data: { status: kind === 'rental' ? 'rented' : 'sold' },
-        });
+        if (deal.propertyId) {
+          await tx.property.update({
+            where: { id: deal.propertyId },
+            data: { status: deal.kind === 'rental' ? 'rented' : 'sold' },
+          });
+        }
+        if (deal.projectUnitId) {
+          await tx.projectUnit.update({ where: { id: deal.projectUnitId }, data: { status: 'sold' } });
+        }
         await tx.dealEvent.create({ data: { dealId, actorId: userId, eventType: 'deal.completed' } });
       } else {
         // advance to next non-skipped stage
@@ -307,8 +450,7 @@ export class DealsService {
     if (!deal.parties.some((p) => p.userId === userId) && !(await this.isAdmin(userId))) {
       throw new ForbiddenException('Not a party to this deal');
     }
-    const template = await this.prisma.pipelineTemplate.findUnique({ where: { kind: deal.kind } });
-    const stages = (template?.stages as unknown as StageDef[]) ?? [];
+    const { stages } = await this.pipelineFor(deal);
     const curIdx = stages.findIndex((s) => s.key === deal.currentStageKey);
     const cur = stages[curIdx];
     if (!cur?.skippable) throw new BadRequestException('This stage cannot be skipped');
@@ -372,6 +514,16 @@ export class DealsService {
   }
 
   // ── helpers ──────────────────────────────────────────────────────
+
+  /**
+   * Which pipeline drives this deal. A project-unit deal is still `kind=purchase`
+   * but runs the off-plan template, so the template is chosen by key, not kind.
+   */
+  private async pipelineFor(deal: { kind: string; projectUnitId: string | null }) {
+    const templateKey = deal.projectUnitId ? 'project_purchase' : deal.kind;
+    const template = await this.prisma.pipelineTemplate.findUnique({ where: { key: templateKey } });
+    return { templateKey, stages: (template?.stages as unknown as StageDef[]) ?? [] };
+  }
 
   private async assertCanComplete(
     userId: string,

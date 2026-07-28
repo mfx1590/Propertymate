@@ -69,7 +69,56 @@ export class VerificationService {
     if (item.entityType === 'profile') {
       return { ...item, profile: await this.profileReview(item.entityId) };
     }
+    if (item.entityType === 'project') {
+      return { ...item, project: await this.projectReview(item.entityId) };
+    }
     return item;
+  }
+
+  private async projectReview(projectId: string) {
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      include: {
+        media: { orderBy: { sortOrder: 'asc' } },
+        region: { select: { slug: true, nameI18n: true } },
+        units: { orderBy: [{ floor: 'asc' }, { unitNo: 'asc' }] },
+        developer: {
+          select: {
+            id: true,
+            phone: true,
+            email: true,
+            developerProfile: { select: { companyName: true, regNo: true, taxNo: true } },
+            userRoles: {
+              where: { role: { key: 'developer' } },
+              select: { verificationStatus: true, badgeTier: true },
+            },
+          },
+        },
+      },
+    });
+    if (!project) throw new NotFoundException('Project not found');
+
+    const documents = await this.documentsWithUrls('project', projectId);
+    const requirements = await this.prisma.verificationRequirement.findMany({
+      where: { context: 'project' },
+      select: { documentType: true, isRequired: true, titleI18n: true, role: { select: { key: true } } },
+      orderBy: { sortOrder: 'asc' },
+    });
+
+    // same-document-hash across accounts (Plan §4 fraud tools)
+    const signals: string[] = [];
+    for (const doc of documents) {
+      const reuse = await this.prisma.document.count({
+        where: { sha256: doc.sha256, ownerUserId: { not: project.developerUserId }, deletedAt: null },
+      });
+      if (reuse > 0) signals.push(`${doc.documentType}: same file used by ${reuse} other account(s)`);
+    }
+    // a project whose developer profile is not itself verified is a red flag (§4)
+    if (project.developer.userRoles[0]?.verificationStatus !== 'verified') {
+      signals.push('Developer profile is not verified');
+    }
+
+    return { project, documents, requirements, fraudSignals: signals };
   }
 
   private async listingReview(propertyId: string) {
@@ -262,6 +311,8 @@ export class VerificationService {
       await this.applyListingOutcome(item.entityId, overall, documentDecisions);
     } else if (item.entityType === 'profile') {
       await this.applyProfileOutcome(item.entityId, overall);
+    } else if (item.entityType === 'project') {
+      await this.applyProjectOutcome(item.entityId, overall, documentDecisions);
     }
 
     await this.audit.log({
@@ -313,6 +364,28 @@ export class VerificationService {
         propertyId,
         title,
         rejectedCount: rejected.length,
+      });
+    }
+  }
+
+  private async applyProjectOutcome(projectId: string, outcome: string, decisions: DocumentDecision[]) {
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId },
+      select: { developerUserId: true, nameI18n: true },
+    });
+    if (!project) return;
+    const name = (project.nameI18n as { en?: string })?.en ?? 'your project';
+
+    if (outcome === 'approved') {
+      await this.prisma.project.update({ where: { id: projectId }, data: { status: 'live' } });
+      this.events.emit('project.live', { projectId });
+      await this.notifications.notify(project.developerUserId, 'verification.approved', { projectId, title: name });
+    } else {
+      // stays pending_verification; developer re-uploads only rejected boxes (Plan §4 step 6)
+      await this.notifications.notify(project.developerUserId, 'verification.rejected', {
+        projectId,
+        title: name,
+        rejectedCount: decisions.filter((d) => d.status === 'rejected').length,
       });
     }
   }
@@ -381,6 +454,25 @@ export class VerificationService {
             lister: p.createdBy.email ?? p.createdBy.phone,
           }
         : { label: 'Deleted listing' };
+    }
+    if (entityType === 'project') {
+      const p = await this.prisma.project.findUnique({
+        where: { id: entityId },
+        select: {
+          nameI18n: true,
+          region: { select: { slug: true } },
+          developer: { select: { phone: true, email: true } },
+          _count: { select: { units: true } },
+        },
+      });
+      return p
+        ? {
+            label: (p.nameI18n as { en?: string })?.en || 'Untitled project',
+            kind: `project (${p._count.units} units)`,
+            region: p.region.slug,
+            lister: p.developer.email ?? p.developer.phone,
+          }
+        : { label: 'Deleted project' };
     }
     if (entityType === 'profile') {
       const ur = await this.prisma.userRole.findUnique({

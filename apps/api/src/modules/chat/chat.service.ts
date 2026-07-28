@@ -61,6 +61,43 @@ export class ChatService {
     return conversation;
   }
 
+  /** Customer opens (or reuses) the inquiry thread on a developer project (§6.3 leads). */
+  async inquireProject(customerId: string, projectId: string, firstMessage: string, ip?: string) {
+    const project = await this.prisma.project.findUnique({
+      where: { id: projectId, deletedAt: null },
+      select: { id: true, status: true, developerUserId: true, nameI18n: true },
+    });
+    if (!project || project.status !== 'live') throw new NotFoundException('Project not available');
+    if (project.developerUserId === customerId) throw new BadRequestException('You manage this project');
+
+    let conversation = await this.prisma.conversation.findFirst({
+      where: {
+        projectId,
+        dealId: null,
+        participants: { some: { userId: customerId } },
+      },
+    });
+    if (!conversation) {
+      conversation = await this.prisma.conversation.create({
+        data: {
+          projectId,
+          participants: {
+            create: [
+              { userId: customerId, roleInConvo: 'customer' },
+              { userId: project.developerUserId, roleInConvo: 'lister' },
+            ],
+          },
+        },
+      });
+      await this.notifications.notify(project.developerUserId, 'chat.new_inquiry', {
+        conversationId: conversation.id,
+        title: (project.nameI18n as { en?: string })?.en ?? 'your project',
+      });
+    }
+    await this.sendMessage(customerId, conversation.id, firstMessage, ip);
+    return conversation;
+  }
+
   /** Owner ↔ assigned agent channel — ALWAYS scrubbed (anonymity contract, §13.4). */
   async assignmentConversation(userId: string, assignmentId: string) {
     const a = await this.prisma.agentAssignment.findUnique({ where: { id: assignmentId } });
@@ -167,9 +204,18 @@ export class ChatService {
    */
   private async mustScrub(convo: {
     propertyId: string | null;
+    dealId: string | null;
     participants: { userId: string; roleInConvo: string }[];
   }): Promise<boolean> {
     if (convo.participants.some((p) => p.roleInConvo === 'owner_anonymous')) return true;
+    // inside a live deal room the parties are already transacting — the reveal
+    // gate has been passed (accepted offer, or an off-plan reservation, §6.3)
+    if (convo.dealId) {
+      const open = await this.prisma.deal.count({
+        where: { id: convo.dealId, status: { in: ['active', 'completed'] } },
+      });
+      if (open > 0) return false;
+    }
     if (!convo.propertyId) return true;
     const userIds = convo.participants.map((p) => p.userId);
 

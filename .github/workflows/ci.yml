@@ -79,6 +79,14 @@ jobs:
       - name: Run critical-flow e2e suite
         run: npm run test:e2e -w apps/api
 
+      # The two suites spend 3 + 2 OTP requests against the 5-per-60s limit on
+      # /auth/otp/request (§2.4), so back-to-back they land exactly on it.
+      - name: Let the OTP rate-limit window drain
+        run: sleep 60
+
+      - name: Run project-module e2e suite
+        run: npm run test:e2e:projects -w apps/api
+
       - name: API logs on failure
         if: failure()
         run: tail -80 api.log || true
