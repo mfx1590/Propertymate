@@ -706,5 +706,34 @@
       "sent": "Sent — the developer will reply in your messages.",
       "inquireHint": "Contact details stay hidden until a viewing is confirmed."
     }
+  },
+  "team": {
+    "title": "My team",
+    "subtitle": "Members work listings under the agency. They sign in with their own phone.",
+    "viewPublic": "View public page",
+    "add": "Add a member",
+    "addHint": "Enter their phone number. If they have no account yet one is created — they sign in with the usual code, so no password is ever shared. Members list under the agency's subscription.",
+    "phone": "Phone",
+    "bio": "Role / bio",
+    "orgRole": "Permissions",
+    "roleMember": "Member",
+    "roleOrgAdmin": "Team admin",
+    "addMember": "Add member",
+    "adding": "Adding…",
+    "empty": "No members yet. Add your first one above.",
+    "status": { "active": "Active", "deactivated": "Removed" },
+    "joined": "Joined",
+    "salesClosed": "sales closed",
+    "rentalsClosed": "rentals closed",
+    "promote": "Make team admin",
+    "demote": "Remove admin rights",
+    "remove": "Remove from team",
+    "confirmRemove": "Remove this member? They lose access to the agency immediately.",
+    "reactivateHint": "Add the same phone number again to restore this member.",
+    "publicVerified": "Verified agency",
+    "totalMembers": "Team members",
+    "ourTeam": "Our team",
+    "noPublicMembers": "This agency has no listed members yet.",
+    "publicContactNote": "Contact details are shared through the platform once a viewing is confirmed."
   }
 }

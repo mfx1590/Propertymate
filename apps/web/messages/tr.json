@@ -706,5 +706,34 @@
       "sent": "Gönderildi — geliştirici mesajlarınızdan yanıtlayacak.",
       "inquireHint": "İletişim bilgileri, görüntüleme onaylanana kadar gizli kalır."
     }
+  },
+  "team": {
+    "title": "Ekibim",
+    "subtitle": "Üyeler ilanları acente adına yönetir. Kendi telefonlarıyla giriş yaparlar.",
+    "viewPublic": "Herkese açık sayfayı gör",
+    "add": "Üye ekle",
+    "addHint": "Telefon numarasını girin. Hesabı yoksa oluşturulur — her zamanki kodla giriş yapar, yani şifre paylaşılmaz. Üyeler acentenin aboneliği kapsamında ilan verir.",
+    "phone": "Telefon",
+    "bio": "Görev / özgeçmiş",
+    "orgRole": "Yetkiler",
+    "roleMember": "Üye",
+    "roleOrgAdmin": "Ekip yöneticisi",
+    "addMember": "Üye ekle",
+    "adding": "Ekleniyor…",
+    "empty": "Henüz üye yok. İlkini yukarıdan ekleyin.",
+    "status": { "active": "Aktif", "deactivated": "Çıkarıldı" },
+    "joined": "Katılım",
+    "salesClosed": "satış tamamlandı",
+    "rentalsClosed": "kiralama tamamlandı",
+    "promote": "Ekip yöneticisi yap",
+    "demote": "Yönetici yetkisini kaldır",
+    "remove": "Ekipten çıkar",
+    "confirmRemove": "Bu üye çıkarılsın mı? Acenteye erişimi hemen sona erer.",
+    "reactivateHint": "Bu üyeyi geri almak için aynı telefon numarasını yeniden ekleyin.",
+    "publicVerified": "Doğrulanmış acente",
+    "totalMembers": "Ekip üyesi",
+    "ourTeam": "Ekibimiz",
+    "noPublicMembers": "Bu acentenin henüz listelenen üyesi yok.",
+    "publicContactNote": "İletişim bilgileri, görüntüleme onaylandıktan sonra platform üzerinden paylaşılır."
   }
 }

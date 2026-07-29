@@ -14,6 +14,7 @@ const ROLES = [
   { key: 'owner', name: 'Owner' },
   { key: 'solo_agent', name: 'Solo Agent' },
   { key: 'agency', name: 'Agency' },
+  { key: 'agency_member', name: 'Agency Member' },
   { key: 'developer', name: 'Developer' },
   { key: 'admin', name: 'Admin' },
 ];
@@ -48,6 +49,19 @@ const PERMISSIONS: Record<string, string[]> = {
     'rating.create', 'dispute.open',
   ],
   agency: [
+    'listing.create', 'listing.update.own', 'listing.delete.own',
+    'listing.manage.mandated', 'listing.confirm_availability',
+    'agency.agents.manage',
+    'search.saved.manage', 'favorite.manage',
+    'viewing.request', 'viewing.host', 'offer.create', 'offer.respond',
+    'chat.participate',
+    'deal.participate', 'deal.stage.complete', 'deal.document.upload',
+    'rating.create', 'dispute.open',
+  ],
+  // An agency member works listings exactly like a solo agent. `agents.manage`
+  // is coarse here, as `listing.update.own` is elsewhere: the guard admits the
+  // role and OrganizationsService enforces orgRole === 'org_admin' (§13.1).
+  agency_member: [
     'listing.create', 'listing.update.own', 'listing.delete.own',
     'listing.manage.mandated', 'listing.confirm_availability',
     'agency.agents.manage',

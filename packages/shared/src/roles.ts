@@ -9,6 +9,10 @@ export const ROLE_KEYS = [
   'owner',
   'solo_agent',
   'agency',
+  // an agent who belongs to an agency (§13.1). Same working permissions as a
+  // solo agent, but the org admin manages the account and the member is not
+  // individually selectable in the find-my-agent directory — the agency is.
+  'agency_member',
   'developer',
   'admin',
 ] as const;

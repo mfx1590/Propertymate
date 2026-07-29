@@ -10,7 +10,23 @@ export class SubscriptionsService {
     private readonly audit: AuditService,
   ) {}
 
+  /**
+   * An agency member lists under the agency's subscription rather than buying
+   * one of their own (§13.1 + §13.3): the agency is the paying entity, members
+   * are staff. Checked here rather than at each gate so listings, projects and
+   * anything added later inherit it.
+   */
   async hasActive(userId: string): Promise<boolean> {
+    if (await this.activeFor(userId)) return true;
+
+    const membership = await this.prisma.agencyAgent.findFirst({
+      where: { agentUserId: userId, status: 'active' },
+      select: { agencyId: true },
+    });
+    return membership ? this.activeFor(membership.agencyId) : false;
+  }
+
+  private async activeFor(userId: string): Promise<boolean> {
     const count = await this.prisma.subscription.count({
       where: {
         userId,

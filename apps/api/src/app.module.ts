@@ -14,6 +14,7 @@ import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { HealthModule } from './modules/health/health.module';
 import { PropertiesModule } from './modules/properties/properties.module';
+import { OrganizationsModule } from './modules/organizations/organizations.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { SearchModule } from './modules/search/search.module';
@@ -41,6 +42,7 @@ import { JobsModule } from './jobs/jobs.module';
     HealthModule,
     PropertiesModule,
     ProjectsModule,
+    OrganizationsModule,
     DocumentsModule,
     SearchModule,
     AdminModule,

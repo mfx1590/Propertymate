@@ -342,6 +342,9 @@ model AgencyProfile {
 model AgencyAgent {
   agencyId    String   @map("agency_id")
   agentUserId String   @map("agent_user_id")
+  /// `org_admin` may manage the team alongside the agency account itself; `member` works listings only (§13.1).
+  orgRole     String   @default("member") @map("org_role")
+  /// `active` | `deactivated` — removal is a soft deactivate so closed deals keep their party history.
   status      String   @default("active")
   joinedAt    DateTime @default(now()) @map("joined_at")
 
