@@ -15,6 +15,7 @@ import { Public } from '../../common/decorators/public.decorator';
 import { RequirePermissions } from '../../common/decorators/require-permissions.decorator';
 import { DealsService } from './deals.service';
 import { RatingsService } from './ratings.service';
+import { ReputationService } from './reputation.service';
 
 @RequirePermissions('deal.participate')
 @Controller('deals')
@@ -82,12 +83,22 @@ export class DealsController {
 
 @Controller()
 export class ReviewsController {
-  constructor(private readonly ratings: RatingsService) {}
+  constructor(
+    private readonly ratings: RatingsService,
+    private readonly reputation: ReputationService,
+  ) {}
 
   /** Public performance/reviews on a professional profile (§13.2). */
   @Public()
   @Get('users/:id/reviews')
   reviews(@Param('id') id: string) {
     return this.ratings.publicReviews(id);
+  }
+
+  /** Manual trigger for the nightly reputation sweep (ops/testing). */
+  @RequirePermissions('analytics.view')
+  @Post('admin/jobs/reputation')
+  recomputeReputation() {
+    return this.reputation.recomputeAll();
   }
 }

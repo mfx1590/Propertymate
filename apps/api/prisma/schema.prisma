@@ -235,6 +235,7 @@ model User {
   otpCodes           OtpCode[]
   savedSearches      SavedSearch[]
   favorites          Favorite[]
+  propertyViews      PropertyViewEvent[]
   conversationsIn    ConversationParticipant[]
   messagesSent       Message[]
   viewingsAsCustomer Viewing[]                 @relation("ViewingCustomer")
@@ -318,9 +319,16 @@ model AgentProfile {
   responseTimeAvgSec Int?     @map("response_time_avg_sec")
   dealCount          Int      @default(0) @map("deal_count")
   ratingAvg          Float?   @map("rating_avg")
+  /// Upheld disputes ÷ completed deals — the negative term of the ranking score.
+  disputeRate        Float?   @map("dispute_rate")
+  /// f(rating_avg, deal_count, response_time, dispute_rate) 0–100, nightly (§6.5).
+  /// Boosts this lister's listings in search and orders the find-my-agent directory.
+  rankingScore       Float?   @map("ranking_score")
+  rankingComputedAt  DateTime? @map("ranking_computed_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([rankingScore])
   @@map("agent_profiles")
 }
 
@@ -511,6 +519,7 @@ model Property {
   mandateDocument Document?      @relation("PropertyMandate", fields: [mandateDocumentId], references: [id])
   region          Region         @relation(fields: [regionId], references: [id])
   media           PropertyMedia[]
+  viewEvents      PropertyViewEvent[]
   favorites       Favorite[]
   conversations   Conversation[]
   viewings        Viewing[]
@@ -534,6 +543,25 @@ model PropertyMedia {
 
   @@index([phash])
   @@map("property_media")
+}
+
+/// One row per listing detail view. `properties.view_count` stays as the
+/// lifetime counter; this table is what makes views a *time series* — the
+/// analytics funnel (§6.7) reads it, and the co-visitation recommender (§8)
+/// is built on exactly this shape.
+model PropertyViewEvent {
+  id         String   @id @default(cuid())
+  propertyId String   @map("property_id")
+  /// null for signed-out visitors — most traffic, and still valid supply/demand signal
+  viewerId   String?  @map("viewer_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  viewer   User?    @relation(fields: [viewerId], references: [id], onDelete: SetNull)
+
+  @@index([propertyId, createdAt])
+  @@index([viewerId, createdAt])
+  @@map("property_view_events")
 }
 
 model Project {

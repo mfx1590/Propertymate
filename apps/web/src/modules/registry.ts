@@ -29,6 +29,7 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
     menu: [
       { labelKey: 'myListings', href: '/dashboard/listings' },
       { labelKey: 'leads', href: '/dashboard/leads' },
+      { labelKey: 'analytics', href: '/dashboard/analytics' },
     ],
   },
   solo_agent: {
@@ -39,6 +40,7 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
       { labelKey: 'myListings', href: '/dashboard/listings' },
       { labelKey: 'mandates', href: '/dashboard/mandates' },
       { labelKey: 'leads', href: '/dashboard/leads' },
+      { labelKey: 'analytics', href: '/dashboard/analytics' },
       { labelKey: 'profile', href: '/dashboard/profile/solo_agent' },
     ],
   },
@@ -50,7 +52,20 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
       { labelKey: 'myListings', href: '/dashboard/listings' },
       { labelKey: 'team', href: '/dashboard/team' },
       { labelKey: 'leads', href: '/dashboard/leads' },
+      { labelKey: 'analytics', href: '/dashboard/analytics' },
       { labelKey: 'profile', href: '/dashboard/profile/agency' },
+    ],
+  },
+  // A member works listings like a solo agent but never manages the org: no
+  // team entry, and their analytics are their own, not the agency's rollup.
+  agency_member: {
+    roleKey: 'agency_member',
+    labelKey: 'agencyMember',
+    requiresVerification: true,
+    menu: [
+      { labelKey: 'myListings', href: '/dashboard/listings' },
+      { labelKey: 'leads', href: '/dashboard/leads' },
+      { labelKey: 'analytics', href: '/dashboard/analytics' },
     ],
   },
   developer: {
@@ -60,6 +75,7 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
     menu: [
       { labelKey: 'projects', href: '/dashboard/projects' },
       { labelKey: 'leads', href: '/dashboard/leads' },
+      { labelKey: 'analytics', href: '/dashboard/analytics' },
       { labelKey: 'profile', href: '/dashboard/profile/developer' },
     ],
   },
@@ -72,6 +88,7 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
       { labelKey: 'mediated', href: '/dashboard/admin/mediated' },
       { labelKey: 'subscriptions', href: '/dashboard/admin/subscriptions' },
       { labelKey: 'platformSettings', href: '/dashboard/admin/settings' },
+      { labelKey: 'platformAnalytics', href: '/dashboard/admin/analytics' },
       { labelKey: 'users', href: '/dashboard/admin/users' },
       { labelKey: 'disputes', href: '/dashboard/admin/disputes' },
     ],

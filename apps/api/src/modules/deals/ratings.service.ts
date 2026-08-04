@@ -3,6 +3,7 @@ import { RATING_REVEAL_DAYS } from '@propverify/shared';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { ReputationService } from './reputation.service';
 
 const RATING_TAGS = ['responsive', 'honest', 'smooth_process', 'knowledgeable', 'punctual', 'professional'];
 
@@ -16,6 +17,7 @@ export class RatingsService {
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
     private readonly notifications: NotificationsService,
+    private readonly reputation: ReputationService,
   ) {}
 
   /** Who this user may rate on a completed deal (the other parties). */
@@ -118,23 +120,12 @@ export class RatingsService {
     return { revealed: stale.length };
   }
 
-  /** Roll revealed ratings + completed-deal counts into agent_profiles (§6.5). */
+  /**
+   * A reveal changes a public score, so the ranking is refreshed immediately
+   * rather than waiting for the nightly sweep (§6.5, §8).
+   */
   private async recomputeReputation(userId: string) {
-    const agent = await this.prisma.agentProfile.findUnique({ where: { userId } });
-    if (!agent) return; // only professional profiles carry a public score
-
-    const revealed = await this.prisma.rating.findMany({
-      where: { rateeId: userId, revealedAt: { not: null } },
-      select: { stars: true },
-    });
-    const ratingAvg = revealed.length ? revealed.reduce((s, r) => s + r.stars, 0) / revealed.length : null;
-    const dealCount = await this.prisma.deal.count({
-      where: { status: 'completed', parties: { some: { userId } } },
-    });
-    await this.prisma.agentProfile.update({
-      where: { userId },
-      data: { ratingAvg, dealCount },
-    });
+    await this.reputation.recompute(userId);
   }
 
   static readonly TAGS = RATING_TAGS;

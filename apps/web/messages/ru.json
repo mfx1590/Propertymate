@@ -10,7 +10,10 @@
   "auth": {
     "title": "Welcome to PropVerify",
     "subtitle": "Sign in or create an account",
-    "tab": { "phone": "Phone", "email": "Email" },
+    "tab": {
+      "phone": "Phone",
+      "email": "Email"
+    },
     "phonePlaceholder": "+90 533 123 45 67",
     "sendCode": "Send code",
     "codeSentTo": "We sent a 6-digit code to {phone}",
@@ -53,7 +56,9 @@
       "subscriptions": "Subscriptions",
       "platformSettings": "Platform settings",
       "users": "Users",
-      "disputes": "Disputes"
+      "disputes": "Disputes",
+      "analytics": "Показатели",
+      "platformAnalytics": "Аналитика платформы"
     },
     "roles": {
       "customer": "Customer",
@@ -61,7 +66,8 @@
       "solo_agent": "Solo Agent",
       "agency": "Agency",
       "developer": "Developer",
-      "admin": "Admin"
+      "admin": "Admin",
+      "agency_member": "Сотрудник агентства"
     },
     "status": {
       "verified": "Verified",
@@ -123,7 +129,7 @@
       "offer.received": "New offer on \"{title}\"",
       "offer.countered": "You received a counter-offer",
       "offer.accepted": "Your offer was accepted 🎉",
-"offer.rejected": "Your offer was declined",
+      "offer.rejected": "Your offer was declined",
       "deal.created": "Deal room opened for \"{title}\"",
       "deal.stage_advanced": "Your deal moved to the next stage",
       "deal.completed": "Your deal is complete 🎉"
@@ -211,7 +217,10 @@
       "approvalRate": "Approval rate",
       "turnaround": "Avg turnaround",
       "all": "All",
-      "type": { "listing": "Listing", "profile": "Profile" },
+      "type": {
+        "listing": "Listing",
+        "profile": "Profile"
+      },
       "empty": "Queue is empty — all caught up ✓",
       "slaIn": "SLA in",
       "overdueBy": "Overdue by",
@@ -247,7 +256,10 @@
     }
   },
   "listings": {
-    "kind": { "resale": "For sale", "rental": "For rent" },
+    "kind": {
+      "resale": "For sale",
+      "rental": "For rent"
+    },
     "kindHint": {
       "resale": "Sell a property you own or manage",
       "rental": "Rent out a property"
@@ -414,8 +426,15 @@
     "title": "Deals",
     "subtitle": "Your transactions, tracked from accepted offer to handover.",
     "empty": "No deals yet. A deal room opens when an offer is accepted.",
-    "kind": { "purchase": "Purchase", "rental": "Rental" },
-    "status": { "active": "In progress", "completed": "Completed", "cancelled": "Cancelled" },
+    "kind": {
+      "purchase": "Purchase",
+      "rental": "Rental"
+    },
+    "status": {
+      "active": "In progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
     "stages": {
       "inquiry": "Inquiry",
       "viewing": "Viewing",
@@ -505,7 +524,10 @@
     "title": "Find your property",
     "searchPlaceholder": "Search…",
     "anyKind": "Buy or rent",
-    "kind": { "resale": "For sale", "rental": "For rent" },
+    "kind": {
+      "resale": "For sale",
+      "rental": "For rent"
+    },
     "anyRegion": "All regions",
     "minPrice": "Min £",
     "maxPrice": "Max £",
@@ -550,7 +572,11 @@
       "paused": "Приостановлен",
       "archived": "В архиве"
     },
-    "unitStatus": { "available": "Свободно", "reserved": "Забронировано", "sold": "Продано" },
+    "unitStatus": {
+      "available": "Свободно",
+      "reserved": "Забронировано",
+      "sold": "Продано"
+    },
     "board": {
       "title": "Мои проекты",
       "new": "Новый проект",
@@ -721,7 +747,10 @@
     "addMember": "Добавить",
     "adding": "Добавление…",
     "empty": "Сотрудников пока нет. Добавьте первого выше.",
-    "status": { "active": "Активен", "deactivated": "Удалён" },
+    "status": {
+      "active": "Активен",
+      "deactivated": "Удалён"
+    },
     "joined": "В команде с",
     "salesClosed": "продаж закрыто",
     "rentalsClosed": "аренд закрыто",
@@ -735,5 +764,68 @@
     "ourTeam": "Наша команда",
     "noPublicMembers": "У этого агентства пока нет опубликованных сотрудников.",
     "publicContactNote": "Контакты передаются через платформу после подтверждённого просмотра."
+  },
+  "analytics": {
+    "title": "Показатели",
+    "subtitle": "Ваши объявления, заявки и репутация.",
+    "subtitleOrg": "Ваше агентство, его сотрудники и общие результаты.",
+    "views": "Просмотры",
+    "leads": "Заявки",
+    "viewings": "Показы",
+    "offers": "Предложения",
+    "dealsClosed": "Закрытые сделки",
+    "salesClosed": "Закрытые продажи",
+    "rentalsClosed": "Закрытые аренды",
+    "lastDays": "{n} за последние {days} дней",
+    "funnel": "Воронка конверсии",
+    "funnelHint": "Каждая полоса показывает, сколько перешло с предыдущего шага.",
+    "listings": "Объявления",
+    "ranking": "Рейтинговый балл",
+    "rankingHint": "Оценка, закрытые сделки, скорость ответа и споры. Пересчитывается каждую ночь; более высокий балл поднимает ваши объявления в поиске и место в каталоге агентов.",
+    "computedAt": "Обновлено",
+    "factor": {
+      "rating": "Оценка",
+      "deals": "Закрытые сделки",
+      "responseTime": "Скорость ответа",
+      "disputeFree": "Без споров"
+    },
+    "team": "Показатели команды",
+    "member": "Сотрудник",
+    "score": "Балл",
+    "projects": "Проекты",
+    "absorption": "Реализация",
+    "unitsSold": "Продано",
+    "reserved": "Забронировано",
+    "pricePerM2": "Ср. цена за м²",
+    "comparison": "Вы и рынок",
+    "comparisonHint": "Сводные показатели по активным проектам. Конкурирующие проекты никогда не называются.",
+    "region": "Регион",
+    "allRegions": "Все регионы",
+    "myPricePerM2": "Моя цена за м²",
+    "marketPricePerM2": "Рыночная цена за м²",
+    "myAbsorption": "Моя реализация",
+    "marketAbsorption": "Реализация по рынку",
+    "status": {
+      "draft": "Черновик",
+      "pending_verification": "На проверке",
+      "verified_private": "Проверено — не публично",
+      "live": "Опубликовано",
+      "paused": "Приостановлено",
+      "under_offer": "Есть предложение",
+      "sold": "Продано",
+      "rented": "Сдано",
+      "archived": "В архиве"
+    },
+    "admin": {
+      "title": "Аналитика платформы",
+      "subtitle": "Предложение, спрос и проверка за последние {days} дней.",
+      "verification": "Проверка",
+      "decided": "Решений",
+      "turnaround": "Ср. время",
+      "withinSla": "В рамках SLA",
+      "approvalRate": "Доля одобрений",
+      "marketFunnel": "Активность рынка",
+      "supply": "Предложение по регионам"
+    }
   }
 }

@@ -10,7 +10,10 @@
   "auth": {
     "title": "Welcome to PropVerify",
     "subtitle": "Sign in or create an account",
-    "tab": { "phone": "Phone", "email": "Email" },
+    "tab": {
+      "phone": "Phone",
+      "email": "Email"
+    },
     "phonePlaceholder": "+90 533 123 45 67",
     "sendCode": "Send code",
     "codeSentTo": "We sent a 6-digit code to {phone}",
@@ -53,7 +56,9 @@
       "subscriptions": "Subscriptions",
       "platformSettings": "Platform settings",
       "users": "Users",
-      "disputes": "Disputes"
+      "disputes": "Disputes",
+      "analytics": "عملکرد",
+      "platformAnalytics": "تحلیل پلتفرم"
     },
     "roles": {
       "customer": "Customer",
@@ -61,7 +66,8 @@
       "solo_agent": "Solo Agent",
       "agency": "Agency",
       "developer": "Developer",
-      "admin": "Admin"
+      "admin": "Admin",
+      "agency_member": "عضو آژانس"
     },
     "status": {
       "verified": "Verified",
@@ -123,7 +129,7 @@
       "offer.received": "New offer on \"{title}\"",
       "offer.countered": "You received a counter-offer",
       "offer.accepted": "Your offer was accepted 🎉",
-"offer.rejected": "Your offer was declined",
+      "offer.rejected": "Your offer was declined",
       "deal.created": "Deal room opened for \"{title}\"",
       "deal.stage_advanced": "Your deal moved to the next stage",
       "deal.completed": "Your deal is complete 🎉"
@@ -211,7 +217,10 @@
       "approvalRate": "Approval rate",
       "turnaround": "Avg turnaround",
       "all": "All",
-      "type": { "listing": "Listing", "profile": "Profile" },
+      "type": {
+        "listing": "Listing",
+        "profile": "Profile"
+      },
       "empty": "Queue is empty — all caught up ✓",
       "slaIn": "SLA in",
       "overdueBy": "Overdue by",
@@ -247,7 +256,10 @@
     }
   },
   "listings": {
-    "kind": { "resale": "For sale", "rental": "For rent" },
+    "kind": {
+      "resale": "For sale",
+      "rental": "For rent"
+    },
     "kindHint": {
       "resale": "Sell a property you own or manage",
       "rental": "Rent out a property"
@@ -414,8 +426,15 @@
     "title": "Deals",
     "subtitle": "Your transactions, tracked from accepted offer to handover.",
     "empty": "No deals yet. A deal room opens when an offer is accepted.",
-    "kind": { "purchase": "Purchase", "rental": "Rental" },
-    "status": { "active": "In progress", "completed": "Completed", "cancelled": "Cancelled" },
+    "kind": {
+      "purchase": "Purchase",
+      "rental": "Rental"
+    },
+    "status": {
+      "active": "In progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
     "stages": {
       "inquiry": "Inquiry",
       "viewing": "Viewing",
@@ -505,7 +524,10 @@
     "title": "Find your property",
     "searchPlaceholder": "Search…",
     "anyKind": "Buy or rent",
-    "kind": { "resale": "For sale", "rental": "For rent" },
+    "kind": {
+      "resale": "For sale",
+      "rental": "For rent"
+    },
     "anyRegion": "All regions",
     "minPrice": "Min £",
     "maxPrice": "Max £",
@@ -550,7 +572,11 @@
       "paused": "متوقف‌شده",
       "archived": "بایگانی‌شده"
     },
-    "unitStatus": { "available": "موجود", "reserved": "رزرو شده", "sold": "فروخته شده" },
+    "unitStatus": {
+      "available": "موجود",
+      "reserved": "رزرو شده",
+      "sold": "فروخته شده"
+    },
     "board": {
       "title": "پروژه‌های من",
       "new": "پروژه جدید",
@@ -721,7 +747,10 @@
     "addMember": "افزودن عضو",
     "adding": "در حال افزودن…",
     "empty": "هنوز عضوی ندارید. اولین نفر را از بالا اضافه کنید.",
-    "status": { "active": "فعال", "deactivated": "حذف‌شده" },
+    "status": {
+      "active": "فعال",
+      "deactivated": "حذف‌شده"
+    },
     "joined": "تاریخ عضویت",
     "salesClosed": "فروش انجام‌شده",
     "rentalsClosed": "اجاره انجام‌شده",
@@ -735,5 +764,68 @@
     "ourTeam": "تیم ما",
     "noPublicMembers": "این آژانس هنوز عضوی برای نمایش ندارد.",
     "publicContactNote": "اطلاعات تماس پس از تأیید بازدید، از طریق پلتفرم به اشتراک گذاشته می‌شود."
+  },
+  "analytics": {
+    "title": "عملکرد",
+    "subtitle": "آگهی‌ها، سرنخ‌ها و اعتبار شما.",
+    "subtitleOrg": "آژانس شما، اعضای آن و عملکرد مجموع.",
+    "views": "بازدید",
+    "leads": "سرنخ‌ها",
+    "viewings": "بازدیدهای حضوری",
+    "offers": "پیشنهادها",
+    "dealsClosed": "معاملات بسته‌شده",
+    "salesClosed": "فروش‌های انجام‌شده",
+    "rentalsClosed": "اجاره‌های انجام‌شده",
+    "lastDays": "{n} در {days} روز گذشته",
+    "funnel": "قیف تبدیل",
+    "funnelHint": "هر نوار نشان می‌دهد چه تعداد از مرحلهٔ بالاتر ادامه داده‌اند.",
+    "listings": "آگهی‌ها",
+    "ranking": "امتیاز رتبه‌بندی",
+    "rankingHint": "امتیاز کاربران، معاملات بسته‌شده، زمان پاسخ و سابقهٔ اختلاف. هر شب محاسبه می‌شود؛ امتیاز بالاتر آگهی‌های شما را در جست‌وجو و جایگاه شما را در فهرست مشاوران بالا می‌برد.",
+    "computedAt": "به‌روزرسانی",
+    "factor": {
+      "rating": "امتیاز",
+      "deals": "معاملات بسته‌شده",
+      "responseTime": "زمان پاسخ",
+      "disputeFree": "بدون اختلاف"
+    },
+    "team": "عملکرد تیم",
+    "member": "عضو",
+    "score": "امتیاز",
+    "projects": "پروژه‌ها",
+    "absorption": "نرخ جذب",
+    "unitsSold": "فروخته‌شده",
+    "reserved": "رزروشده",
+    "pricePerM2": "میانگین قیمت هر متر مربع",
+    "comparison": "شما و بازار",
+    "comparisonHint": "معیارهای کلی بر اساس پروژه‌های فعال. پروژه‌های رقیب هرگز نام برده نمی‌شوند.",
+    "region": "منطقه",
+    "allRegions": "همهٔ مناطق",
+    "myPricePerM2": "قیمت هر متر مربع من",
+    "marketPricePerM2": "قیمت هر متر مربع بازار",
+    "myAbsorption": "نرخ جذب من",
+    "marketAbsorption": "نرخ جذب بازار",
+    "status": {
+      "draft": "پیش‌نویس",
+      "pending_verification": "در حال بررسی",
+      "verified_private": "تأییدشده — خصوصی",
+      "live": "منتشرشده",
+      "paused": "متوقف",
+      "under_offer": "دارای پیشنهاد",
+      "sold": "فروخته‌شده",
+      "rented": "اجاره داده‌شده",
+      "archived": "بایگانی‌شده"
+    },
+    "admin": {
+      "title": "تحلیل پلتفرم",
+      "subtitle": "عرضه، تقاضا و عملکرد تأیید در {days} روز گذشته.",
+      "verification": "تأیید",
+      "decided": "تصمیم‌گرفته",
+      "turnaround": "میانگین زمان",
+      "withinSla": "در چارچوب SLA",
+      "approvalRate": "نرخ تأیید",
+      "marketFunnel": "فعالیت بازار",
+      "supply": "عرضه بر اساس منطقه"
+    }
   }
 }

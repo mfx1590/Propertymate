@@ -10,7 +10,10 @@
   "auth": {
     "title": "PropVerify'e hoş geldiniz",
     "subtitle": "Giriş yapın veya hesap oluşturun",
-    "tab": { "phone": "Telefon", "email": "E-posta" },
+    "tab": {
+      "phone": "Telefon",
+      "email": "E-posta"
+    },
     "phonePlaceholder": "+90 533 123 45 67",
     "sendCode": "Kod gönder",
     "codeSentTo": "{phone} numarasına 6 haneli kod gönderdik",
@@ -53,7 +56,9 @@
       "subscriptions": "Abonelikler",
       "platformSettings": "Platform ayarları",
       "users": "Kullanıcılar",
-      "disputes": "İtirazlar"
+      "disputes": "İtirazlar",
+      "analytics": "Performans",
+      "platformAnalytics": "Platform analitiği"
     },
     "roles": {
       "customer": "Müşteri",
@@ -61,7 +66,8 @@
       "solo_agent": "Bağımsız danışman",
       "agency": "Emlak ofisi",
       "developer": "Müteahhit",
-      "admin": "Yönetici"
+      "admin": "Yönetici",
+      "agency_member": "Acente Üyesi"
     },
     "status": {
       "verified": "Doğrulandı",
@@ -123,7 +129,7 @@
       "offer.received": "\"{title}\" için yeni teklif",
       "offer.countered": "Karşı teklif aldınız",
       "offer.accepted": "Teklifiniz kabul edildi 🎉",
-"offer.rejected": "Teklifiniz reddedildi",
+      "offer.rejected": "Teklifiniz reddedildi",
       "deal.created": "\"{title}\" için işlem odası açıldı",
       "deal.stage_advanced": "İşleminiz bir sonraki aşamaya geçti",
       "deal.completed": "İşleminiz tamamlandı 🎉"
@@ -211,7 +217,10 @@
       "approvalRate": "Onay oranı",
       "turnaround": "Ort. işlem süresi",
       "all": "Tümü",
-      "type": { "listing": "İlan", "profile": "Profil" },
+      "type": {
+        "listing": "İlan",
+        "profile": "Profil"
+      },
       "empty": "Kuyruk boş — her şey güncel ✓",
       "slaIn": "SLA süresi",
       "overdueBy": "Gecikme",
@@ -247,7 +256,10 @@
     }
   },
   "listings": {
-    "kind": { "resale": "Satılık", "rental": "Kiralık" },
+    "kind": {
+      "resale": "Satılık",
+      "rental": "Kiralık"
+    },
     "kindHint": {
       "resale": "Sahibi olduğunuz veya yönettiğiniz bir mülkü satın",
       "rental": "Bir mülkü kiraya verin"
@@ -414,8 +426,15 @@
     "title": "İşlemler",
     "subtitle": "İşlemleriniz — kabul edilen tekliften teslime kadar takip edilir.",
     "empty": "Henüz işlem yok. Bir teklif kabul edildiğinde işlem odası açılır.",
-    "kind": { "purchase": "Satın alma", "rental": "Kiralama" },
-    "status": { "active": "Devam ediyor", "completed": "Tamamlandı", "cancelled": "İptal edildi" },
+    "kind": {
+      "purchase": "Satın alma",
+      "rental": "Kiralama"
+    },
+    "status": {
+      "active": "Devam ediyor",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal edildi"
+    },
     "stages": {
       "inquiry": "Talep",
       "viewing": "Görüntüleme",
@@ -505,7 +524,10 @@
     "title": "Mülkünüzü bulun",
     "searchPlaceholder": "Ara…",
     "anyKind": "Satılık veya kiralık",
-    "kind": { "resale": "Satılık", "rental": "Kiralık" },
+    "kind": {
+      "resale": "Satılık",
+      "rental": "Kiralık"
+    },
     "anyRegion": "Tüm bölgeler",
     "minPrice": "Min £",
     "maxPrice": "Maks £",
@@ -550,7 +572,11 @@
       "paused": "Duraklatıldı",
       "archived": "Arşivlendi"
     },
-    "unitStatus": { "available": "Müsait", "reserved": "Rezerve", "sold": "Satıldı" },
+    "unitStatus": {
+      "available": "Müsait",
+      "reserved": "Rezerve",
+      "sold": "Satıldı"
+    },
     "board": {
       "title": "Projelerim",
       "new": "Yeni proje",
@@ -721,7 +747,10 @@
     "addMember": "Üye ekle",
     "adding": "Ekleniyor…",
     "empty": "Henüz üye yok. İlkini yukarıdan ekleyin.",
-    "status": { "active": "Aktif", "deactivated": "Çıkarıldı" },
+    "status": {
+      "active": "Aktif",
+      "deactivated": "Çıkarıldı"
+    },
     "joined": "Katılım",
     "salesClosed": "satış tamamlandı",
     "rentalsClosed": "kiralama tamamlandı",
@@ -735,5 +764,68 @@
     "ourTeam": "Ekibimiz",
     "noPublicMembers": "Bu acentenin henüz listelenen üyesi yok.",
     "publicContactNote": "İletişim bilgileri, görüntüleme onaylandıktan sonra platform üzerinden paylaşılır."
+  },
+  "analytics": {
+    "title": "Performans",
+    "subtitle": "İlanlarınız, talepleriniz ve itibarınız.",
+    "subtitleOrg": "Acenteniz, üyeleri ve toplam performansları.",
+    "views": "Görüntülenme",
+    "leads": "Talepler",
+    "viewings": "Görüntüleme randevuları",
+    "offers": "Teklifler",
+    "dealsClosed": "Tamamlanan işlemler",
+    "salesClosed": "Tamamlanan satışlar",
+    "rentalsClosed": "Tamamlanan kiralamalar",
+    "lastDays": "Son {days} günde {n}",
+    "funnel": "Dönüşüm hunisi",
+    "funnelHint": "Her çubuk, bir üstteki adımdan kaçının devam ettiğini gösterir.",
+    "listings": "İlanlar",
+    "ranking": "Sıralama puanı",
+    "rankingHint": "Puan, tamamlanan işlemler, yanıt süresi ve uyuşmazlık kaydı. Her gece yeniden hesaplanır; yüksek puan ilanlarınızı aramada ve danışman dizinindeki yerinizi yükseltir.",
+    "computedAt": "Güncellendi",
+    "factor": {
+      "rating": "Puan",
+      "deals": "Tamamlanan işlemler",
+      "responseTime": "Yanıt süresi",
+      "disputeFree": "Uyuşmazlıksız"
+    },
+    "team": "Ekip performansı",
+    "member": "Üye",
+    "score": "Puan",
+    "projects": "Projeler",
+    "absorption": "Satış oranı",
+    "unitsSold": "Satılan",
+    "reserved": "Rezerve",
+    "pricePerM2": "Ort. m² fiyatı",
+    "comparison": "Siz ve pazar",
+    "comparisonHint": "Yayındaki projeler üzerinden toplu kıyaslama. Rakip projeler hiçbir zaman tek tek belirtilmez.",
+    "region": "Bölge",
+    "allRegions": "Tüm bölgeler",
+    "myPricePerM2": "Benim m² fiyatım",
+    "marketPricePerM2": "Pazar m² fiyatı",
+    "myAbsorption": "Benim satış oranım",
+    "marketAbsorption": "Pazar satış oranı",
+    "status": {
+      "draft": "Taslak",
+      "pending_verification": "İncelemede",
+      "verified_private": "Doğrulandı — özel",
+      "live": "Yayında",
+      "paused": "Duraklatıldı",
+      "under_offer": "Teklif alındı",
+      "sold": "Satıldı",
+      "rented": "Kiralandı",
+      "archived": "Arşivlendi"
+    },
+    "admin": {
+      "title": "Platform analitiği",
+      "subtitle": "Son {days} gündeki arz, talep ve doğrulama performansı.",
+      "verification": "Doğrulama",
+      "decided": "Karara bağlanan",
+      "turnaround": "Ort. sonuçlanma",
+      "withinSla": "SLA içinde",
+      "approvalRate": "Onay oranı",
+      "marketFunnel": "Pazar hareketleri",
+      "supply": "Bölgeye göre arz"
+    }
   }
 }

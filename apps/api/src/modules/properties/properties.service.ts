@@ -383,10 +383,15 @@ export class PropertiesService {
       throw new NotFoundException('Listing not found');
     }
 
-    if (publicStatuses.includes(property.status)) {
-      // fire-and-forget view counter
+    if (publicStatuses.includes(property.status) && !isOwner) {
+      // Fire-and-forget: lifetime counter plus one event row, which is what
+      // gives the analytics funnel a time series (§6.7) and seeds the §8
+      // co-visitation recommender. The lister's own visits are not demand.
       void this.prisma.property
         .update({ where: { id: propertyId }, data: { viewCount: { increment: 1 } } })
+        .catch(() => undefined);
+      void this.prisma.propertyViewEvent
+        .create({ data: { propertyId, viewerId: viewerUserId ?? null } })
         .catch(() => undefined);
     }
 

@@ -14,6 +14,7 @@ const SCHEDULE: { name: string; pattern: string }[] = [
   { name: 'freshness', pattern: '0 6 * * *' }, // 06:00 — 90-day availability sweep
   { name: 'assignment-expiry', pattern: '0 5 * * *' }, // 05:00 — expire elapsed mandates
   { name: 'rating-reveal', pattern: '0 1 * * *' }, // 01:00 — reveal stale one-sided ratings
+  { name: 'reputation', pattern: '0 2 * * *' }, // 02:00 — after reveals, so scores see them
 ];
 
 @Injectable()

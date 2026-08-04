@@ -79,8 +79,10 @@ jobs:
       - name: Run critical-flow e2e suite
         run: npm run test:e2e -w apps/api
 
-      # Each suite spends OTP requests (3 / 2 / 4) against the 5-per-60s limit on
-      # /auth/otp/request (§2.4), so every pair needs the window to drain first.
+      # Each suite spends OTP requests (3 / 2 / 4 / 5) against the 5-per-60s
+      # limit on /auth/otp/request (§2.4), so every pair needs the window to
+      # drain first. The suites also back off on a 429 themselves, so a slow
+      # runner that overruns the gap retries instead of failing the build.
       - name: Let the OTP rate-limit window drain
         run: sleep 60
 
@@ -92,6 +94,12 @@ jobs:
 
       - name: Run agency-team e2e suite
         run: npm run test:e2e:team -w apps/api
+
+      - name: Let the OTP rate-limit window drain
+        run: sleep 60
+
+      - name: Run reputation + analytics e2e suite
+        run: npm run test:e2e:reputation -w apps/api
 
       - name: API logs on failure
         if: failure()

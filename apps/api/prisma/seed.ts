@@ -38,6 +38,7 @@ const PERMISSIONS: Record<string, string[]> = {
     'chat.participate',
     'deal.participate', 'deal.stage.complete', 'deal.document.upload',
     'rating.create', 'dispute.open',
+    'analytics.own.view',
   ],
   solo_agent: [
     'listing.create', 'listing.update.own', 'listing.delete.own',
@@ -47,6 +48,7 @@ const PERMISSIONS: Record<string, string[]> = {
     'chat.participate',
     'deal.participate', 'deal.stage.complete', 'deal.document.upload',
     'rating.create', 'dispute.open',
+    'analytics.own.view',
   ],
   agency: [
     'listing.create', 'listing.update.own', 'listing.delete.own',
@@ -57,6 +59,7 @@ const PERMISSIONS: Record<string, string[]> = {
     'chat.participate',
     'deal.participate', 'deal.stage.complete', 'deal.document.upload',
     'rating.create', 'dispute.open',
+    'analytics.own.view',
   ],
   // An agency member works listings exactly like a solo agent. `agents.manage`
   // is coarse here, as `listing.update.own` is elsewhere: the guard admits the
@@ -70,6 +73,7 @@ const PERMISSIONS: Record<string, string[]> = {
     'chat.participate',
     'deal.participate', 'deal.stage.complete', 'deal.document.upload',
     'rating.create', 'dispute.open',
+    'analytics.own.view',
   ],
   developer: [
     'project.create', 'project.update.own', 'project.unit.manage', 'project.update.publish',
@@ -78,6 +82,7 @@ const PERMISSIONS: Record<string, string[]> = {
     'chat.participate',
     'deal.participate', 'deal.stage.complete', 'deal.document.upload',
     'rating.create', 'dispute.open',
+    'analytics.own.view',
   ],
   admin: [
     'verification.review', 'user.manage', 'listing.moderate',

@@ -17,7 +17,8 @@
     "test:e2e": "node test/e2e/critical-flows.mjs",
     "test:e2e:projects": "node test/e2e/project-flows.mjs",
     "test:load": "node test/load/search-load.mjs",
-    "test:e2e:team": "node test/e2e/agency-team-flows.mjs"
+    "test:e2e:team": "node test/e2e/agency-team-flows.mjs",
+    "test:e2e:reputation": "node test/e2e/reputation-analytics-flows.mjs"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

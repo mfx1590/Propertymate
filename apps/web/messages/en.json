@@ -10,7 +10,10 @@
   "auth": {
     "title": "Welcome to PropVerify",
     "subtitle": "Sign in or create an account",
-    "tab": { "phone": "Phone", "email": "Email" },
+    "tab": {
+      "phone": "Phone",
+      "email": "Email"
+    },
     "phonePlaceholder": "+90 533 123 45 67",
     "sendCode": "Send code",
     "codeSentTo": "We sent a 6-digit code to {phone}",
@@ -53,7 +56,9 @@
       "subscriptions": "Subscriptions",
       "platformSettings": "Platform settings",
       "users": "Users",
-      "disputes": "Disputes"
+      "disputes": "Disputes",
+      "analytics": "Performance",
+      "platformAnalytics": "Platform analytics"
     },
     "roles": {
       "customer": "Customer",
@@ -61,7 +66,8 @@
       "solo_agent": "Solo Agent",
       "agency": "Agency",
       "developer": "Developer",
-      "admin": "Admin"
+      "admin": "Admin",
+      "agency_member": "Agency Member"
     },
     "status": {
       "verified": "Verified",
@@ -123,7 +129,7 @@
       "offer.received": "New offer on \"{title}\"",
       "offer.countered": "You received a counter-offer",
       "offer.accepted": "Your offer was accepted 🎉",
-"offer.rejected": "Your offer was declined",
+      "offer.rejected": "Your offer was declined",
       "deal.created": "Deal room opened for \"{title}\"",
       "deal.stage_advanced": "Your deal moved to the next stage",
       "deal.completed": "Your deal is complete 🎉"
@@ -211,7 +217,10 @@
       "approvalRate": "Approval rate",
       "turnaround": "Avg turnaround",
       "all": "All",
-      "type": { "listing": "Listing", "profile": "Profile" },
+      "type": {
+        "listing": "Listing",
+        "profile": "Profile"
+      },
       "empty": "Queue is empty — all caught up ✓",
       "slaIn": "SLA in",
       "overdueBy": "Overdue by",
@@ -247,7 +256,10 @@
     }
   },
   "listings": {
-    "kind": { "resale": "For sale", "rental": "For rent" },
+    "kind": {
+      "resale": "For sale",
+      "rental": "For rent"
+    },
     "kindHint": {
       "resale": "Sell a property you own or manage",
       "rental": "Rent out a property"
@@ -414,8 +426,15 @@
     "title": "Deals",
     "subtitle": "Your transactions, tracked from accepted offer to handover.",
     "empty": "No deals yet. A deal room opens when an offer is accepted.",
-    "kind": { "purchase": "Purchase", "rental": "Rental" },
-    "status": { "active": "In progress", "completed": "Completed", "cancelled": "Cancelled" },
+    "kind": {
+      "purchase": "Purchase",
+      "rental": "Rental"
+    },
+    "status": {
+      "active": "In progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
     "stages": {
       "inquiry": "Inquiry",
       "viewing": "Viewing",
@@ -505,7 +524,10 @@
     "title": "Find your property",
     "searchPlaceholder": "Search…",
     "anyKind": "Buy or rent",
-    "kind": { "resale": "For sale", "rental": "For rent" },
+    "kind": {
+      "resale": "For sale",
+      "rental": "For rent"
+    },
     "anyRegion": "All regions",
     "minPrice": "Min £",
     "maxPrice": "Max £",
@@ -550,7 +572,11 @@
       "paused": "Paused",
       "archived": "Archived"
     },
-    "unitStatus": { "available": "Available", "reserved": "Reserved", "sold": "Sold" },
+    "unitStatus": {
+      "available": "Available",
+      "reserved": "Reserved",
+      "sold": "Sold"
+    },
     "board": {
       "title": "My projects",
       "new": "New project",
@@ -721,7 +747,10 @@
     "addMember": "Add member",
     "adding": "Adding…",
     "empty": "No members yet. Add your first one above.",
-    "status": { "active": "Active", "deactivated": "Removed" },
+    "status": {
+      "active": "Active",
+      "deactivated": "Removed"
+    },
     "joined": "Joined",
     "salesClosed": "sales closed",
     "rentalsClosed": "rentals closed",
@@ -735,5 +764,68 @@
     "ourTeam": "Our team",
     "noPublicMembers": "This agency has no listed members yet.",
     "publicContactNote": "Contact details are shared through the platform once a viewing is confirmed."
+  },
+  "analytics": {
+    "title": "Performance",
+    "subtitle": "Your listings, leads and reputation.",
+    "subtitleOrg": "Your agency, its members and their combined performance.",
+    "views": "Views",
+    "leads": "Leads",
+    "viewings": "Viewings",
+    "offers": "Offers",
+    "dealsClosed": "Deals closed",
+    "salesClosed": "Sales closed",
+    "rentalsClosed": "Rentals closed",
+    "lastDays": "{n} in the last {days} days",
+    "funnel": "Conversion funnel",
+    "funnelHint": "Each bar shows how many carried through from the step above.",
+    "listings": "Listings",
+    "ranking": "Ranking score",
+    "rankingHint": "Rating, completed deals, response time and dispute record. Recomputed nightly; a higher score lifts your listings in search and your place in the agent directory.",
+    "computedAt": "Updated",
+    "factor": {
+      "rating": "Rating",
+      "deals": "Completed deals",
+      "responseTime": "Response time",
+      "disputeFree": "Dispute-free"
+    },
+    "team": "Team performance",
+    "member": "Member",
+    "score": "Score",
+    "projects": "Projects",
+    "absorption": "Absorption",
+    "unitsSold": "Sold",
+    "reserved": "Reserved",
+    "pricePerM2": "Avg price/m²",
+    "comparison": "You vs the market",
+    "comparisonHint": "Aggregate benchmarks over live projects. Individual competing projects are never identified.",
+    "region": "Region",
+    "allRegions": "All regions",
+    "myPricePerM2": "My price/m²",
+    "marketPricePerM2": "Market price/m²",
+    "myAbsorption": "My absorption",
+    "marketAbsorption": "Market absorption",
+    "status": {
+      "draft": "Draft",
+      "pending_verification": "In review",
+      "verified_private": "Verified — private",
+      "live": "Live",
+      "paused": "Paused",
+      "under_offer": "Under offer",
+      "sold": "Sold",
+      "rented": "Rented",
+      "archived": "Archived"
+    },
+    "admin": {
+      "title": "Platform analytics",
+      "subtitle": "Supply, demand and verification performance over the last {days} days.",
+      "verification": "Verification",
+      "decided": "Decided",
+      "turnaround": "Avg turnaround",
+      "withinSla": "Within SLA",
+      "approvalRate": "Approval rate",
+      "marketFunnel": "Market activity",
+      "supply": "Supply by region"
+    }
   }
 }

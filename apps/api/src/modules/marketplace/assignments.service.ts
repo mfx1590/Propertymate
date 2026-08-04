@@ -24,7 +24,11 @@ export class AssignmentsService {
     private readonly events: EventEmitter2,
   ) {}
 
-  /** Verified agents the owner can pick from (stats, no contacts). */
+  /**
+   * Verified agents the owner can pick from (stats, no contacts), best-ranked
+   * first — the §8 reputation score is what makes this a directory rather than
+   * an arbitrary list. Agents with no score yet sort last, not first.
+   */
   async agentDirectory(regionSlug?: string) {
     const agents = await this.prisma.userRole.findMany({
       where: {
@@ -36,7 +40,12 @@ export class AssignmentsService {
         user: {
           select: {
             id: true,
-            agentProfile: { select: { bio: true, regions: true, dealCount: true, ratingAvg: true, responseTimeAvgSec: true } },
+            agentProfile: {
+              select: {
+                bio: true, regions: true, dealCount: true, ratingAvg: true,
+                responseTimeAvgSec: true, rankingScore: true,
+              },
+            },
             agencyProfile: { select: { companyName: true, about: true } },
           },
         },
@@ -51,8 +60,11 @@ export class AssignmentsService {
         regions: a.user.agentProfile?.regions ?? [],
         dealCount: a.user.agentProfile?.dealCount ?? 0,
         ratingAvg: a.user.agentProfile?.ratingAvg ?? null,
+        responseTimeAvgSec: a.user.agentProfile?.responseTimeAvgSec ?? null,
+        rankingScore: a.user.agentProfile?.rankingScore ?? null,
       }))
-      .filter((a) => !regionSlug || a.regions.length === 0 || a.regions.includes(regionSlug));
+      .filter((a) => !regionSlug || a.regions.length === 0 || a.regions.includes(regionSlug))
+      .sort((a, b) => (b.rankingScore ?? -1) - (a.rankingScore ?? -1));
   }
 
   /** Owner invites agents to work a verified-private resale. */

@@ -34,6 +34,9 @@ export const PERMISSION_KEYS = [
   'dispute.open',
   // agency team
   'agency.agents.manage',
+  // analytics — a pro sees their OWN performance; `analytics.view` is the
+  // platform-wide admin view (§6.7, §13.1)
+  'analytics.own.view',
   // admin
   'verification.review',
   'user.manage',

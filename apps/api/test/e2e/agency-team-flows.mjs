@@ -45,8 +45,20 @@ async function expectFail(method, path, opts = {}) {
     return Number(/-> (\d+):/.exec(e.message)?.[1] ?? -1);
   }
 }
+// OTP sends are capped at 5/min per IP (§2.4). Suites run back to back, so
+// back off on the 429 the server returns rather than assume a fresh window.
 async function otp(phone, accountType) {
-  const r = await req('POST', '/auth/otp/request', { body: { phone } });
+  let r;
+  for (let attempt = 0; ; attempt++) {
+    try {
+      r = await req('POST', '/auth/otp/request', { body: { phone } });
+      break;
+    } catch (e) {
+      if (!e.message.includes('-> 429') || attempt >= 5) throw e;
+      console.log('  (OTP rate limit hit — waiting out the window)');
+      await sleep(20_000);
+    }
+  }
   const v = await req('POST', '/auth/otp/verify', { body: { phone, code: r.devCode, accountType } });
   return v.accessToken;
 }
