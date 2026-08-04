@@ -236,6 +236,8 @@ model User {
   savedSearches      SavedSearch[]
   favorites          Favorite[]
   propertyViews      PropertyViewEvent[]
+  notificationPrefs  NotificationPreference[]
+  pushTokens         PushToken[]
   conversationsIn    ConversationParticipant[]
   messagesSent       Message[]
   viewingsAsCustomer Viewing[]                 @relation("ViewingCustomer")
@@ -889,6 +891,9 @@ model Dispute {
 
 // ─────────────────────── notifications / audit / misc ───────────────────────
 
+/// One row per channel delivery (Plan §6.6) — an `offer.received` that goes
+/// in-app and by email is two rows, so a failure on one channel is visible
+/// without hiding the delivery that did work.
 model Notification {
   id          String              @id @default(cuid())
   userId      String              @map("user_id")
@@ -896,6 +901,10 @@ model Notification {
   templateKey String              @map("template_key")
   payload     Json?
   sentAt      DateTime?           @map("sent_at")
+  /// Set when the provider rejected the send, or when no provider is configured
+  /// for the channel — the row stays as the record of what was attempted.
+  failedAt    DateTime?           @map("failed_at")
+  error       String?
   readAt      DateTime?           @map("read_at")
   createdAt   DateTime            @default(now()) @map("created_at")
 
@@ -903,6 +912,38 @@ model Notification {
 
   @@index([userId, readAt])
   @@map("notifications")
+}
+
+/// Per-user channel opt-in, one row per notification category (Plan §6.6).
+/// Sparse by design: a missing row means "platform defaults apply", so
+/// changing a default later reaches everyone who never expressed a preference.
+model NotificationPreference {
+  userId   String                @map("user_id")
+  /// templateKey prefix — `offer`, `viewing`, `deal`, `availability`, …
+  category String
+  channels NotificationChannel[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, category])
+  @@map("notification_preferences")
+}
+
+/// Expo push tokens (Plan §6.6 "push (FCM via Expo)"). A device, not a session:
+/// the token survives sign-out, so it is deleted explicitly on sign-out from
+/// the mobile app rather than tied to a refresh token.
+model PushToken {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  token      String   @unique
+  platform   String   @default("unknown") // ios | android | web
+  createdAt  DateTime @default(now()) @map("created_at")
+  lastSeenAt DateTime @default(now()) @map("last_seen_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("push_tokens")
 }
 
 /// Append-only (Plan §2.4). No update/delete paths in application code.

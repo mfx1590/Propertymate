@@ -7,7 +7,8 @@ import { VerificationModule } from '../modules/verification/verification.module'
 import { MarketplaceModule } from '../modules/marketplace/marketplace.module';
 import { DealsModule } from '../modules/deals/deals.module';
 import { MaintenanceProcessor } from './maintenance.processor';
-import { MAINTENANCE_QUEUE } from './jobs.constants';
+import { NotificationQueueProducer, NotificationsProcessor } from './notifications.processor';
+import { MAINTENANCE_QUEUE, NOTIFICATIONS_QUEUE } from './jobs.constants';
 
 /** Daily repeatable maintenance jobs (cron patterns), keyed for idempotent registration. */
 const SCHEDULE: { name: string; pattern: string }[] = [
@@ -53,11 +54,16 @@ class MaintenanceScheduler implements OnModuleInit {
         },
       }),
     }),
-    BullModule.registerQueue({ name: MAINTENANCE_QUEUE }),
+    BullModule.registerQueue({ name: MAINTENANCE_QUEUE }, { name: NOTIFICATIONS_QUEUE }),
     VerificationModule,
     MarketplaceModule,
     DealsModule,
   ],
-  providers: [MaintenanceProcessor, MaintenanceScheduler],
+  providers: [
+    MaintenanceProcessor,
+    MaintenanceScheduler,
+    NotificationQueueProducer,
+    NotificationsProcessor,
+  ],
 })
 export class JobsModule {}

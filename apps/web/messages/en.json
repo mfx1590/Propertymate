@@ -58,7 +58,8 @@
       "users": "Users",
       "disputes": "Disputes",
       "analytics": "Performance",
-      "platformAnalytics": "Platform analytics"
+      "platformAnalytics": "Platform analytics",
+      "notificationSettings": "Notification settings"
     },
     "roles": {
       "customer": "Customer",
@@ -826,6 +827,51 @@
       "approvalRate": "Approval rate",
       "marketFunnel": "Market activity",
       "supply": "Supply by region"
+    }
+  },
+  "notificationSettings": {
+    "title": "Notifications",
+    "subtitle": "Choose how each kind of update reaches you.",
+    "categoryColumn": "Update type",
+    "reset": "Use default",
+    "alwaysOn": "Always on",
+    "alwaysOnHint": "In-app notifications cannot be switched off — they are the record of what happened on your account.",
+    "channel": {
+      "in_app": "In-app",
+      "push": "Push",
+      "email": "Email",
+      "whatsapp": "WhatsApp"
+    },
+    "category": {
+      "verification": "Verification",
+      "profile": "Profile",
+      "availability": "Availability checks",
+      "assignment": "Agent assignments",
+      "chat": "Messages",
+      "viewing": "Viewings",
+      "offer": "Offers",
+      "deal": "Deals",
+      "project": "Project updates"
+    },
+    "hint": {
+      "verification": "Listing and document decisions",
+      "profile": "Your professional profile application",
+      "availability": "The 90-day confirmation your listing needs to stay live",
+      "assignment": "Mandate invitations, responses and publications",
+      "chat": "New inquiries and replies",
+      "viewing": "Requests, confirmations and cancellations",
+      "offer": "Offers, counter-offers and decisions",
+      "deal": "Deal rooms and stage progress",
+      "project": "Construction progress on projects you follow"
+    },
+    "deliveries": "Delivery log",
+    "deliveriesHint": "What was actually sent, per channel.",
+    "noDeliveries": "Nothing sent yet.",
+    "status": {
+      "sent": "Sent",
+      "skipped": "Skipped",
+      "failed": "Failed",
+      "queued": "Queued"
     }
   }
 }

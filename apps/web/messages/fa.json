@@ -58,7 +58,8 @@
       "users": "Users",
       "disputes": "Disputes",
       "analytics": "عملکرد",
-      "platformAnalytics": "تحلیل پلتفرم"
+      "platformAnalytics": "تحلیل پلتفرم",
+      "notificationSettings": "تنظیمات اعلان"
     },
     "roles": {
       "customer": "Customer",
@@ -826,6 +827,51 @@
       "approvalRate": "نرخ تأیید",
       "marketFunnel": "فعالیت بازار",
       "supply": "عرضه بر اساس منطقه"
+    }
+  },
+  "notificationSettings": {
+    "title": "اعلان‌ها",
+    "subtitle": "انتخاب کنید هر نوع اطلاع‌رسانی چگونه به شما برسد.",
+    "categoryColumn": "نوع اطلاع‌رسانی",
+    "reset": "پیش‌فرض",
+    "alwaysOn": "همیشه فعال",
+    "alwaysOnHint": "اعلان‌های درون‌برنامه قابل خاموش کردن نیستند — آن‌ها سابقهٔ اتفاقات حساب شما هستند.",
+    "channel": {
+      "in_app": "درون‌برنامه",
+      "push": "اعلان فوری",
+      "email": "ایمیل",
+      "whatsapp": "واتس‌اپ"
+    },
+    "category": {
+      "verification": "تأیید",
+      "profile": "نمایه",
+      "availability": "تأیید در دسترس بودن",
+      "assignment": "واگذاری به مشاور",
+      "chat": "پیام‌ها",
+      "viewing": "بازدیدها",
+      "offer": "پیشنهادها",
+      "deal": "معاملات",
+      "project": "به‌روزرسانی پروژه"
+    },
+    "hint": {
+      "verification": "تصمیمات مربوط به آگهی و مدارک",
+      "profile": "درخواست نمایهٔ حرفه‌ای شما",
+      "availability": "تأیید ۹۰ روزه برای ماندن آگهی در سایت",
+      "assignment": "دعوت‌ها، پاسخ‌ها و انتشار",
+      "chat": "درخواست‌ها و پاسخ‌های جدید",
+      "viewing": "درخواست، تأیید و لغو",
+      "offer": "پیشنهاد، پیشنهاد متقابل و تصمیم‌ها",
+      "deal": "اتاق معامله و پیشرفت مراحل",
+      "project": "پیشرفت ساخت پروژه‌هایی که دنبال می‌کنید"
+    },
+    "deliveries": "گزارش ارسال",
+    "deliveriesHint": "آنچه واقعاً در هر کانال ارسال شد.",
+    "noDeliveries": "هنوز چیزی ارسال نشده است.",
+    "status": {
+      "sent": "ارسال شد",
+      "skipped": "رد شد",
+      "failed": "ناموفق",
+      "queued": "در صف"
     }
   }
 }

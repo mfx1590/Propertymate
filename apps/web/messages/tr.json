@@ -58,7 +58,8 @@
       "users": "Kullanıcılar",
       "disputes": "İtirazlar",
       "analytics": "Performans",
-      "platformAnalytics": "Platform analitiği"
+      "platformAnalytics": "Platform analitiği",
+      "notificationSettings": "Bildirim ayarları"
     },
     "roles": {
       "customer": "Müşteri",
@@ -826,6 +827,51 @@
       "approvalRate": "Onay oranı",
       "marketFunnel": "Pazar hareketleri",
       "supply": "Bölgeye göre arz"
+    }
+  },
+  "notificationSettings": {
+    "title": "Bildirimler",
+    "subtitle": "Her güncelleme türünün size nasıl ulaşacağını seçin.",
+    "categoryColumn": "Güncelleme türü",
+    "reset": "Varsayılanı kullan",
+    "alwaysOn": "Her zaman açık",
+    "alwaysOnHint": "Uygulama içi bildirimler kapatılamaz — hesabınızda olanların kaydıdırlar.",
+    "channel": {
+      "in_app": "Uygulama içi",
+      "push": "Anlık bildirim",
+      "email": "E-posta",
+      "whatsapp": "WhatsApp"
+    },
+    "category": {
+      "verification": "Doğrulama",
+      "profile": "Profil",
+      "availability": "Müsaitlik kontrolleri",
+      "assignment": "Danışman atamaları",
+      "chat": "Mesajlar",
+      "viewing": "Görüntülemeler",
+      "offer": "Teklifler",
+      "deal": "İşlemler",
+      "project": "Proje güncellemeleri"
+    },
+    "hint": {
+      "verification": "İlan ve belge kararları",
+      "profile": "Profesyonel profil başvurunuz",
+      "availability": "İlanınızın yayında kalması için 90 günlük onay",
+      "assignment": "Yetki davetleri, yanıtlar ve yayınlar",
+      "chat": "Yeni talepler ve yanıtlar",
+      "viewing": "Talepler, onaylar ve iptaller",
+      "offer": "Teklifler, karşı teklifler ve kararlar",
+      "deal": "İşlem odaları ve aşama ilerlemesi",
+      "project": "Takip ettiğiniz projelerdeki inşaat ilerlemesi"
+    },
+    "deliveries": "Gönderim kaydı",
+    "deliveriesHint": "Kanal bazında gerçekte ne gönderildi.",
+    "noDeliveries": "Henüz bir şey gönderilmedi.",
+    "status": {
+      "sent": "Gönderildi",
+      "skipped": "Atlandı",
+      "failed": "Başarısız",
+      "queued": "Sırada"
     }
   }
 }
