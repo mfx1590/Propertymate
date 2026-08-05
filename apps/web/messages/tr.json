@@ -360,7 +360,9 @@
       "save": "Favorilere ekle",
       "saved": "Kaydedildi",
       "trustTitle": "PropVerify tarafından doğrulandı",
-      "trustBody": "Koçan, mal sahibi kimliği ve belgeler bu ilan yayına girmeden önce doğrulama ekibimizce kontrol edildi."
+      "trustBody": "Koçan, mal sahibi kimliği ve belgeler bu ilan yayına girmeden önce doğrulama ekibimizce kontrol edildi.",
+      "alsoViewed": "Bunu görüntüleyenler şunlara da baktı",
+      "similarListings": "Benzer ilanlar"
     },
     "actions": {
       "inquire": "Mesaj",

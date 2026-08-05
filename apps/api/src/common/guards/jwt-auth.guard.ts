@@ -17,10 +17,26 @@ export class JwtAuthGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) return true;
-
     const request = context.switchToHttp().getRequest();
     const token = this.extractBearerToken(request);
+
+    if (isPublic) {
+      // A public route stays public, but a valid token is still worth reading:
+      // it lets the listing page attribute a view to the signed-in viewer and
+      // skip the lister's own visits (§6.7, §8). An absent or bad token is
+      // simply an anonymous visitor here — never an error.
+      if (token) {
+        try {
+          request.user = await this.jwtService.verifyAsync(token, {
+            secret: this.config.getOrThrow<string>('JWT_ACCESS_SECRET'),
+          });
+        } catch {
+          /* anonymous */
+        }
+      }
+      return true;
+    }
+
     if (!token) throw new UnauthorizedException('Missing access token');
 
     try {

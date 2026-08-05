@@ -1,13 +1,51 @@
+import { cache } from 'react';
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { API_BASE, fmtGbp, fmtMoney, type Property } from '../../../../lib/listings';
+import { Link } from '../../../../i18n/routing';
 import { ActionBox, DetailMap, FavoriteButton } from './parts';
 
-async function fetchListing(id: string): Promise<Property | null> {
-  const res = await fetch(`${API_BASE}/properties/${id}`, { cache: 'no-store' });
+interface SimilarListing {
+  id: string;
+  title: string;
+  bedrooms: number | null;
+  areaM2: number | null;
+  priceGbp: number;
+  regionName: string;
+  coverUrl: string | null;
+}
+
+/**
+ * `cache()` dedupes within one render pass. Next calls this page's fetch twice
+ * — once for `generateMetadata`, once for the component — and without this the
+ * API records two views for a single visit, inflating both the funnel (§6.7)
+ * and the co-visitation signal (§8).
+ *
+ * The `pv_sid` cookie is forwarded as `x-session-key`: this fetch runs on the
+ * Next server, so without passing it explicitly every signed-out view would
+ * arrive at the API with no viewer identity at all.
+ */
+const fetchListing = cache(async (id: string): Promise<Property | null> => {
+  const sessionKey = cookies().get('pv_sid')?.value;
+  const res = await fetch(`${API_BASE}/properties/${id}`, {
+    cache: 'no-store',
+    headers: sessionKey ? { 'x-session-key': sessionKey } : {},
+  });
   if (!res.ok) return null;
   return res.json();
+});
+
+/** "Viewers of this also viewed" (§8), with a comparable-listings fallback. */
+async function fetchSimilar(id: string): Promise<{ source: string; items: SimilarListing[] }> {
+  try {
+    const res = await fetch(`${API_BASE}/search/similar/${id}?limit=4`, { cache: 'no-store' });
+    if (!res.ok) return { source: 'none', items: [] };
+    return res.json();
+  } catch {
+    return { source: 'none', items: [] };
+  }
 }
 
 export async function generateMetadata({
@@ -34,6 +72,7 @@ export default async function ListingDetailPage({
   const t = await getTranslations('listings');
   const p = await fetchListing(id);
   if (!p) notFound();
+  const similar = await fetchSimilar(id);
 
   const title = p.titleI18n?.en ?? '';
   const description = p.descriptionI18n?.en ?? '';
@@ -182,6 +221,40 @@ export default async function ListingDetailPage({
           <ActionBox propertyId={p.id} />
         </aside>
       </div>
+
+      {/* §8 recommendation v1 — co-visitation, or comparables while a new
+          listing has no view history yet */}
+      {similar.items.length > 0 && (
+        <section className="mt-12">
+          <h2 className="text-lg font-semibold">
+            {similar.source === 'co_visitation' ? t('detail.alsoViewed') : t('detail.similarListings')}
+          </h2>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {similar.items.map((s) => (
+              <Link
+                key={s.id}
+                href={`/listing/${s.id}`}
+                className="group overflow-hidden rounded-xl border border-gray-200"
+              >
+                {s.coverUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={s.coverUrl} alt={s.title} className="h-32 w-full object-cover" />
+                ) : (
+                  <div className="h-32 w-full bg-gray-100" />
+                )}
+                <div className="p-3">
+                  <p className="truncate text-sm font-medium group-hover:text-brand-600">{s.title}</p>
+                  <p className="mt-1 text-xs text-gray-400">
+                    {s.regionName}
+                    {s.bedrooms !== null && ` · ${s.bedrooms} ${t('fields.bedrooms')}`}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-brand-600">{fmtGbp(s.priceGbp)}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Ip,
   Param,
   Post,
@@ -129,10 +130,20 @@ export class PropertiesController {
   // ── public detail (keep LAST: ':id' would otherwise shadow routes above) ──
 
   // public browse/SEO path — not rate-limited (§11 targets auth/chat/inquiry)
+  /**
+   * `x-session-key` is the browser's `pv_sid` cookie, forwarded by the SSR
+   * page. It is the only viewer identity available for signed-out traffic —
+   * which is most of it — and is what makes co-visitation (§8) work at all.
+   * It is opaque and carries no personal data.
+   */
   @SkipThrottle()
   @Public()
   @Get(':id')
-  getPublic(@Param('id') id: string) {
-    return this.properties.getPublic(id);
+  getPublic(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthUser | undefined,
+    @Headers('x-session-key') sessionKey?: string,
+  ) {
+    return this.properties.getPublic(id, user?.sub, sessionKey?.slice(0, 64) || undefined);
   }
 }

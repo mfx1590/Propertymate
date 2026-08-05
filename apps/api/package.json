@@ -20,7 +20,8 @@
     "test:e2e:team": "node test/e2e/agency-team-flows.mjs",
     "test:e2e:reputation": "node test/e2e/reputation-analytics-flows.mjs",
     "test:e2e:notifications": "node test/e2e/notification-channel-flows.mjs",
-    "test:e2e:leads": "node test/e2e/lead-inbox-flows.mjs"
+    "test:e2e:leads": "node test/e2e/lead-inbox-flows.mjs",
+    "test:e2e:recommendations": "node test/e2e/recommendation-flows.mjs"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

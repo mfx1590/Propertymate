@@ -113,6 +113,12 @@ jobs:
       - name: Run lead-inbox e2e suite
         run: npm run test:e2e:leads -w apps/api
 
+      - name: Let the OTP rate-limit window drain
+        run: sleep 60
+
+      - name: Run recommendation e2e suite
+        run: npm run test:e2e:recommendations -w apps/api
+
       - name: API logs on failure
         if: failure()
         run: tail -80 api.log || true

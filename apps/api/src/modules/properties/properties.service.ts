@@ -17,6 +17,9 @@ import { UpdatePropertyDto } from './dto/properties.dto';
 
 /** Statuses in which the lister may still edit core fields. */
 const EDITABLE_STATUSES = ['draft', 'pending_verification'] as const;
+
+/** One visit = one view within this window, per viewer per listing. */
+const VIEW_DEDUPE_MINUTES = 30;
 /** phash Hamming distance at or below which we warn about a duplicate photo. */
 const DUPLICATE_PHASH_DISTANCE = 6;
 
@@ -366,7 +369,45 @@ export class PropertiesService {
   }
 
   /** Public detail: live/under_offer/sold/rented are viewable; drafts only by their owner. */
-  async getPublic(propertyId: string, viewerUserId?: string) {
+  /**
+   * A view is recorded at most once per viewer per listing per
+   * VIEW_DEDUPE_MINUTES. Without this the SSR page counts two views for one
+   * visit (Next calls the fetch once for `generateMetadata` and once for the
+   * page), and a refresh or a back-button would inflate demand further.
+   */
+  private async recordView(propertyId: string, viewerUserId?: string, sessionKey?: string) {
+    try {
+      // Deduped by a unique key rather than a read-then-write: this runs
+      // fire-and-forget so it never adds latency to a public page, which means
+      // two near-simultaneous requests would both pass a "seen recently?" check.
+      // Postgres rejecting the second insert is what actually makes it one view.
+      const identity = viewerUserId ?? sessionKey;
+      const bucket = Math.floor(Date.now() / (VIEW_DEDUPE_MINUTES * 60_000));
+      const dedupeKey = identity ? `${propertyId}:${identity}:${bucket}` : null;
+
+      const { count } = await this.prisma.propertyViewEvent.createMany({
+        data: [
+          {
+            propertyId,
+            viewerId: viewerUserId ?? null,
+            sessionKey: sessionKey ?? null,
+            dedupeKey,
+          },
+        ],
+        skipDuplicates: true,
+      });
+      if (count === 0) return; // same visit, already counted
+
+      await this.prisma.property.update({
+        where: { id: propertyId },
+        data: { viewCount: { increment: 1 } },
+      });
+    } catch {
+      // view counting must never break the page it is counting
+    }
+  }
+
+  async getPublic(propertyId: string, viewerUserId?: string, sessionKey?: string) {
     const property = await this.prisma.property.findUnique({
       where: { id: propertyId, deletedAt: null },
       include: {
@@ -385,14 +426,9 @@ export class PropertiesService {
 
     if (publicStatuses.includes(property.status) && !isOwner) {
       // Fire-and-forget: lifetime counter plus one event row, which is what
-      // gives the analytics funnel a time series (§6.7) and seeds the §8
+      // gives the analytics funnel a time series (§6.7) and feeds the §8
       // co-visitation recommender. The lister's own visits are not demand.
-      void this.prisma.property
-        .update({ where: { id: propertyId }, data: { viewCount: { increment: 1 } } })
-        .catch(() => undefined);
-      void this.prisma.propertyViewEvent
-        .create({ data: { propertyId, viewerId: viewerUserId ?? null } })
-        .catch(() => undefined);
+      void this.recordView(propertyId, viewerUserId, sessionKey);
     }
 
     const { createdBy, ...rest } = property;

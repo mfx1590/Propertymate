@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { VerificationModule } from '../modules/verification/verification.module';
 import { MarketplaceModule } from '../modules/marketplace/marketplace.module';
 import { DealsModule } from '../modules/deals/deals.module';
+import { SearchModule } from '../modules/search/search.module';
 import { MaintenanceProcessor } from './maintenance.processor';
 import { NotificationQueueProducer, NotificationsProcessor } from './notifications.processor';
 import { MAINTENANCE_QUEUE, NOTIFICATIONS_QUEUE } from './jobs.constants';
@@ -16,6 +17,7 @@ const SCHEDULE: { name: string; pattern: string }[] = [
   { name: 'assignment-expiry', pattern: '0 5 * * *' }, // 05:00 — expire elapsed mandates
   { name: 'rating-reveal', pattern: '0 1 * * *' }, // 01:00 — reveal stale one-sided ratings
   { name: 'reputation', pattern: '0 2 * * *' }, // 02:00 — after reveals, so scores see them
+  { name: 'recommendations', pattern: '0 3 * * *' }, // 03:00 — co-visitation rebuild (§8)
 ];
 
 @Injectable()
@@ -58,6 +60,7 @@ class MaintenanceScheduler implements OnModuleInit {
     VerificationModule,
     MarketplaceModule,
     DealsModule,
+    SearchModule,
   ],
   providers: [
     MaintenanceProcessor,

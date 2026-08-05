@@ -5,6 +5,7 @@ import { FreshnessService } from '../modules/verification/freshness.service';
 import { AssignmentsService } from '../modules/marketplace/assignments.service';
 import { RatingsService } from '../modules/deals/ratings.service';
 import { ReputationService } from '../modules/deals/reputation.service';
+import { RecommendationsService } from '../modules/search/recommendations.service';
 import { MAINTENANCE_QUEUE } from './jobs.constants';
 
 /**
@@ -20,6 +21,7 @@ export class MaintenanceProcessor extends WorkerHost {
     private readonly assignments: AssignmentsService,
     private readonly ratings: RatingsService,
     private readonly reputation: ReputationService,
+    private readonly recommendations: RecommendationsService,
   ) {
     super();
   }
@@ -35,6 +37,8 @@ export class MaintenanceProcessor extends WorkerHost {
         return this.ratings.revealStale();
       case 'reputation':
         return this.reputation.recomputeAll();
+      case 'recommendations':
+        return this.recommendations.rebuild();
       default:
         this.logger.warn(`Unknown maintenance job: ${job.name}`);
         return { skipped: job.name };

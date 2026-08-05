@@ -360,7 +360,9 @@
       "save": "Save to favorites",
       "saved": "Saved",
       "trustTitle": "Verified by PropVerify",
-      "trustBody": "Title deed, owner identity and documents were checked by our verification team before this listing went live."
+      "trustBody": "Title deed, owner identity and documents were checked by our verification team before this listing went live.",
+      "alsoViewed": "بازدیدکنندگان این مورد، این‌ها را هم دیدند",
+      "similarListings": "آگهی‌های مشابه"
     },
     "actions": {
       "inquire": "Message",
