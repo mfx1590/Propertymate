@@ -873,5 +873,47 @@
       "failed": "ناموفق",
       "queued": "در صف"
     }
+  },
+  "leads": {
+    "title": "سرنخ‌ها",
+    "subtitle": "هر کسی که دربارهٔ آگهی‌های شما پرسیده، بازدید گرفته یا پیشنهاد داده است.",
+    "total": "سرنخ",
+    "awaitingReply": "در انتظار پاسخ شما",
+    "avgResponse": "میانگین اولین پاسخ",
+    "allStages": "همهٔ مراحل",
+    "allListings": "همهٔ آگهی‌ها",
+    "empty": "هنوز سرنخی نیست. به محض تماس کسی اینجا نمایان می‌شود.",
+    "unread": "{n} خوانده‌نشده",
+    "needsReply": "نیازمند پاسخ",
+    "contactHidden": "اطلاعات تماس پس از بازدید تأییدشده نمایان می‌شود",
+    "you": "شما",
+    "respondedIn": "پاسخ در",
+    "viewing": "بازدید",
+    "offer": "پیشنهاد",
+    "openThread": "گفتوگو",
+    "openDeal": "معامله",
+    "stage": {
+      "new": "جدید",
+      "in_conversation": "در گفتوگو",
+      "viewing_booked": "بازدید تنظیم شد",
+      "viewing_done": "بازدید انجام شد",
+      "offer_made": "پیشنهاد داده شد",
+      "won": "موفق",
+      "lost": "از‌دست‌رفته"
+    },
+    "viewingStatus": {
+      "requested": "درخواست‌شده",
+      "confirmed": "تأییدشده",
+      "completed": "انجام‌شده",
+      "cancelled": "لغوشده",
+      "no_show": "عدم حضور"
+    },
+    "offerStatus": {
+      "submitted": "ثبت‌شده",
+      "countered": "پیشنهاد متقابل",
+      "accepted": "پذیرفته",
+      "rejected": "ردشده",
+      "withdrawn": "پس‌گرفته"
+    }
   }
 }

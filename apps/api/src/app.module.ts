@@ -25,6 +25,7 @@ import { MarketplaceModule } from './modules/marketplace/marketplace.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { DealsModule } from './modules/deals/deals.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { LeadsModule } from './modules/leads/leads.module';
 import { JobsModule } from './jobs/jobs.module';
 
 @Module({
@@ -53,6 +54,7 @@ import { JobsModule } from './jobs/jobs.module';
     DealsModule,
     ChatModule,
     AnalyticsModule,
+    LeadsModule,
     JobsModule,
   ],
   providers: [

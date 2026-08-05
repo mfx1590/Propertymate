@@ -218,21 +218,31 @@ export class ChatService {
     }
     if (!convo.propertyId) return true;
     const userIds = convo.participants.map((p) => p.userId);
+    return !(await this.contactRevealed(convo.propertyId, userIds));
+  }
 
+  /**
+   * The §2.4 reveal gate: contact details are exchangeable once these parties
+   * have a confirmed viewing or an accepted offer on this property.
+   *
+   * Public so the lead inbox applies exactly the same rule as the scrubber —
+   * a second implementation would eventually drift and leak a phone number.
+   */
+  async contactRevealed(propertyId: string, userIds: string[]): Promise<boolean> {
     const [viewing, offer] = await Promise.all([
       this.prisma.viewing.count({
         where: {
-          propertyId: convo.propertyId,
+          propertyId,
           status: { in: ['confirmed', 'completed'] },
           customerId: { in: userIds },
           hostUserId: { in: userIds },
         },
       }),
       this.prisma.offer.count({
-        where: { propertyId: convo.propertyId, status: 'accepted', customerId: { in: userIds } },
+        where: { propertyId, status: 'accepted', customerId: { in: userIds } },
       }),
     ]);
-    return viewing === 0 && offer === 0;
+    return viewing > 0 || offer > 0;
   }
 
   private async assertParticipant(userId: string, conversationId: string) {

@@ -873,5 +873,47 @@
       "failed": "Failed",
       "queued": "Queued"
     }
+  },
+  "leads": {
+    "title": "Leads",
+    "subtitle": "Everyone who enquired, booked a viewing or made an offer on your listings.",
+    "total": "Leads",
+    "awaitingReply": "Awaiting your reply",
+    "avgResponse": "Avg first response",
+    "allStages": "All stages",
+    "allListings": "All listings",
+    "empty": "No leads yet. They appear here as soon as someone enquires.",
+    "unread": "{n} unread",
+    "needsReply": "Needs a reply",
+    "contactHidden": "Contact shown after a confirmed viewing",
+    "you": "You",
+    "respondedIn": "replied in",
+    "viewing": "Viewing",
+    "offer": "Offer",
+    "openThread": "Open thread",
+    "openDeal": "Open deal",
+    "stage": {
+      "new": "New",
+      "in_conversation": "In conversation",
+      "viewing_booked": "Viewing booked",
+      "viewing_done": "Viewed",
+      "offer_made": "Offer made",
+      "won": "Won",
+      "lost": "Lost"
+    },
+    "viewingStatus": {
+      "requested": "requested",
+      "confirmed": "confirmed",
+      "completed": "completed",
+      "cancelled": "cancelled",
+      "no_show": "no-show"
+    },
+    "offerStatus": {
+      "submitted": "submitted",
+      "countered": "countered",
+      "accepted": "accepted",
+      "rejected": "rejected",
+      "withdrawn": "withdrawn"
+    }
   }
 }

@@ -873,5 +873,47 @@
       "failed": "Başarısız",
       "queued": "Sırada"
     }
+  },
+  "leads": {
+    "title": "Talepler",
+    "subtitle": "İlanlarınıza soru soran, randevu alan veya teklif veren herkes.",
+    "total": "Talep",
+    "awaitingReply": "Yanıt bekleyen",
+    "avgResponse": "Ort. ilk yanıt",
+    "allStages": "Tüm aşamalar",
+    "allListings": "Tüm ilanlar",
+    "empty": "Henüz talep yok. Biri iletişime geçtiğinde burada görünür.",
+    "unread": "{n} okunmamış",
+    "needsReply": "Yanıt gerekiyor",
+    "contactHidden": "İletişim bilgisi onaylanmış randevudan sonra görünür",
+    "you": "Siz",
+    "respondedIn": "yanıt süresi",
+    "viewing": "Görüntüleme",
+    "offer": "Teklif",
+    "openThread": "Sohbeti aç",
+    "openDeal": "İşlemi aç",
+    "stage": {
+      "new": "Yeni",
+      "in_conversation": "Görüşülüyor",
+      "viewing_booked": "Randevu alındı",
+      "viewing_done": "Görülmüş",
+      "offer_made": "Teklif verildi",
+      "won": "Kazanıldı",
+      "lost": "Kaybedildi"
+    },
+    "viewingStatus": {
+      "requested": "talep edildi",
+      "confirmed": "onaylandı",
+      "completed": "tamamlandı",
+      "cancelled": "iptal",
+      "no_show": "gelinmedi"
+    },
+    "offerStatus": {
+      "submitted": "verildi",
+      "countered": "karşı teklif",
+      "accepted": "kabul",
+      "rejected": "reddedildi",
+      "withdrawn": "geri çekildi"
+    }
   }
 }

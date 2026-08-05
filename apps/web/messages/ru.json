@@ -873,5 +873,47 @@
       "failed": "Ошибка",
       "queued": "В очереди"
     }
+  },
+  "leads": {
+    "title": "Заявки",
+    "subtitle": "Все, кто написал, записался на показ или сделал предложение по вашим объявлениям.",
+    "total": "Заявки",
+    "awaitingReply": "Ждут ответа",
+    "avgResponse": "Ср. первый ответ",
+    "allStages": "Все этапы",
+    "allListings": "Все объявления",
+    "empty": "Заявок пока нет. Они появятся, как только кто-то обратится.",
+    "unread": "{n} непрочитанных",
+    "needsReply": "Нужен ответ",
+    "contactHidden": "Контакты откроются после подтверждённого показа",
+    "you": "Вы",
+    "respondedIn": "ответ за",
+    "viewing": "Показ",
+    "offer": "Предложение",
+    "openThread": "Открыть чат",
+    "openDeal": "Открыть сделку",
+    "stage": {
+      "new": "Новая",
+      "in_conversation": "В переписке",
+      "viewing_booked": "Показ назначен",
+      "viewing_done": "Показ прошёл",
+      "offer_made": "Есть предложение",
+      "won": "Успешно",
+      "lost": "Потеряна"
+    },
+    "viewingStatus": {
+      "requested": "запрошен",
+      "confirmed": "подтверждён",
+      "completed": "состоялся",
+      "cancelled": "отменён",
+      "no_show": "неявка"
+    },
+    "offerStatus": {
+      "submitted": "подано",
+      "countered": "встречное",
+      "accepted": "принято",
+      "rejected": "отклонено",
+      "withdrawn": "отозвано"
+    }
   }
 }
