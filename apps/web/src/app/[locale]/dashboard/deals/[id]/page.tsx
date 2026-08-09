@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { apiGet, apiPost, apiUpload } from '../../../../../lib/api';
+import { ContractPanel } from './contract-panel';
 import { Link } from '../../../../../i18n/routing';
 import { fmtGbp, fmtMoney } from '../../../../../lib/listings';
 
@@ -54,6 +55,8 @@ export default function DealRoomPage() {
   const [deal, setDeal] = useState<DealDetail | null>(null);
   const [rateable, setRateable] = useState<Rateable[]>([]);
   const [note, setNote] = useState('');
+  // an unsigned contract blocks the stage server-side (§7) — reflect that in the button
+  const [contractBlocked, setContractBlocked] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -176,7 +179,7 @@ export default function DealRoomPage() {
                         onChange={(e) => setNote(e.target.value)}
                       />
                       <button
-                        disabled={busy || missingDocs.length > 0}
+                        disabled={busy || missingDocs.length > 0 || contractBlocked}
                         onClick={() => run(async () => { await apiPost(`/deals/${id}/advance`, { note: note || undefined }); setNote(''); })}
                         className="rounded-lg bg-brand-600 px-4 py-1.5 text-sm font-medium text-white disabled:opacity-50"
                       >
@@ -189,6 +192,7 @@ export default function DealRoomPage() {
                       )}
                     </div>
                     {missingDocs.length > 0 && <p className="mt-1 text-xs text-amber-600">{t('room.attachFirst')}</p>}
+                    {contractBlocked && <p className="mt-1 text-xs text-amber-600">{t('room.signFirst')}</p>}
                     <p className="mt-1 text-[11px] text-gray-400">{t('room.completesBy', { who: t(`completesBy.${s.completesBy}`) })}</p>
                   </>
                 )}
@@ -197,6 +201,12 @@ export default function DealRoomPage() {
           );
         })}
       </ol>
+
+      {/* §7: the rental contract is generated and e-signed here, and an
+          unsigned one blocks the stage above */}
+      {deal.kind === 'rental' && (
+        <ContractPanel dealId={id} onChange={() => void load()} onBlockedChange={setContractBlocked} />
+      )}
 
       {/* ratings (post-completion) */}
       {deal.status === 'completed' && rateable.length > 0 && (

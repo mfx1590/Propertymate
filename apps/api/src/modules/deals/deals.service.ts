@@ -384,6 +384,7 @@ export class DealsService {
 
     await this.assertCanComplete(userId, deal.parties, cur);
     await this.assertRequiredDocs(dealId, cur);
+    await this.assertContractsSigned(dealId);
 
     const isCompletion = cur.key === COMPLETION_STAGE[templateKey];
 
@@ -546,6 +547,21 @@ export class DealsService {
       (await this.isAdmin(userId));
     if (!allowed) {
       throw new ForbiddenException(`This stage is completed by ${stage.completesBy}`);
+    }
+  }
+
+  /**
+   * A generated contract that is still waiting on a signature blocks the deal
+   * (Plan §7 "both e-sign"). Queried directly rather than through
+   * ContractsService so the deals module keeps no dependency on contracts —
+   * contracts already depends on deals.
+   */
+  private async assertContractsSigned(dealId: string) {
+    const unsigned = await this.prisma.contract.count({
+      where: { dealId, status: 'awaiting_signatures' },
+    });
+    if (unsigned > 0) {
+      throw new BadRequestException('The contract is not fully signed yet');
     }
   }
 

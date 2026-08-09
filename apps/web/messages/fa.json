@@ -465,7 +465,7 @@
       "post_deal": "Optional services — furniture, movers, insurance.",
       "application": "The renter submits their application and ID.",
       "landlord_approval": "The landlord reviews and approves the application.",
-      "contract": "Both parties sign the tenancy contract. Upload the signed contract.",
+      "contract": "قرارداد اجاره را در پایین بسازید؛ سپس هر دو طرف آن را الکترونیکی امضا کنند.",
       "move_in_checklist": "Confirm the move-in condition together. Completing this finalizes the tenancy.",
       "active_tenancy": "The tenancy is active.",
       "renewal_or_exit": "Handle renewal or the exit checklist."
@@ -520,7 +520,8 @@
       "commentPlaceholder": "Optional comment…",
       "submitRating": "Submit rating",
       "timeline": "Timeline",
-      "openChat": "Open deal chat"
+      "openChat": "Open deal chat",
+      "signFirst": "تا زمانی که هر دو طرف قرارداد را امضا نکنند، این مرحله کامل نمی‌شود."
     }
   },
   "search": {
@@ -916,6 +917,28 @@
       "accepted": "پذیرفته",
       "rejected": "ردشده",
       "withdrawn": "پس‌گرفته"
+    }
+  },
+  "contract": {
+    "title": "قرارداد اجاره",
+    "none": "هنوز قراردادی نیست. قرارداد را از شرایط توافق‌شده بسازید؛ سپس هر دو طرف اینجا امضا می‌کنند.",
+    "generate": "ساخت قرارداد",
+    "generating": "در حال ساخت…",
+    "openPdf": "باز کردن PDF",
+    "rent": "اجاره",
+    "term": "مدت",
+    "deposit": "ودیعه",
+    "months": "{n} ماه",
+    "awaiting": "در انتظار امضا",
+    "signPrompt": "این قرارداد را امضا کنید",
+    "signHint": "تایپ کردن نام کامل شما به‌منزلهٔ امضاست. نام، زمان و نشانی IP شما در سند ثبت می‌شود.",
+    "typeYourName": "نام و نام خانوادگی",
+    "sign": "امضا",
+    "signing": "در حال امضا…",
+    "status": {
+      "awaiting_signatures": "در انتظار امضا",
+      "signed": "امضاشده",
+      "void": "باطل"
     }
   }
 }

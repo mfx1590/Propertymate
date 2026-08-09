@@ -465,7 +465,7 @@
       "post_deal": "İsteğe bağlı hizmetler — mobilya, nakliye, sigorta.",
       "application": "Kiracı başvurusunu ve kimliğini gönderir.",
       "landlord_approval": "Ev sahibi başvuruyu inceleyip onaylar.",
-      "contract": "Her iki taraf kira sözleşmesini imzalar. İmzalı sözleşmeyi yükleyin.",
+      "contract": "Aşağıda kira sözleşmesini oluşturun, ardından iki taraf da elektronik olarak imzalasın.",
       "move_in_checklist": "Taşınma durumunu birlikte onaylayın. Bunu tamamlamak kiracılığı sonlandırır.",
       "active_tenancy": "Kiracılık aktif.",
       "renewal_or_exit": "Yenileme veya çıkış kontrol listesini yönetin."
@@ -520,7 +520,8 @@
       "commentPlaceholder": "İsteğe bağlı yorum…",
       "submitRating": "Değerlendirmeyi gönder",
       "timeline": "Zaman çizelgesi",
-      "openChat": "İşlem sohbetini aç"
+      "openChat": "İşlem sohbetini aç",
+      "signFirst": "İki taraf da sözleşmeyi imzalamadan bu aşama tamamlanamaz."
     }
   },
   "search": {
@@ -916,6 +917,28 @@
       "accepted": "kabul",
       "rejected": "reddedildi",
       "withdrawn": "geri çekildi"
+    }
+  },
+  "contract": {
+    "title": "Kira sözleşmesi",
+    "none": "Henüz sözleşme yok. Anlaşılan şartlardan kira sözleşmesini oluşturun, ardından iki taraf da burada imzalasın.",
+    "generate": "Sözleşme oluştur",
+    "generating": "Oluşturuluyor…",
+    "openPdf": "PDF'i aç",
+    "rent": "Kira",
+    "term": "Süre",
+    "deposit": "Depozito",
+    "months": "{n} ay",
+    "awaiting": "İmza bekleniyor",
+    "signPrompt": "Bu sözleşmeyi imzalayın",
+    "signHint": "Adınızı yazmak sözleşmeyi imzalar. Adınız, saat ve IP adresiniz belgeye kaydedilir.",
+    "typeYourName": "Adınız ve soyadınız",
+    "sign": "İmzala",
+    "signing": "İmzalanıyor…",
+    "status": {
+      "awaiting_signatures": "İmza bekleniyor",
+      "signed": "İmzalandı",
+      "void": "Geçersiz"
     }
   }
 }

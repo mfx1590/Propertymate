@@ -238,6 +238,7 @@ model User {
   propertyViews      PropertyViewEvent[]
   notificationPrefs  NotificationPreference[]
   pushTokens         PushToken[]
+  contractSignatures ContractSignature[]
   conversationsIn    ConversationParticipant[]
   messagesSent       Message[]
   viewingsAsCustomer Viewing[]                 @relation("ViewingCustomer")
@@ -457,6 +458,7 @@ model Document {
   owner         User           @relation(fields: [ownerUserId], references: [id])
   dealDocuments DealDocument[]
   mandateFor    Property[]     @relation("PropertyMandate")
+  contract      Contract?
 
   @@index([sha256]) // same-document-across-accounts fraud signal (Plan §4)
   @@index([entityType, entityId])
@@ -811,6 +813,7 @@ model Deal {
   ratings       Rating[]
   disputes      Dispute[]
   conversations Conversation[]
+  contracts     Contract[]
 
   @@map("deals")
 }
@@ -974,6 +977,62 @@ model PushToken {
 
   @@index([userId])
   @@map("push_tokens")
+}
+
+enum ContractKind {
+  rental_tenancy
+  agent_mandate
+}
+
+enum ContractStatus {
+  awaiting_signatures
+  signed
+  void
+}
+
+/// Platform-generated contract PDF + its typed signatures (Plan §7, §6.2).
+/// The PDF itself is an ordinary `documents` row, so it inherits the private
+/// bucket and signed-URL rules (§2.4) rather than inventing a second store.
+model Contract {
+  id         String         @id @default(cuid())
+  kind       ContractKind
+  status     ContractStatus @default(awaiting_signatures)
+  dealId     String?        @map("deal_id")
+  propertyId String?        @map("property_id")
+  documentId String         @unique @map("document_id")
+  /// Frozen terms the PDF was rendered from — the PDF is the artefact, this is
+  /// the queryable record of what was actually agreed.
+  terms      Json
+  createdAt  DateTime       @default(now()) @map("created_at")
+  signedAt   DateTime?      @map("signed_at")
+
+  deal       Deal?               @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  document   Document            @relation(fields: [documentId], references: [id])
+  signatures ContractSignature[]
+
+  @@index([dealId])
+  @@map("contracts")
+}
+
+/// Typed-signature e-sign (Plan §6.2 "simple typed-signature + audit trail at
+/// launch"). One row per required signatory; `signedAt` null means outstanding.
+model ContractSignature {
+  id         String    @id @default(cuid())
+  contractId String    @map("contract_id")
+  userId     String    @map("user_id")
+  /// party_role at signing time, frozen — roles can change, a signature cannot
+  partyRole  String    @map("party_role")
+  /// what the signatory typed; the legal weight of a typed signature is the
+  /// audit trail around it, so ip and timestamp are captured with it
+  typedName  String?   @map("typed_name")
+  signedAt   DateTime? @map("signed_at")
+  ip         String?
+
+  contract Contract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id])
+
+  @@unique([contractId, userId])
+  @@map("contract_signatures")
 }
 
 /// Append-only (Plan §2.4). No update/delete paths in application code.

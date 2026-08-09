@@ -465,7 +465,7 @@
       "post_deal": "Optional services — furniture, movers, insurance.",
       "application": "The renter submits their application and ID.",
       "landlord_approval": "The landlord reviews and approves the application.",
-      "contract": "Both parties sign the tenancy contract. Upload the signed contract.",
+      "contract": "Создайте договор ниже, затем обе стороны подпишут его электронно.",
       "move_in_checklist": "Confirm the move-in condition together. Completing this finalizes the tenancy.",
       "active_tenancy": "The tenancy is active.",
       "renewal_or_exit": "Handle renewal or the exit checklist."
@@ -520,7 +520,8 @@
       "commentPlaceholder": "Optional comment…",
       "submitRating": "Submit rating",
       "timeline": "Timeline",
-      "openChat": "Open deal chat"
+      "openChat": "Open deal chat",
+      "signFirst": "Обе стороны должны подписать договор, иначе этап не завершить."
     }
   },
   "search": {
@@ -916,6 +917,28 @@
       "accepted": "принято",
       "rejected": "отклонено",
       "withdrawn": "отозвано"
+    }
+  },
+  "contract": {
+    "title": "Договор аренды",
+    "none": "Договора пока нет. Создайте его по согласованным условиям — затем обе стороны подпишут его здесь.",
+    "generate": "Создать договор",
+    "generating": "Создаём…",
+    "openPdf": "Открыть PDF",
+    "rent": "Арендная плата",
+    "term": "Срок",
+    "deposit": "Депозит",
+    "months": "{n, plural, one {# месяц} few {# месяца} other {# месяцев}}",
+    "awaiting": "Ожидает подписи",
+    "signPrompt": "Подпишите договор",
+    "signHint": "Ввод вашего полного имени подписывает договор. Имя, время и IP-адрес фиксируются в документе.",
+    "typeYourName": "Фамилия и имя",
+    "sign": "Подписать",
+    "signing": "Подписываем…",
+    "status": {
+      "awaiting_signatures": "Ожидает подписей",
+      "signed": "Подписан",
+      "void": "Аннулирован"
     }
   }
 }

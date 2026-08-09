@@ -465,7 +465,7 @@
       "post_deal": "Optional services — furniture, movers, insurance.",
       "application": "The renter submits their application and ID.",
       "landlord_approval": "The landlord reviews and approves the application.",
-      "contract": "Both parties sign the tenancy contract. Upload the signed contract.",
+      "contract": "Generate the tenancy contract below, then both parties sign it electronically.",
       "move_in_checklist": "Confirm the move-in condition together. Completing this finalizes the tenancy.",
       "active_tenancy": "The tenancy is active.",
       "renewal_or_exit": "Handle renewal or the exit checklist."
@@ -520,7 +520,8 @@
       "commentPlaceholder": "Optional comment…",
       "submitRating": "Submit rating",
       "timeline": "Timeline",
-      "openChat": "Open deal chat"
+      "openChat": "Open deal chat",
+      "signFirst": "Both parties must sign the contract before this stage can complete."
     }
   },
   "search": {
@@ -916,6 +917,28 @@
       "accepted": "accepted",
       "rejected": "rejected",
       "withdrawn": "withdrawn"
+    }
+  },
+  "contract": {
+    "title": "Tenancy contract",
+    "none": "No contract yet. Generate the tenancy agreement from the agreed terms, then both parties sign it here.",
+    "generate": "Generate contract",
+    "generating": "Generating…",
+    "openPdf": "Open the PDF",
+    "rent": "Rent",
+    "term": "Term",
+    "deposit": "Deposit",
+    "months": "{n, plural, one {# month} other {# months}}",
+    "awaiting": "Awaiting signature",
+    "signPrompt": "Sign this contract",
+    "signHint": "Typing your full name signs the agreement. Your name, the time and your IP address are recorded on the document.",
+    "typeYourName": "Your full name",
+    "sign": "Sign",
+    "signing": "Signing…",
+    "status": {
+      "awaiting_signatures": "Awaiting signatures",
+      "signed": "Signed",
+      "void": "Void"
     }
   }
 }
