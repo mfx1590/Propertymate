@@ -172,29 +172,44 @@ export class RecommendationsService {
     }
 
     const price = Number(source.listPriceGbp ?? source.priceBaseGbp);
-    const fallback = await this.prisma.property.findMany({
-      where: {
-        id: { not: propertyId },
-        status: 'live',
-        deletedAt: null,
-        kind: source.kind,
-        regionId: source.regionId,
-        ...(source.bedrooms !== null ? { bedrooms: source.bedrooms } : {}),
-      },
-      orderBy: { createdAt: 'desc' },
-      take: limit * 3,
-      select: {
-        id: true, titleI18n: true, kind: true, bedrooms: true, bathrooms: true, areaM2: true,
-        priceBaseGbp: true, listPriceGbp: true, priceCurrency: true,
-        region: { select: { slug: true, nameI18n: true } },
-        media: { orderBy: { sortOrder: 'asc' }, take: 1, select: { url: true } },
-      },
-    });
+    const select = {
+      id: true, titleI18n: true, kind: true, bedrooms: true, bathrooms: true, areaM2: true,
+      priceBaseGbp: true, listPriceGbp: true, priceCurrency: true,
+      region: { select: { slug: true, nameI18n: true } },
+      media: { orderBy: { sortOrder: 'asc' as const }, take: 1, select: { url: true } },
+    };
 
-    // nearest by price within the same region/kind/bedrooms
-    const items = fallback
-      .map((p) => ({ p, delta: Math.abs(Number(p.listPriceGbp ?? p.priceBaseGbp) - price) }))
-      .sort((a, b) => a.delta - b.delta)
+    /**
+     * Widen until something is found: same region first, then the same kind
+     * anywhere. Filtering on an exact bedroom count leaves a 5-bed villa with
+     * an empty strip forever, so bedrooms rank the results instead of gating
+     * them — near neighbours beat nothing.
+     */
+    let candidates = await this.prisma.property.findMany({
+      where: { id: { not: propertyId }, status: 'live', deletedAt: null, kind: source.kind, regionId: source.regionId },
+      orderBy: { createdAt: 'desc' },
+      take: limit * 5,
+      select,
+    });
+    if (candidates.length === 0) {
+      candidates = await this.prisma.property.findMany({
+        where: { id: { not: propertyId }, status: 'live', deletedAt: null, kind: source.kind },
+        orderBy: { createdAt: 'desc' },
+        take: limit * 5,
+        select,
+      });
+    }
+
+    // closest bedroom count first, then closest price
+    const items = candidates
+      .map((p) => ({
+        p,
+        beds: source.bedrooms === null || p.bedrooms === null
+          ? 99
+          : Math.abs(p.bedrooms - source.bedrooms),
+        priceDelta: Math.abs(Number(p.listPriceGbp ?? p.priceBaseGbp) - price),
+      }))
+      .sort((a, b) => a.beds - b.beds || a.priceDelta - b.priceDelta)
       .slice(0, limit)
       .map(({ p }) => this.shape(p, null));
 
