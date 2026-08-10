@@ -25,6 +25,7 @@ export interface ListingDocument {
   coverUrl: string | null;
   createdAtTs: number;
   /** §8 ranking inputs — see RANKING_RULES. */
+  featured: number;
   freshnessTier: number;
   completenessScore: number;
   listerScore: number;
@@ -48,6 +49,10 @@ const RANKING_RULES = [
   'attribute',
   'sort',
   'exactness',
+  // A paid/earned boost reorders VERIFIED supply only — every document in this
+  // index is already a live, verified listing, so featuring can never put an
+  // unverified one in front of a buyer (§8).
+  'featured:desc',
   'freshnessTier:desc',
   'completenessScore:desc',
   'listerScore:desc',
@@ -82,7 +87,7 @@ export class SearchService implements OnModuleInit {
       await this.index.updateSettings({
         filterableAttributes: [
           'kind', 'regionSlug', 'bedrooms', 'bathrooms', 'deedType', 'furnished',
-          'priceBaseGbp', 'areaM2', 'features', '_geo',
+          'priceBaseGbp', 'areaM2', 'features', '_geo', 'featured',
         ],
         sortableAttributes: ['priceBaseGbp', 'createdAtTs', 'pricePerM2'],
         searchableAttributes: ['title', 'description', 'regionName', 'district'],
@@ -273,6 +278,7 @@ export class SearchService implements OnModuleInit {
       features: Array.isArray(p.features) ? (p.features as string[]) : [],
       coverUrl: p.media[0]?.url ?? null,
       createdAtTs: p.createdAt.getTime(),
+      featured: p.featuredUntil && p.featuredUntil > new Date() ? 1 : 0,
       freshnessTier: this.freshnessTier(p.availabilityConfirmedAt, p.createdAt),
       completenessScore: this.completeness(p),
       // Owner-direct listings have no agent profile — a neutral 50 keeps them

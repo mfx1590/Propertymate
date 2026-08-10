@@ -11,6 +11,7 @@ import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
 import { ProfilesService } from '../users/profiles.service';
+import { ReferralsService } from '../referrals/referrals.service';
 import { TokenService, TokenPair } from './token.service';
 import { OTP_PROVIDER, OtpProvider } from './otp/otp.provider';
 import { AccountType } from './dto/auth.dto';
@@ -27,6 +28,7 @@ export class AuthService {
     private readonly audit: AuditService,
     private readonly config: ConfigService,
     private readonly profilesService: ProfilesService,
+    private readonly referrals: ReferralsService,
     @Inject(OTP_PROVIDER) private readonly otpProvider: OtpProvider,
   ) {}
 
@@ -53,6 +55,7 @@ export class AuthService {
     code: string,
     ip?: string,
     accountType?: AccountType,
+    referralCode?: string,
   ): Promise<TokenPair & { isNewUser: boolean }> {
     const otp = await this.prisma.otpCode.findFirst({
       where: { phone, usedAt: null, expiresAt: { gt: new Date() } },
@@ -78,6 +81,9 @@ export class AuthService {
       });
       await this.assignDefaultCustomerRole(user.id);
       await this.assignAccountType(user.id, accountType, ip);
+      // §8: attribution happens only on account CREATION — an existing user
+      // signing in on someone's link is not a referral
+      await this.referrals.attachOnSignup(user.id, referralCode, ip);
       await this.audit.log({
         actorId: user.id,
         action: 'user.register.otp',
@@ -113,6 +119,7 @@ export class AuthService {
     locale = 'en',
     ip?: string,
     accountType?: AccountType,
+    referralCode?: string,
   ): Promise<TokenPair> {
     const existing = await this.prisma.user.findUnique({ where: { email } });
     if (existing) throw new ConflictException('Email already registered');
@@ -122,6 +129,7 @@ export class AuthService {
     });
     await this.assignDefaultCustomerRole(user.id);
     await this.assignAccountType(user.id, accountType, ip);
+    await this.referrals.attachOnSignup(user.id, referralCode, ip);
     await this.audit.log({
       actorId: user.id,
       action: 'user.register.email',

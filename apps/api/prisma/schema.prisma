@@ -217,6 +217,9 @@ model User {
   email           String?    @unique
   passwordHash    String?    @map("password_hash")
   locale          String     @default("en")
+  /// Personal invite code (Plan §8). Assigned on first use, not at signup, so
+  /// existing accounts get one the moment they open the referrals page.
+  referralCode    String?    @unique @map("referral_code")
   avatarUrl       String?    @map("avatar_url")
   status          UserStatus @default(active)
   createdAt       DateTime   @default(now()) @map("created_at")
@@ -239,6 +242,9 @@ model User {
   notificationPrefs  NotificationPreference[]
   pushTokens         PushToken[]
   contractSignatures ContractSignature[]
+  referralsMade      Referral[]                @relation("ReferralReferrer")
+  referralReceived   Referral?                 @relation("ReferralReferee")
+  featuredCredits    FeaturedCredit[]
   conversationsIn    ConversationParticipant[]
   messagesSent       Message[]
   viewingsAsCustomer Viewing[]                 @relation("ViewingCustomer")
@@ -511,6 +517,9 @@ model Property {
   agentCommissionGbp      Decimal?       @map("agent_commission_gbp") @db.Decimal(14, 2)
   listPriceGbp            Decimal?       @map("list_price_gbp") @db.Decimal(14, 2)
   publishedByAgentId      String?        @map("published_by_agent_id")
+  /// §8/§9 featured placement. A boost only ever reorders LIVE listings —
+  /// it can never put an unverified one in front of a buyer.
+  featuredUntil           DateTime?      @map("featured_until")
   availabilityConfirmedAt DateTime?      @map("availability_confirmed_at")
   viewCount               Int            @default(0) @map("view_count")
   saveCount               Int            @default(0) @map("save_count")
@@ -979,6 +988,21 @@ model PushToken {
   @@map("push_tokens")
 }
 
+enum ReferralStatus {
+  /// invitee signed up; the qualifying action has not happened yet
+  pending
+  /// invitee published a verified listing — the reward is earned (§8)
+  qualified
+  /// invitee never qualified within the window
+  expired
+}
+
+enum CreditStatus {
+  available
+  used
+  expired
+}
+
 enum ContractKind {
   rental_tenancy
   agent_mandate
@@ -1033,6 +1057,49 @@ model ContractSignature {
 
   @@unique([contractId, userId])
   @@map("contract_signatures")
+}
+
+/// Invite tracking (Plan §8 "unique invite codes per user").
+/// One row per invitee, so `refereeId` is unique — a person can be referred
+/// once, and a race between two codes resolves to whoever landed first.
+model Referral {
+  id          String         @id @default(cuid())
+  referrerId  String         @map("referrer_id")
+  refereeId   String         @unique @map("referee_id")
+  /// the code as typed at signup, kept even if the referrer's code is reissued
+  code        String
+  status      ReferralStatus @default(pending)
+  qualifiedAt DateTime?      @map("qualified_at")
+  /// what the invitee did to qualify it — a published listing id (§8)
+  qualifyingPropertyId String? @map("qualifying_property_id")
+  createdAt   DateTime       @default(now()) @map("created_at")
+
+  referrer User @relation("ReferralReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
+  referee  User @relation("ReferralReferee", fields: [refereeId], references: [id], onDelete: Cascade)
+
+  @@index([referrerId, status])
+  @@map("referrals")
+}
+
+/// A featured-listing credit (Plan §8 reward, §9 `featured_slots` seam).
+/// Earned, not bought — payments are Phase 3, so this table is deliberately
+/// independent of any billing concept.
+model FeaturedCredit {
+  id         String       @id @default(cuid())
+  userId     String       @map("user_id")
+  status     CreditStatus @default(available)
+  /// `referral` today; `purchase` when Phase 3 payments land
+  source     String       @default("referral")
+  referralId String?      @map("referral_id")
+  usedOnPropertyId String? @map("used_on_property_id")
+  usedAt     DateTime?    @map("used_at")
+  expiresAt  DateTime?    @map("expires_at")
+  createdAt  DateTime     @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@map("featured_credits")
 }
 
 /// Append-only (Plan §2.4). No update/delete paths in application code.

@@ -18,6 +18,7 @@ const SCHEDULE: { name: string; pattern: string }[] = [
   { name: 'rating-reveal', pattern: '0 1 * * *' }, // 01:00 — reveal stale one-sided ratings
   { name: 'reputation', pattern: '0 2 * * *' }, // 02:00 — after reveals, so scores see them
   { name: 'recommendations', pattern: '0 3 * * *' }, // 03:00 — co-visitation rebuild (§8)
+  { name: 'featured-expiry', pattern: '0 4 * * *' }, // 04:00 — lapse credits + featured windows (§8)
 ];
 
 @Injectable()

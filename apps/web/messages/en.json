@@ -59,7 +59,8 @@
       "disputes": "Disputes",
       "analytics": "Performance",
       "platformAnalytics": "Platform analytics",
-      "notificationSettings": "Notification settings"
+      "notificationSettings": "Notification settings",
+      "referrals": "Invite & earn"
     },
     "roles": {
       "customer": "Customer",
@@ -348,7 +349,8 @@
       "continue": "Continue draft",
       "findAgent": "Find my agent →",
       "confirmAvailability": "Confirm still available",
-      "view": "View"
+      "view": "View",
+      "feature": "Feature"
     },
     "detail": {
       "verified": "Verified",
@@ -939,6 +941,34 @@
       "awaiting_signatures": "Awaiting signatures",
       "signed": "Signed",
       "void": "Void"
+    }
+  },
+  "referrals": {
+    "title": "Invite & earn",
+    "subtitle": "Share your code. When someone you invite publishes a verified listing, you earn a featured-listing credit.",
+    "yourCode": "Your invite code",
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "howItWorks": "The code applies when a new account is created — signing in on the link does nothing.",
+    "invited": "Invited",
+    "qualified": "Qualified",
+    "creditsAvailable": "Credits available",
+    "creditsUsed": "Credits used",
+    "invites": "Your invites",
+    "noInvites": "Nobody has signed up on your code yet.",
+    "inviteN": "Invite #{n}",
+    "credits": "Featured credits",
+    "creditsHint": "Spend a credit from your listings board to feature a live listing.",
+    "noCredits": "No credits yet.",
+    "featuredCredit": "Featured listing",
+    "expires": "expires {date}",
+    "usedOn": "used {date}",
+    "status": {
+      "pending": "Signed up",
+      "qualified": "Qualified",
+      "expired": "Expired",
+      "available": "Available",
+      "used": "Used"
     }
   }
 }

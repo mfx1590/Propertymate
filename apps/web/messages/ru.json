@@ -59,7 +59,8 @@
       "disputes": "Disputes",
       "analytics": "Показатели",
       "platformAnalytics": "Аналитика платформы",
-      "notificationSettings": "Настройки уведомлений"
+      "notificationSettings": "Настройки уведомлений",
+      "referrals": "Приглашения"
     },
     "roles": {
       "customer": "Customer",
@@ -348,7 +349,8 @@
       "continue": "Continue draft",
       "findAgent": "Find my agent →",
       "confirmAvailability": "Confirm still available",
-      "view": "View"
+      "view": "View",
+      "feature": "Продвинуть"
     },
     "detail": {
       "verified": "Verified",
@@ -939,6 +941,34 @@
       "awaiting_signatures": "Ожидает подписей",
       "signed": "Подписан",
       "void": "Аннулирован"
+    }
+  },
+  "referrals": {
+    "title": "Приглашайте и получайте",
+    "subtitle": "Поделитесь кодом. Когда приглашённый опубликует проверенное объявление, вы получаете кредит на продвижение.",
+    "yourCode": "Ваш код",
+    "copyLink": "Копировать ссылку",
+    "copied": "Скопировано",
+    "howItWorks": "Код действует только при создании нового аккаунта — вход по ссылке ничего не даёт.",
+    "invited": "Приглашено",
+    "qualified": "Засчитано",
+    "creditsAvailable": "Доступно кредитов",
+    "creditsUsed": "Использовано",
+    "invites": "Ваши приглашения",
+    "noInvites": "По вашему коду пока никто не зарегистрировался.",
+    "inviteN": "Приглашение №{n}",
+    "credits": "Кредиты на продвижение",
+    "creditsHint": "Потратьте кредит на доске объявлений, чтобы продвинуть активное объявление.",
+    "noCredits": "Кредитов пока нет.",
+    "featuredCredit": "Продвижение объявления",
+    "expires": "до {date}",
+    "usedOn": "использован {date}",
+    "status": {
+      "pending": "Зарегистрировался",
+      "qualified": "Засчитано",
+      "expired": "Истёк",
+      "available": "Доступен",
+      "used": "Использован"
     }
   }
 }

@@ -59,7 +59,8 @@
       "disputes": "Disputes",
       "analytics": "عملکرد",
       "platformAnalytics": "تحلیل پلتفرم",
-      "notificationSettings": "تنظیمات اعلان"
+      "notificationSettings": "تنظیمات اعلان",
+      "referrals": "دعوت و جایزه"
     },
     "roles": {
       "customer": "Customer",
@@ -348,7 +349,8 @@
       "continue": "Continue draft",
       "findAgent": "Find my agent →",
       "confirmAvailability": "Confirm still available",
-      "view": "View"
+      "view": "View",
+      "feature": "ویژه کن"
     },
     "detail": {
       "verified": "Verified",
@@ -939,6 +941,34 @@
       "awaiting_signatures": "در انتظار امضا",
       "signed": "امضاشده",
       "void": "باطل"
+    }
+  },
+  "referrals": {
+    "title": "دعوت کنید و جایزه بگیرید",
+    "subtitle": "کد خود را به اشتراک بگذارید. وقتی کسی که دعوت کرده‌اید آگهی تأییدشده منتشر کند، اعتبار آگهی ویژه می‌گیرید.",
+    "yourCode": "کد دعوت شما",
+    "copyLink": "کپی پیوند",
+    "copied": "کپی شد",
+    "howItWorks": "کد فقط هنگام ساخت حساب جدید اعمال می‌شود — ورود با پیوند اثری ندارد.",
+    "invited": "دعوت‌شده",
+    "qualified": "واجد شرایط",
+    "creditsAvailable": "اعتبار موجود",
+    "creditsUsed": "اعتبار مصرف‌شده",
+    "invites": "دعوت‌های شما",
+    "noInvites": "هنوز کسی با کد شما ثبت‌نام نکرده است.",
+    "inviteN": "دعوت #{n}",
+    "credits": "اعتبار آگهی ویژه",
+    "creditsHint": "از صفحهٔ آگهی‌ها یک اعتبار خرج کنید تا آگهی منتشرشده ویژه شود.",
+    "noCredits": "هنوز اعتباری نیست.",
+    "featuredCredit": "آگهی ویژه",
+    "expires": "انقضا {date}",
+    "usedOn": "مصرف شد {date}",
+    "status": {
+      "pending": "ثبت‌نام کرد",
+      "qualified": "واجد شرایط",
+      "expired": "منقضی",
+      "available": "موجود",
+      "used": "مصرف‌شده"
     }
   }
 }

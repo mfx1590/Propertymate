@@ -25,6 +25,12 @@ export class VerifyOtpDto {
   @IsOptional()
   @IsIn(ACCOUNT_TYPES as unknown as string[])
   accountType?: AccountType;
+
+  /** invite code the signup arrived on (Plan §8); ignored for existing accounts */
+  @IsOptional()
+  @IsString()
+  @Length(4, 16)
+  referralCode?: string;
 }
 
 export class RegisterDto {
@@ -42,6 +48,12 @@ export class RegisterDto {
   @IsOptional()
   @IsIn(ACCOUNT_TYPES as unknown as string[])
   accountType?: AccountType;
+
+  /** invite code the signup arrived on (Plan §8) */
+  @IsOptional()
+  @IsString()
+  @Length(4, 16)
+  referralCode?: string;
 }
 
 export class LoginDto {

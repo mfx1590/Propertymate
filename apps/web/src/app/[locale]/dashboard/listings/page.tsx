@@ -22,6 +22,7 @@ export default function MyListingsPage() {
   const locale = useLocale();
   const [items, setItems] = useState<Property[] | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [featureError, setFeatureError] = useState<string | null>(null);
 
   const load = () => apiGet<Property[]>('/properties/mine').then(setItems);
   useEffect(() => {
@@ -33,6 +34,20 @@ export default function MyListingsPage() {
     try {
       await apiPost(`/properties/${id}/confirm-availability`);
       await load();
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  /** §8: spend an earned featured credit on this listing. */
+  const feature = async (id: string) => {
+    setBusyId(id);
+    setFeatureError(null);
+    try {
+      await apiPost(`/properties/${id}/feature`, {});
+      await load();
+    } catch (e) {
+      setFeatureError(e instanceof Error ? e.message : String(e));
     } finally {
       setBusyId(null);
     }
@@ -53,6 +68,9 @@ export default function MyListingsPage() {
       </div>
 
       {items.length === 0 && <p className="mt-8 text-gray-500">{t('board.empty')}</p>}
+      {featureError && (
+        <p className="mb-3 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{featureError}</p>
+      )}
 
       <ul className="mt-6 space-y-3">
         {items.map((p) => (
@@ -94,6 +112,17 @@ export default function MyListingsPage() {
                     onClick={() => confirmAvailability(p.id)}
                   >
                     {t('board.confirmAvailability')}
+                  </button>
+                )}
+                {/* §8: spend an earned featured credit. Live only — a boost
+                    reorders verified supply, it never promotes unverified. */}
+                {p.status === 'live' && (
+                  <button
+                    className="font-medium text-brand-600 disabled:opacity-50"
+                    disabled={busyId === p.id}
+                    onClick={() => feature(p.id)}
+                  >
+                    {t('board.feature')}
                   </button>
                 )}
                 {p.status !== 'draft' && (

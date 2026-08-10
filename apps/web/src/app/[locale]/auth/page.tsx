@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { apiPost, setTokens } from '../../../lib/api';
 import { useAuth } from '../../../lib/auth';
@@ -19,6 +19,16 @@ export default function AuthPage() {
 
   // account type — chosen once, at registration
   const [accountType, setAccountType] = useState('customer');
+
+  // §8: an invite link carries ?ref=CODE. Read from the URL after hydration
+  // rather than via useSearchParams — that hook opts the whole page out of
+  // static generation, and this page is otherwise perfectly prerenderable.
+  // It is only ever applied when the account is actually created.
+  const [referralCode, setReferralCode] = useState<string | undefined>();
+  useEffect(() => {
+    const ref = new URLSearchParams(window.location.search).get('ref');
+    if (ref) setReferralCode(ref.trim().toUpperCase());
+  }, []);
 
   // phone flow
   const [phone, setPhone] = useState('');
@@ -77,13 +87,13 @@ export default function AuthPage() {
 
   const verifyCode = () =>
     run(async () => {
-      await finishAuth(await apiPost<TokenPair>('/auth/otp/verify', { phone, code, accountType }));
+      await finishAuth(await apiPost<TokenPair>('/auth/otp/verify', { phone, code, accountType, referralCode }));
     });
 
   const submitEmail = () =>
     run(async () => {
       const body =
-        mode === 'login' ? { email, password } : { email, password, accountType };
+        mode === 'login' ? { email, password } : { email, password, accountType, referralCode };
       await finishAuth(await apiPost<TokenPair>(mode === 'login' ? '/auth/login' : '/auth/register', body));
     });
 

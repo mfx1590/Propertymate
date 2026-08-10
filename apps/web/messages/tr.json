@@ -59,7 +59,8 @@
       "disputes": "İtirazlar",
       "analytics": "Performans",
       "platformAnalytics": "Platform analitiği",
-      "notificationSettings": "Bildirim ayarları"
+      "notificationSettings": "Bildirim ayarları",
+      "referrals": "Davet et, kazan"
     },
     "roles": {
       "customer": "Müşteri",
@@ -348,7 +349,8 @@
       "continue": "Taslağa devam et",
       "findAgent": "Danışmanımı bul →",
       "confirmAvailability": "Hâlâ satılık/kiralık onayla",
-      "view": "Görüntüle"
+      "view": "Görüntüle",
+      "feature": "Öne çıkar"
     },
     "detail": {
       "verified": "Doğrulanmış",
@@ -939,6 +941,34 @@
       "awaiting_signatures": "İmza bekleniyor",
       "signed": "İmzalandı",
       "void": "Geçersiz"
+    }
+  },
+  "referrals": {
+    "title": "Davet et, kazan",
+    "subtitle": "Kodunuzu paylaşın. Davet ettiğiniz biri doğrulanmış bir ilan yayınladığında öne çıkarılmış ilan hakkı kazanırsınız.",
+    "yourCode": "Davet kodunuz",
+    "copyLink": "Bağlantıyı kopyala",
+    "copied": "Kopyalandı",
+    "howItWorks": "Kod yalnızca yeni hesap oluşturulurken geçerlidir — bağlantıyla giriş yapmak bir şey değiştirmez.",
+    "invited": "Davet edilen",
+    "qualified": "Hak kazanan",
+    "creditsAvailable": "Kullanılabilir hak",
+    "creditsUsed": "Kullanılan hak",
+    "invites": "Davetleriniz",
+    "noInvites": "Henüz kodunuzla kimse kayıt olmadı.",
+    "inviteN": "Davet #{n}",
+    "credits": "Öne çıkarma hakları",
+    "creditsHint": "İlan panonuzdan bir hakkı kullanarak yayındaki bir ilanı öne çıkarın.",
+    "noCredits": "Henüz hak yok.",
+    "featuredCredit": "Öne çıkarılmış ilan",
+    "expires": "bitiş {date}",
+    "usedOn": "kullanıldı {date}",
+    "status": {
+      "pending": "Kayıt oldu",
+      "qualified": "Hak kazandı",
+      "expired": "Süresi doldu",
+      "available": "Kullanılabilir",
+      "used": "Kullanıldı"
     }
   }
 }
