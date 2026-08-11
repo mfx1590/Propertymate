@@ -23,7 +23,8 @@
     "test:e2e:leads": "node test/e2e/lead-inbox-flows.mjs",
     "test:e2e:recommendations": "node test/e2e/recommendation-flows.mjs",
     "test:e2e:contracts": "node test/e2e/contract-esign-flows.mjs",
-    "test:e2e:referrals": "node test/e2e/referral-flows.mjs"
+    "test:e2e:referrals": "node test/e2e/referral-flows.mjs",
+    "test:e2e:admin": "node test/e2e/admin-console-flows.mjs"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

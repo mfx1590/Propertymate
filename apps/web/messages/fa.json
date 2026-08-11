@@ -971,5 +971,55 @@
       "available": "موجود",
       "used": "مصرف‌شده"
     }
+  },
+  "adminUsers": {
+    "title": "کاربران",
+    "subtitle": "جست‌وجوی حساب‌ها، تعلیق یا مسدودسازی با ذکر دلیل، و اعطای نقش.",
+    "searchPlaceholder": "جست‌وجو با تلفن یا ایمیل",
+    "allStatuses": "همهٔ وضعیت‌ها",
+    "empty": "کاربری یافت نشد.",
+    "joined": "تاریخ عضویت",
+    "reactivate": "فعال‌سازی مجدد",
+    "suspend": "تعلیق",
+    "ban": "مسدود",
+    "reasonPrompt": "دلیل (در گزارش حسابرسی ثبت می‌شود):",
+    "reasonRequired": "ذکر دلیل الزامی است.",
+    "roleAction": "نقش‌ها…",
+    "grantRole": "اعطای {role}",
+    "revokeRole": "لغو {role}",
+    "status": {
+      "active": "فعال",
+      "suspended": "معلق",
+      "banned": "مسدود"
+    }
+  },
+  "adminDisputes": {
+    "title": "اختلافات",
+    "subtitle": "هر پرونده، همراه با مستنداتی که پلتفرم در اختیار دارد.",
+    "allStatuses": "همهٔ وضعیت‌ها",
+    "empty": "اختلافی نیست.",
+    "openEvidence": "مشاهدهٔ مستندات",
+    "evidence": "پروندهٔ مستندات",
+    "close": "بستن",
+    "timeline": "خط زمانی معامله",
+    "documents": "مدارک",
+    "noDocuments": "مدرکی پیوست نشده.",
+    "chatExport": "خروجی گفتوگو",
+    "noMessages": "پیامی نیست.",
+    "scrubbed": "اطلاعات تماس پنهان شد",
+    "resolution": "تصمیم",
+    "notePlaceholder": "چه تصمیمی گرفتید و چرا",
+    "upheldHint": "تأیید اختلاف به زیان امتیاز رتبه‌بندی طرف مقابل ثبت می‌شود.",
+    "uphold": "تأیید",
+    "dismiss": "رد",
+    "investigate": "در دست بررسی",
+    "resolved": "رسیدگی‌شده",
+    "status": {
+      "open": "باز",
+      "investigating": "در حال بررسی",
+      "resolved_upheld": "تأییدشده",
+      "resolved_dismissed": "ردشده",
+      "withdrawn": "پس‌گرفته"
+    }
   }
 }

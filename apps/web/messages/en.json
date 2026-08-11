@@ -971,5 +971,55 @@
       "available": "Available",
       "used": "Used"
     }
+  },
+  "adminUsers": {
+    "title": "Users",
+    "subtitle": "Search accounts, suspend or ban with a reason, and grant roles.",
+    "searchPlaceholder": "Search by phone or email",
+    "allStatuses": "All statuses",
+    "empty": "No users match.",
+    "joined": "Joined",
+    "reactivate": "Reactivate",
+    "suspend": "Suspend",
+    "ban": "Ban",
+    "reasonPrompt": "Reason (recorded in the audit log):",
+    "reasonRequired": "A reason is required.",
+    "roleAction": "Roles…",
+    "grantRole": "Grant {role}",
+    "revokeRole": "Revoke {role}",
+    "status": {
+      "active": "Active",
+      "suspended": "Suspended",
+      "banned": "Banned"
+    }
+  },
+  "adminDisputes": {
+    "title": "Disputes",
+    "subtitle": "Every case, with the evidence the platform already holds.",
+    "allStatuses": "All statuses",
+    "empty": "No disputes.",
+    "openEvidence": "Open evidence",
+    "evidence": "Evidence bundle",
+    "close": "Close",
+    "timeline": "Deal timeline",
+    "documents": "Documents",
+    "noDocuments": "No documents attached.",
+    "chatExport": "Chat export",
+    "noMessages": "No messages.",
+    "scrubbed": "contact masked",
+    "resolution": "Resolution",
+    "notePlaceholder": "What you decided and why",
+    "upheldHint": "Upholding a dispute counts against the respondent ranking score.",
+    "uphold": "Uphold",
+    "dismiss": "Dismiss",
+    "investigate": "Mark investigating",
+    "resolved": "Resolved",
+    "status": {
+      "open": "Open",
+      "investigating": "Investigating",
+      "resolved_upheld": "Upheld",
+      "resolved_dismissed": "Dismissed",
+      "withdrawn": "Withdrawn"
+    }
   }
 }

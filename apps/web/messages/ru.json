@@ -971,5 +971,55 @@
       "available": "Доступен",
       "used": "Использован"
     }
+  },
+  "adminUsers": {
+    "title": "Пользователи",
+    "subtitle": "Поиск аккаунтов, блокировка с указанием причины и выдача ролей.",
+    "searchPlaceholder": "Поиск по телефону или почте",
+    "allStatuses": "Все статусы",
+    "empty": "Ничего не найдено.",
+    "joined": "Регистрация",
+    "reactivate": "Восстановить",
+    "suspend": "Приостановить",
+    "ban": "Заблокировать",
+    "reasonPrompt": "Причина (запишется в журнал):",
+    "reasonRequired": "Нужна причина.",
+    "roleAction": "Роли…",
+    "grantRole": "Выдать {role}",
+    "revokeRole": "Снять {role}",
+    "status": {
+      "active": "Активен",
+      "suspended": "Приостановлен",
+      "banned": "Заблокирован"
+    }
+  },
+  "adminDisputes": {
+    "title": "Споры",
+    "subtitle": "Каждое дело с доказательствами, которые уже есть у платформы.",
+    "allStatuses": "Все статусы",
+    "empty": "Споров нет.",
+    "openEvidence": "Открыть доказательства",
+    "evidence": "Материалы дела",
+    "close": "Закрыть",
+    "timeline": "Хронология сделки",
+    "documents": "Документы",
+    "noDocuments": "Документов нет.",
+    "chatExport": "Выгрузка чата",
+    "noMessages": "Сообщений нет.",
+    "scrubbed": "контакт скрыт",
+    "resolution": "Решение",
+    "notePlaceholder": "Что решено и почему",
+    "upheldHint": "Удовлетворённый спор снижает рейтинг ответчика.",
+    "uphold": "Удовлетворить",
+    "dismiss": "Отклонить",
+    "investigate": "На рассмотрение",
+    "resolved": "Решено",
+    "status": {
+      "open": "Открыт",
+      "investigating": "Рассматривается",
+      "resolved_upheld": "Удовлетворён",
+      "resolved_dismissed": "Отклонён",
+      "withdrawn": "Отозван"
+    }
   }
 }

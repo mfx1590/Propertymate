@@ -28,6 +28,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { LeadsModule } from './modules/leads/leads.module';
 import { ContractsModule } from './modules/contracts/contracts.module';
 import { ReferralsModule } from './modules/referrals/referrals.module';
+import { DisputesModule } from './modules/disputes/disputes.module';
 import { JobsModule } from './jobs/jobs.module';
 
 @Module({
@@ -59,6 +60,7 @@ import { JobsModule } from './jobs/jobs.module';
     LeadsModule,
     ContractsModule,
     ReferralsModule,
+    DisputesModule,
     JobsModule,
   ],
   providers: [

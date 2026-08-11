@@ -971,5 +971,55 @@
       "available": "Kullanılabilir",
       "used": "Kullanıldı"
     }
+  },
+  "adminUsers": {
+    "title": "Kullanıcılar",
+    "subtitle": "Hesapları arayın, gerekçeyle askıya alın veya yasaklayın, rol verin.",
+    "searchPlaceholder": "Telefon veya e-posta ile ara",
+    "allStatuses": "Tüm durumlar",
+    "empty": "Eşleşen kullanıcı yok.",
+    "joined": "Katılım",
+    "reactivate": "Yeniden etkinleştir",
+    "suspend": "Askıya al",
+    "ban": "Yasakla",
+    "reasonPrompt": "Gerekçe (denetim kaydına yazılır):",
+    "reasonRequired": "Gerekçe zorunludur.",
+    "roleAction": "Roller…",
+    "grantRole": "{role} ver",
+    "revokeRole": "{role} kaldır",
+    "status": {
+      "active": "Aktif",
+      "suspended": "Askıda",
+      "banned": "Yasaklı"
+    }
+  },
+  "adminDisputes": {
+    "title": "Uyuşmazlıklar",
+    "subtitle": "Her dosya, platformun zaten sahip olduğu kanıtlarla.",
+    "allStatuses": "Tüm durumlar",
+    "empty": "Uyuşmazlık yok.",
+    "openEvidence": "Kanıtları aç",
+    "evidence": "Kanıt dosyası",
+    "close": "Kapat",
+    "timeline": "İşlem zaman çizelgesi",
+    "documents": "Belgeler",
+    "noDocuments": "Ekli belge yok.",
+    "chatExport": "Sohbet dökümü",
+    "noMessages": "Mesaj yok.",
+    "scrubbed": "iletişim gizlendi",
+    "resolution": "Karar",
+    "notePlaceholder": "Kararınız ve gerekçesi",
+    "upheldHint": "Uyuşmazlığı haklı bulmak, karşı tarafın sıralama puanını düşürür.",
+    "uphold": "Haklı bul",
+    "dismiss": "Reddet",
+    "investigate": "İncelemeye al",
+    "resolved": "Sonuçlandı",
+    "status": {
+      "open": "Açık",
+      "investigating": "İnceleniyor",
+      "resolved_upheld": "Haklı bulundu",
+      "resolved_dismissed": "Reddedildi",
+      "withdrawn": "Geri çekildi"
+    }
   }
 }
