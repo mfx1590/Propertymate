@@ -30,7 +30,18 @@ export class SettingsService {
       minTermMonths: await this.get('assignment.min_term_months', 1),
       maxTermMonths: await this.get('assignment.max_term_months', 6),
       resaleMode: await this.get('resale.mode', 'agent_only'),
+      offersEnabled: await this.offersEnabled(),
     };
+  }
+
+  /**
+   * Offers are switched OFF by default (change log 2026-08-10). Everything
+   * behind them — negotiation, and the offer-accept that opens a property deal
+   * room — is intact and comes back the moment this is flipped, rather than
+   * being deleted and needing a rebuild.
+   */
+  async offersEnabled(): Promise<boolean> {
+    return this.get('offers.enabled', false);
   }
 
   // ── profit bands (§13.5) ─────────────────────────────────────────

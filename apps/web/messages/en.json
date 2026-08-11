@@ -425,7 +425,8 @@
     "reject": "Reject",
     "counter": "Counter",
     "counterAmount": "Counter (GBP)",
-    "withdraw": "Withdraw"
+    "withdraw": "Withdraw",
+    "disabled": "New offers are switched off on the platform right now. Anything already in progress is still shown below."
   },
   "deals": {
     "title": "Deals",

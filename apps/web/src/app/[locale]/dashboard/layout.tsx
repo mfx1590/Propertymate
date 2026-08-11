@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { apiGet } from '../../../lib/api';
 import { useAuth } from '../../../lib/auth';
 import { menuForRoles } from '../../../modules/registry';
 import { Link, useRouter, usePathname } from '../../../i18n/routing';
@@ -16,11 +17,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     if (!loading && !me) router.replace('/auth');
   }, [loading, me, router]);
 
+  // Offers are behind an admin toggle (change log 2026-08-10). The nav entry
+  // is driven by the flag rather than removed from the registry, so flipping
+  // the switch brings it back with no deploy.
+  const [offersEnabled, setOffersEnabled] = useState(false);
+  useEffect(() => {
+    apiGet<{ offersEnabled: boolean }>('/settings/public')
+      .then((s) => setOffersEnabled(Boolean(s.offersEnabled)))
+      .catch(() => setOffersEnabled(false));
+  }, []);
+
   if (loading || !me) {
     return <div className="flex min-h-screen items-center justify-center text-gray-400">…</div>;
   }
 
-  const menu = menuForRoles(me.userRoles.map((ur) => ur.role.key));
+  const menu = menuForRoles(me.userRoles.map((ur) => ur.role.key)).filter(
+    (item) => offersEnabled || item.href !== '/dashboard/offers',
+  );
 
   return (
     <div className="flex min-h-screen">

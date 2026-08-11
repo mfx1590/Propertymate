@@ -425,7 +425,8 @@
     "reject": "Reject",
     "counter": "Counter",
     "counterAmount": "Counter (GBP)",
-    "withdraw": "Withdraw"
+    "withdraw": "Withdraw",
+    "disabled": "در حال حاضر ثبت پیشنهاد جدید در پلتفرم غیرفعال است. مواردی که در جریان هستند همچنان در پایین نمایش داده می‌شوند."
   },
   "deals": {
     "title": "Deals",

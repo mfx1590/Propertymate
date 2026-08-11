@@ -23,6 +23,15 @@ export function ActionBox({ propertyId }: { propertyId: string }) {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Offers are behind an admin toggle (change log 2026-08-10). Default to off
+  // so the tab never flashes in before the flag arrives.
+  const [offersEnabled, setOffersEnabled] = useState(false);
+
+  useEffect(() => {
+    apiGet<{ offersEnabled: boolean }>('/settings/public')
+      .then((s) => setOffersEnabled(Boolean(s.offersEnabled)))
+      .catch(() => setOffersEnabled(false));
+  }, []);
 
   const run = async (fn: () => Promise<void>, doneMsg: string) => {
     if (!getAccessToken()) {
@@ -48,8 +57,13 @@ export function ActionBox({ propertyId }: { propertyId: string }) {
   return (
     <div className="space-y-2 rounded-xl border border-gray-200 p-4">
       {done && <p className="rounded-md bg-emerald-50 p-2 text-sm text-emerald-700">{done}</p>}
-      <div className="grid grid-cols-3 gap-1 text-xs font-medium">
-        {(['inquire', 'viewing', 'offer'] as const).map((k) => (
+      <div
+        className={`grid gap-1 text-xs font-medium ${offersEnabled ? 'grid-cols-3' : 'grid-cols-2'}`}
+      >
+        {(offersEnabled
+          ? (['inquire', 'viewing', 'offer'] as const)
+          : (['inquire', 'viewing'] as const)
+        ).map((k) => (
           <button
             key={k}
             onClick={() => setTab(tab === k ? null : k)}

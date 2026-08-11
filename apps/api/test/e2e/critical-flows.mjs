@@ -79,6 +79,18 @@ async function main() {
   for (let i = 0; i < 30; i++) { try { await req('GET', '/health'); break; } catch { await sleep(1000); } }
 
   const admin = (await req('POST', '/auth/login', { body: { email: 'admin@propverify.local', password: 'Admin123!' } })).accessToken;
+  // Offers ship disabled (change log 2026-08-10). Prove the default holds and
+  // the gate bites, then turn it on — the rest of this suite exercises the
+  // negotiation and deal machinery that lives behind the toggle.
+  await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: false } });
+  const publicFlags = await req('GET', '/settings/public');
+  ok('0a offers are disabled by default', publicFlags.offersEnabled === false, `${publicFlags.offersEnabled}`);
+  await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: true } });
+  ok(
+    '0b the toggle is reflected publicly',
+    (await req('GET', '/settings/public')).offersEnabled === true,
+  );
+
   const u = `${Date.now()}`.slice(-7);
   const agentPhone = `+9053${u}1`;
   const ownerPhone = `+9053${u}2`;
@@ -149,6 +161,17 @@ async function main() {
   ok('3b viewing requested + confirmed by host', confirmed.status === 'confirmed');
 
   // ── Flow 4: offer → deal completion + ratings ────────────────────
+  // the toggle has to bite on a real listing, not just in the public payload
+  await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: false } });
+  let refused = 0;
+  try {
+    await req('POST', `/properties/${draft.id}/offers`, { token: buyer, body: { amount: 159000, currency: 'GBP' } });
+  } catch (e) {
+    refused = Number(/-> (\d+):/.exec(e.message)?.[1] ?? -1);
+  }
+  ok('4a0 a disabled platform refuses new offers', refused === 400, `status ${refused}`);
+  await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: true } });
+
   const offer = await req('POST', `/properties/${draft.id}/offers`, { token: buyer, body: { amount: 159000, currency: 'GBP' } });
   const accepted = await req('POST', `/offers/${offer.id}/respond`, { token: agent, body: { action: 'accept' } });
   ok('4a offer accepted → deal room created', !!accepted.dealId);

@@ -9,6 +9,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { DealsService } from '../deals/deals.service';
+import { SettingsService } from '../marketplace/settings.service';
 
 const VIEWING_TRANSITIONS: Record<string, string[]> = {
   requested: ['confirmed', 'cancelled'],
@@ -87,9 +88,22 @@ export class OffersService {
     private readonly notifications: NotificationsService,
     private readonly deals: DealsService,
     private readonly events: EventEmitter2,
+    private readonly settings: SettingsService,
   ) {}
 
+  /**
+   * Offers are behind an admin toggle and default to off (change log
+   * 2026-08-10). `respond` is deliberately NOT gated: anything already in
+   * flight when the switch is thrown must still be closeable.
+   */
+  private async assertOffersEnabled() {
+    if (!(await this.settings.offersEnabled())) {
+      throw new BadRequestException('Offers are currently disabled on this platform');
+    }
+  }
+
   async submit(customerId: string, propertyId: string, amount: number, currency: string, termsNote?: string) {
+    await this.assertOffersEnabled();
     const property = await this.prisma.property.findUnique({
       where: { id: propertyId, deletedAt: null },
       select: { status: true, createdByUserId: true, publishedByAgentId: true, titleI18n: true },
@@ -112,6 +126,7 @@ export class OffersService {
 
   /** Lister counters with a new amount; customer can counter back the same way. */
   async counter(userId: string, offerId: string, amount: number, termsNote?: string) {
+    await this.assertOffersEnabled();
     const { offer, listerId } = await this.loadWithLister(offerId);
     const isParty = userId === listerId || userId === offer.customerId;
     if (!isParty) throw new ForbiddenException('Not your negotiation');

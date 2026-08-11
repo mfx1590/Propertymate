@@ -28,11 +28,15 @@ export default function OffersPage() {
   const t = useTranslations('offers');
   const [data, setData] = useState<{ sent: Offer[]; received: Offer[] } | null>(null);
   const [counter, setCounter] = useState<Record<string, string>>({});
+  const [offersEnabled, setOffersEnabled] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
 
   const load = useCallback(() => apiGet<{ sent: Offer[]; received: Offer[] }>('/users/me/offers').then(setData), []);
   useEffect(() => {
     void load();
+    void apiGet<{ offersEnabled: boolean }>('/settings/public')
+      .then((s) => setOffersEnabled(Boolean(s.offersEnabled)))
+      .catch(() => undefined);
   }, [load]);
 
   const act = async (id: string, fn: () => Promise<unknown>) => {
@@ -96,6 +100,15 @@ export default function OffersPage() {
   return (
     <div className="max-w-3xl">
       <h1 className="text-2xl font-bold">{t('title')}</h1>
+
+      {/* Offers are behind an admin toggle (change log 2026-08-10). Anything
+          already in flight stays actionable, so the list below still renders —
+          this only explains why no new offer can be made. */}
+      {!offersEnabled && (
+        <p className="mt-3 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {t('disabled')}
+        </p>
+      )}
 
       <h2 className="mt-6 font-semibold text-gray-700">{t('received')}</h2>
       {data.received.length === 0 && <p className="mt-2 text-sm text-gray-500">{t('none')}</p>}

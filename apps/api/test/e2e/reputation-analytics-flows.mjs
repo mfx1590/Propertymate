@@ -114,6 +114,10 @@ async function main() {
   for (let i = 0; i < 30; i++) { try { await req('GET', '/health'); break; } catch { await sleep(1000); } }
 
   const admin = (await req('POST', '/auth/login', { body: { email: 'admin@propverify.local', password: 'Admin123!' } })).accessToken;
+  // Offers ship disabled (change log 2026-08-10); this suite exercises the
+  // negotiation and deal machinery behind the toggle, so turn it on first.
+  await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: true } });
+
   const u = `${Date.now()}`.slice(-7);
   const agentPhone = `+9053${u}1`;
   const agencyPhone = `+9053${u}2`;

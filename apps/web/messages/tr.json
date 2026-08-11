@@ -425,7 +425,8 @@
     "reject": "Reddet",
     "counter": "Karşı teklif",
     "counterAmount": "Karşı teklif (GBP)",
-    "withdraw": "Geri çek"
+    "withdraw": "Geri çek",
+    "disabled": "Şu anda platformda yeni teklifler kapalı. Devam eden teklifleriniz aşağıda görünmeye devam eder."
   },
   "deals": {
     "title": "İşlemler",
