@@ -4,6 +4,10 @@
 
 generator client {
   provider = "prisma-client-js"
+  // "native" covers the developer machine; the debian target is what the
+  // Docker image runs on (node:20-bookworm-slim). Without it the container
+  // starts and then dies looking for a query engine it never generated.
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
