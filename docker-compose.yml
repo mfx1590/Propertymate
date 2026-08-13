@@ -45,8 +45,10 @@ services:
       MINIO_ROOT_USER: propverify
       MINIO_ROOT_PASSWORD: propverify_secret
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      # host ports are overridable: Windows reserves chunks of the 9000s for
+      # Hyper-V/WSL, which makes the defaults unbindable on some machines
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
     volumes:
       - miniodata:/data
 

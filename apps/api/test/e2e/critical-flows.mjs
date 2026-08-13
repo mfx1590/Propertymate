@@ -85,6 +85,7 @@ async function main() {
   await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: false } });
   const publicFlags = await req('GET', '/settings/public');
   ok('0a offers are disabled by default', publicFlags.offersEnabled === false, `${publicFlags.offersEnabled}`);
+  const offersWereEnabled = Boolean((await req('GET', '/settings/public')).offersEnabled);
   await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: true } });
   ok(
     '0b the toggle is reflected publicly',
@@ -199,6 +200,12 @@ async function main() {
   ok('4f both ratings revealed after reciprocal', r2.revealed === true);
   const reviews = await req('GET', `/users/${agentId}/reviews`);
   ok('4g agent public reviews visible (no raterId leak)', reviews.count >= 1 && !JSON.stringify(reviews).includes('raterId'));
+
+  // Put the platform back how we found it. These suites run against dev
+  // databases as well as CI's throwaway one, and silently leaving a disabled
+  // feature switched on is a nasty surprise for whoever looks next.
+  await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: offersWereEnabled } })
+    .catch(() => undefined);
 
   console.log(results.join('\n'));
   console.log(failed ? `\n${failed} CHECK(S) FAILED` : '\nALL CRITICAL-FLOW E2E CHECKS PASSED');

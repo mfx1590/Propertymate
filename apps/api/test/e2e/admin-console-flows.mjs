@@ -84,6 +84,7 @@ async function main() {
 
   const admin = (await req('POST', '/auth/login', { body: { email: 'admin@propverify.local', password: 'Admin123!' } })).accessToken;
   // this suite drives a deal to completion, which starts with an offer
+  const offersWereEnabled = Boolean((await req('GET', '/settings/public')).offersEnabled);
   await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: true } });
 
   const u = `${Date.now()}`.slice(-7);
@@ -258,6 +259,12 @@ async function main() {
     token: spare, body: { againstUserId: ownerId, reason: 'I am not even on this deal at all' },
   })) === 403);
   ok('8f none of it is public', (await expectFail('GET', '/admin/users')) === 401);
+
+  // Put the platform back how we found it. These suites run against dev
+  // databases as well as CI's throwaway one, and silently leaving a disabled
+  // feature switched on is a nasty surprise for whoever looks next.
+  await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: offersWereEnabled } })
+    .catch(() => undefined);
 
   console.log(results.join('\n'));
   console.log(failed ? `\n${failed} CHECK(S) FAILED` : '\nALL ADMIN-CONSOLE E2E CHECKS PASSED');

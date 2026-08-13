@@ -116,6 +116,7 @@ async function main() {
   const admin = (await req('POST', '/auth/login', { body: { email: 'admin@propverify.local', password: 'Admin123!' } })).accessToken;
   // Offers ship disabled (change log 2026-08-10); this suite exercises the
   // negotiation and deal machinery behind the toggle, so turn it on first.
+  const offersWereEnabled = Boolean((await req('GET', '/settings/public')).offersEnabled);
   await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: true } });
 
   const u = `${Date.now()}`.slice(-7);
@@ -360,6 +361,12 @@ async function main() {
   ok('9d admin sees supply by region', !!platform.supplyByRegion.kyrenia, JSON.stringify(Object.keys(platform.supplyByRegion)));
   ok('9e admin sees the market funnel', platform.funnel.offers >= 1, JSON.stringify(platform.funnel));
   ok('9f admin sees verification SLA performance', typeof platform.verification.avgTurnaroundHours === 'number' && platform.verification.withinSlaPct !== null);
+
+  // Put the platform back how we found it. These suites run against dev
+  // databases as well as CI's throwaway one, and silently leaving a disabled
+  // feature switched on is a nasty surprise for whoever looks next.
+  await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: offersWereEnabled } })
+    .catch(() => undefined);
 
   console.log(results.join('\n'));
   console.log(failed ? `\n${failed} CHECK(S) FAILED` : '\nALL REPUTATION + ANALYTICS E2E CHECKS PASSED');

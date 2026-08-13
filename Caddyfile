@@ -1,0 +1,25 @@
+# Caddy is the only thing listening on the public interface. It obtains and
+# renews Let's Encrypt certificates automatically — there is no certbot step.
+
+{$APP_DOMAIN} {
+	encode gzip
+	reverse_proxy web:3000
+}
+
+{$API_DOMAIN} {
+	encode gzip
+
+	# Listing photos live in the public MinIO bucket. Serving them through the
+	# same hostname keeps the browser on one origin and avoids exposing MinIO
+	# directly — the documents bucket stays private and is only ever reachable
+	# through the API's signed URLs.
+	handle_path /media/* {
+		reverse_proxy minio:9000 {
+			rewrite /media{uri}
+		}
+	}
+
+	handle {
+		reverse_proxy api:4000
+	}
+}

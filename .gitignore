@@ -11,6 +11,8 @@ out/
 .env
 .env.local
 .env.*.local
+# filled-in deployment secrets — only the .example belongs in git
+.env.production
 
 # database
 *.sqlite
