@@ -110,31 +110,50 @@
       "body": "This section arrives in an upcoming build step."
     },
     "notifications": {
-      "verification.approved": "Your listing \"{title}\" is verified and live 🎉",
-      "verification.rejected": "Your listing \"{title}\" needs attention — some documents were rejected",
-      "profile.verified": "Your {title} profile is verified — you can now list",
-      "profile.rejected": "Your {title} profile application was rejected — check your documents",
-      "availability.confirm_needed": "Please confirm \"{title}\" is still available",
-      "availability.paused": "\"{title}\" was paused — confirm availability to relist",
-      "verification.approved_private": "\"{title}\" is verified! Now choose agents in Find-my-agent to bring it to market",
-      "assignment.invited": "New mandate invitation: \"{title}\"",
-      "assignment.accepted": "An agent accepted your property assignment",
-      "assignment.rejected": "An agent declined your property assignment",
-      "assignment.published": "Your property \"{title}\" was published by your agent 🎉",
-      "chat.new_inquiry": "New inquiry about \"{title}\"",
-      "chat.new_message": "New message in your inbox",
-      "viewing.requested": "New viewing request for \"{title}\"",
-      "viewing.confirmed": "Your viewing was confirmed",
-      "viewing.completed": "Viewing marked completed",
-      "viewing.cancelled": "A viewing was cancelled",
-      "viewing.no_show": "A viewing was marked no-show",
-      "offer.received": "New offer on \"{title}\"",
-      "offer.countered": "You received a counter-offer",
-      "offer.accepted": "Your offer was accepted 🎉",
-      "offer.rejected": "Your offer was declined",
-      "deal.created": "Deal room opened for \"{title}\"",
-      "deal.stage_advanced": "Your deal moved to the next stage",
-      "deal.completed": "Your deal is complete 🎉"
+      "verification": {
+        "approved": "Your listing \"{title}\" is verified and live 🎉",
+        "rejected": "Your listing \"{title}\" needs attention — some documents were rejected",
+        "approved_private": "\"{title}\" is verified! Now choose agents in Find-my-agent to bring it to market"
+      },
+      "profile": {
+        "verified": "Your {title} profile is verified — you can now list",
+        "rejected": "Your {title} profile application was rejected — check your documents"
+      },
+      "availability": {
+        "confirm_needed": "Please confirm \"{title}\" is still available",
+        "paused": "\"{title}\" was paused — confirm availability to relist"
+      },
+      "assignment": {
+        "invited": "New mandate invitation: \"{title}\"",
+        "accepted": "An agent accepted your property assignment",
+        "rejected": "An agent declined your property assignment",
+        "published": "Your property \"{title}\" was published by your agent 🎉"
+      },
+      "chat": {
+        "new_inquiry": "New inquiry about \"{title}\"",
+        "new_message": "New message in your inbox"
+      },
+      "viewing": {
+        "requested": "New viewing request for \"{title}\"",
+        "confirmed": "Your viewing was confirmed",
+        "completed": "Viewing marked completed",
+        "cancelled": "A viewing was cancelled",
+        "no_show": "A viewing was marked no-show"
+      },
+      "offer": {
+        "received": "New offer on \"{title}\"",
+        "countered": "You received a counter-offer",
+        "accepted": "Your offer was accepted 🎉",
+        "rejected": "Your offer was declined"
+      },
+      "deal": {
+        "created": "Deal room opened for \"{title}\"",
+        "stage_advanced": "Your deal moved to the next stage",
+        "completed": "Your deal is complete 🎉"
+      },
+      "project": {
+        "update_published": "New construction update on {title}"
+      }
     },
     "reasons": {
       "illegible": "Document illegible",
@@ -379,6 +398,16 @@
       "makeOffer": "Submit offer",
       "offerSent": "Offer submitted",
       "antiBypassNote": "For your safety, contact details are hidden in chat until a viewing is confirmed. All deals are protected by the platform."
+    },
+    "statusHelp": {
+      "draft": "Only you can see this. Finish it and submit it for verification.",
+      "pending_verification": "Our team is checking your documents — usually within 24 hours.",
+      "verified_private": "Verified, but not public yet. Choose agents in Find-my-agent to bring it to market.",
+      "live": "Published and searchable by buyers.",
+      "paused": "Hidden from search. Confirm it is still available to relist it.",
+      "under_offer": "An offer was accepted — the deal room is open.",
+      "sold": "This sale completed.",
+      "rented": "This tenancy completed."
     }
   },
   "chat": {
@@ -488,11 +517,26 @@
       "government_id": "Government ID"
     },
     "events": {
-      "deal.created": "Deal room opened",
-      "stage.completed": "Stage completed",
-      "stage.skipped": "Stage skipped",
-      "document.attached": "Document attached",
-      "deal.completed": "Deal completed 🎉"
+      "deal": {
+        "created": "Deal room opened",
+        "completed": "Deal completed 🎉"
+      },
+      "stage": {
+        "completed": "Stage completed",
+        "skipped": "Stage skipped"
+      },
+      "document": {
+        "attached": "Document attached"
+      },
+      "contract": {
+        "generated": "Contract generated",
+        "signature_added": "One party signed the contract",
+        "signed": "Contract signed by both parties"
+      },
+      "dispute": {
+        "opened": "A dispute was opened",
+        "resolved": "The dispute was resolved"
+      }
     },
     "tags": {
       "responsive": "Responsive",
@@ -1020,6 +1064,51 @@
       "resolved_upheld": "Upheld",
       "resolved_dismissed": "Dismissed",
       "withdrawn": "Withdrawn"
+    }
+  },
+  "nextSteps": {
+    "title": "Getting started",
+    "progress": "{done} of {total} done",
+    "step": {
+      "verify_profile": "Verify your professional profile",
+      "verification_pending": "Your documents are being reviewed",
+      "subscription": "Get a subscription to publish listings",
+      "create_listing": "Create your first listing",
+      "submit_listing": "Submit {count} draft listing for verification",
+      "awaiting_verification": "{count} listing waiting on verification",
+      "choose_agents": "Choose agents to bring “{title}” to market",
+      "listing_live": "Your listing is live",
+      "respond_mandates": "{count} agent invitation waiting for your answer",
+      "create_project": "Create your first project",
+      "answer_leads": "{count} enquiry with no reply yet",
+      "browse_listings": "Browse verified properties",
+      "save_favourites": "Save a property to your favourites",
+      "book_viewing": "Book a viewing"
+    },
+    "hint": {
+      "verify_profile": "Upload your documents below. Nothing can be listed until an admin approves them.",
+      "verification_pending": "usually within 24 hours",
+      "subscription": "Subscriptions are granted by an administrator while payments are still being built — ask them to enable your account.",
+      "create_listing": "Six short steps: details, location, features, photos, documents, review.",
+      "submit_listing": "A draft is only visible to you. Submit it so our team can verify the documents.",
+      "awaiting_verification": "our team is checking the documents",
+      "choose_agents": "Resale listings stay private after verification. Pick the agents you want working on it — they never see your contact details.",
+      "respond_mandates": "An owner asked you to work their property. Accept or decline.",
+      "answer_leads": "Fast replies raise your ranking score.",
+      "book_viewing": "Contact details are shared once a viewing is confirmed."
+    },
+    "cta": {
+      "verify_profile": "Upload documents",
+      "subscription": "Learn more",
+      "create_listing": "Create a listing",
+      "submit_listing": "Go to my listings",
+      "choose_agents": "Find my agent",
+      "respond_mandates": "Review invitations",
+      "create_project": "Create a project",
+      "answer_leads": "Open leads",
+      "browse_listings": "Start searching",
+      "save_favourites": "Start searching",
+      "book_viewing": "Find a property"
     }
   }
 }

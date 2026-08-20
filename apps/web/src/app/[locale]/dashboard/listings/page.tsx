@@ -89,6 +89,13 @@ export default function MyListingsPage() {
                 <span className="text-xs text-gray-400">{t(`kind.${p.kind}`)}</span>
               </div>
               <p className="mt-1 truncate font-medium">{p.titleI18n?.en || t('board.untitled')}</p>
+              {/* A status badge alone does not explain itself. `verified_private`
+                  in particular reads like success while the listing is invisible
+                  to buyers, which is the single biggest source of "why can nobody
+                  see my property?" */}
+              {t.has(`statusHelp.${p.status}`) && (
+                <p className="mt-0.5 text-xs text-gray-500">{t(`statusHelp.${p.status}`)}</p>
+              )}
               <p className="text-sm text-gray-500">
                 {p.region.nameI18n[locale] ?? p.region.nameI18n.en}
                 {Number(p.priceAmount) > 0 && ` · ${fmtMoney(Number(p.priceAmount), p.priceCurrency)}`}

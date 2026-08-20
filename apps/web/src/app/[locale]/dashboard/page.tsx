@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { apiGet, apiPost, apiUpload } from '../../../lib/api';
 import { useAuth } from '../../../lib/auth';
 import type { RequirementConfig } from '../../../lib/types';
+import { NextSteps } from './next-steps';
 
 const STATUS_STYLES: Record<string, string> = {
   verified: 'bg-emerald-50 text-emerald-700',
@@ -95,6 +96,9 @@ export default function DashboardOverview() {
   return (
     <div className="max-w-3xl">
       <h1 className="text-2xl font-bold">{t('overview.title')}</h1>
+
+      {/* the answer to "what do I do next?", before anything else on the page */}
+      <NextSteps />
 
       {/* notifications */}
       {notifications.length > 0 && (

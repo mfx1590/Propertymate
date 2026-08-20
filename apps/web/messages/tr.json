@@ -110,31 +110,50 @@
       "body": "Bu bölüm sonraki geliştirme adımında gelecek."
     },
     "notifications": {
-      "verification.approved": "\"{title}\" ilanınız doğrulandı ve yayında 🎉",
-      "verification.rejected": "\"{title}\" ilanınız ilgi bekliyor — bazı belgeler reddedildi",
-      "profile.verified": "{title} profiliniz doğrulandı — artık ilan verebilirsiniz",
-      "profile.rejected": "{title} profil başvurunuz reddedildi — belgelerinizi kontrol edin",
-      "availability.confirm_needed": "\"{title}\" hâlâ mevcut mu, lütfen onaylayın",
-      "availability.paused": "\"{title}\" duraklatıldı — yeniden yayınlamak için müsaitliği onaylayın",
-      "verification.approved_private": "\"{title}\" doğrulandı! Piyasaya sunmak için Danışmanımı bul bölümünden danışman seçin",
-      "assignment.invited": "Yeni yetki daveti: \"{title}\"",
-      "assignment.accepted": "Bir danışman mülk atamanızı kabul etti",
-      "assignment.rejected": "Bir danışman mülk atamanızı reddetti",
-      "assignment.published": "\"{title}\" mülkünüz danışmanınız tarafından yayınlandı 🎉",
-      "chat.new_inquiry": "\"{title}\" hakkında yeni talep",
-      "chat.new_message": "Gelen kutunuzda yeni mesaj",
-      "viewing.requested": "\"{title}\" için yeni görüntüleme talebi",
-      "viewing.confirmed": "Görüntülemeniz onaylandı",
-      "viewing.completed": "Görüntüleme tamamlandı olarak işaretlendi",
-      "viewing.cancelled": "Bir görüntüleme iptal edildi",
-      "viewing.no_show": "Bir görüntüleme gelmedi olarak işaretlendi",
-      "offer.received": "\"{title}\" için yeni teklif",
-      "offer.countered": "Karşı teklif aldınız",
-      "offer.accepted": "Teklifiniz kabul edildi 🎉",
-      "offer.rejected": "Teklifiniz reddedildi",
-      "deal.created": "\"{title}\" için işlem odası açıldı",
-      "deal.stage_advanced": "İşleminiz bir sonraki aşamaya geçti",
-      "deal.completed": "İşleminiz tamamlandı 🎉"
+      "verification": {
+        "approved": "\"{title}\" ilanınız doğrulandı ve yayında 🎉",
+        "rejected": "\"{title}\" ilanınız ilgi bekliyor — bazı belgeler reddedildi",
+        "approved_private": "\"{title}\" doğrulandı! Piyasaya sunmak için Danışmanımı bul bölümünden danışman seçin"
+      },
+      "profile": {
+        "verified": "{title} profiliniz doğrulandı — artık ilan verebilirsiniz",
+        "rejected": "{title} profil başvurunuz reddedildi — belgelerinizi kontrol edin"
+      },
+      "availability": {
+        "confirm_needed": "\"{title}\" hâlâ mevcut mu, lütfen onaylayın",
+        "paused": "\"{title}\" duraklatıldı — yeniden yayınlamak için müsaitliği onaylayın"
+      },
+      "assignment": {
+        "invited": "Yeni yetki daveti: \"{title}\"",
+        "accepted": "Bir danışman mülk atamanızı kabul etti",
+        "rejected": "Bir danışman mülk atamanızı reddetti",
+        "published": "\"{title}\" mülkünüz danışmanınız tarafından yayınlandı 🎉"
+      },
+      "chat": {
+        "new_inquiry": "\"{title}\" hakkında yeni talep",
+        "new_message": "Gelen kutunuzda yeni mesaj"
+      },
+      "viewing": {
+        "requested": "\"{title}\" için yeni görüntüleme talebi",
+        "confirmed": "Görüntülemeniz onaylandı",
+        "completed": "Görüntüleme tamamlandı olarak işaretlendi",
+        "cancelled": "Bir görüntüleme iptal edildi",
+        "no_show": "Bir görüntüleme gelmedi olarak işaretlendi"
+      },
+      "offer": {
+        "received": "\"{title}\" için yeni teklif",
+        "countered": "Karşı teklif aldınız",
+        "accepted": "Teklifiniz kabul edildi 🎉",
+        "rejected": "Teklifiniz reddedildi"
+      },
+      "deal": {
+        "created": "\"{title}\" için işlem odası açıldı",
+        "stage_advanced": "İşleminiz bir sonraki aşamaya geçti",
+        "completed": "İşleminiz tamamlandı 🎉"
+      },
+      "project": {
+        "update_published": "{title} için yeni inşaat güncellemesi"
+      }
     },
     "reasons": {
       "illegible": "Belge okunaksız",
@@ -379,6 +398,16 @@
       "makeOffer": "Teklif ver",
       "offerSent": "Teklif gönderildi",
       "antiBypassNote": "Güvenliğiniz için, görüntüleme onaylanana kadar iletişim bilgileri sohbette gizlenir. Tüm işlemler platform güvencesindedir."
+    },
+    "statusHelp": {
+      "draft": "Bunu yalnızca siz görürsünüz. Tamamlayıp doğrulamaya gönderin.",
+      "pending_verification": "Ekibimiz belgelerinizi kontrol ediyor — genellikle 24 saat içinde.",
+      "verified_private": "Doğrulandı ancak henüz yayında değil. Pazara çıkarmak için Danışmanımı Bul’dan danışman seçin.",
+      "live": "Yayında ve alıcılar tarafından bulunabilir.",
+      "paused": "Aramada gizli. Tekrar yayınlamak için müsaitliği onaylayın.",
+      "under_offer": "Bir teklif kabul edildi — işlem odası açık.",
+      "sold": "Bu satış tamamlandı.",
+      "rented": "Bu kiralama tamamlandı."
     }
   },
   "chat": {
@@ -488,11 +517,26 @@
       "government_id": "Kimlik belgesi"
     },
     "events": {
-      "deal.created": "İşlem odası açıldı",
-      "stage.completed": "Aşama tamamlandı",
-      "stage.skipped": "Aşama atlandı",
-      "document.attached": "Belge eklendi",
-      "deal.completed": "İşlem tamamlandı 🎉"
+      "deal": {
+        "created": "İşlem odası açıldı",
+        "completed": "İşlem tamamlandı 🎉"
+      },
+      "stage": {
+        "completed": "Aşama tamamlandı",
+        "skipped": "Aşama atlandı"
+      },
+      "document": {
+        "attached": "Belge eklendi"
+      },
+      "contract": {
+        "generated": "Sözleşme oluşturuldu",
+        "signature_added": "Taraflardan biri sözleşmeyi imzaladı",
+        "signed": "Sözleşme iki tarafça imzalandı"
+      },
+      "dispute": {
+        "opened": "Bir uyuşmazlık açıldı",
+        "resolved": "Uyuşmazlık sonuçlandı"
+      }
     },
     "tags": {
       "responsive": "İlgili",
@@ -1020,6 +1064,51 @@
       "resolved_upheld": "Haklı bulundu",
       "resolved_dismissed": "Reddedildi",
       "withdrawn": "Geri çekildi"
+    }
+  },
+  "nextSteps": {
+    "title": "Başlarken",
+    "progress": "{total} adımdan {done} tamam",
+    "step": {
+      "verify_profile": "Profesyonel profilinizi doğrulayın",
+      "verification_pending": "Belgeleriniz inceleniyor",
+      "subscription": "İlan yayınlamak için abonelik alın",
+      "create_listing": "İlk ilanınızı oluşturun",
+      "submit_listing": "{count} taslak ilanı doğrulamaya gönderin",
+      "awaiting_verification": "{count} ilan doğrulama bekliyor",
+      "choose_agents": "“{title}” için danışman seçin",
+      "listing_live": "İlanınız yayında",
+      "respond_mandates": "{count} danışman daveti yanıtınızı bekliyor",
+      "create_project": "İlk projenizi oluşturun",
+      "answer_leads": "{count} talep henüz yanıtlanmadı",
+      "browse_listings": "Doğrulanmış ilanlara göz atın",
+      "save_favourites": "Bir ilanı favorilerinize ekleyin",
+      "book_viewing": "Bir görüntüleme ayarlayın"
+    },
+    "hint": {
+      "verify_profile": "Belgelerinizi aşağıdan yükleyin. Yönetici onaylamadan ilan verilemez.",
+      "verification_pending": "genellikle 24 saat içinde",
+      "subscription": "Ödemeler hazırlanırken abonelikler yönetici tarafından tanımlanır — hesabınızın açılmasını isteyin.",
+      "create_listing": "Altı kısa adım: detaylar, konum, özellikler, fotoğraflar, belgeler, özet.",
+      "submit_listing": "Taslak yalnızca size görünür. Belgelerin doğrulanması için gönderin.",
+      "awaiting_verification": "ekibimiz belgeleri kontrol ediyor",
+      "choose_agents": "Satılık ilanlar doğrulamadan sonra özel kalır. Çalışmasını istediğiniz danışmanları seçin — iletişim bilgilerinizi asla görmezler.",
+      "respond_mandates": "Bir mülk sahibi sizinle çalışmak istiyor. Kabul edin veya reddedin.",
+      "answer_leads": "Hızlı yanıtlar sıralama puanınızı yükseltir.",
+      "book_viewing": "İletişim bilgileri, randevu onaylandıktan sonra paylaşılır."
+    },
+    "cta": {
+      "verify_profile": "Belge yükle",
+      "subscription": "Daha fazla",
+      "create_listing": "İlan oluştur",
+      "submit_listing": "İlanlarıma git",
+      "choose_agents": "Danışmanımı bul",
+      "respond_mandates": "Davetleri incele",
+      "create_project": "Proje oluştur",
+      "answer_leads": "Talepleri aç",
+      "browse_listings": "Aramaya başla",
+      "save_favourites": "Aramaya başla",
+      "book_viewing": "Mülk bul"
     }
   }
 }

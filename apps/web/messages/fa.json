@@ -110,31 +110,50 @@
       "body": "This section arrives in an upcoming build step."
     },
     "notifications": {
-      "verification.approved": "Your listing \"{title}\" is verified and live 🎉",
-      "verification.rejected": "Your listing \"{title}\" needs attention — some documents were rejected",
-      "profile.verified": "Your {title} profile is verified — you can now list",
-      "profile.rejected": "Your {title} profile application was rejected — check your documents",
-      "availability.confirm_needed": "Please confirm \"{title}\" is still available",
-      "availability.paused": "\"{title}\" was paused — confirm availability to relist",
-      "verification.approved_private": "\"{title}\" is verified! Now choose agents in Find-my-agent to bring it to market",
-      "assignment.invited": "New mandate invitation: \"{title}\"",
-      "assignment.accepted": "An agent accepted your property assignment",
-      "assignment.rejected": "An agent declined your property assignment",
-      "assignment.published": "Your property \"{title}\" was published by your agent 🎉",
-      "chat.new_inquiry": "New inquiry about \"{title}\"",
-      "chat.new_message": "New message in your inbox",
-      "viewing.requested": "New viewing request for \"{title}\"",
-      "viewing.confirmed": "Your viewing was confirmed",
-      "viewing.completed": "Viewing marked completed",
-      "viewing.cancelled": "A viewing was cancelled",
-      "viewing.no_show": "A viewing was marked no-show",
-      "offer.received": "New offer on \"{title}\"",
-      "offer.countered": "You received a counter-offer",
-      "offer.accepted": "Your offer was accepted 🎉",
-      "offer.rejected": "Your offer was declined",
-      "deal.created": "Deal room opened for \"{title}\"",
-      "deal.stage_advanced": "Your deal moved to the next stage",
-      "deal.completed": "Your deal is complete 🎉"
+      "verification": {
+        "approved": "Your listing \"{title}\" is verified and live 🎉",
+        "rejected": "Your listing \"{title}\" needs attention — some documents were rejected",
+        "approved_private": "\"{title}\" is verified! Now choose agents in Find-my-agent to bring it to market"
+      },
+      "profile": {
+        "verified": "Your {title} profile is verified — you can now list",
+        "rejected": "Your {title} profile application was rejected — check your documents"
+      },
+      "availability": {
+        "confirm_needed": "Please confirm \"{title}\" is still available",
+        "paused": "\"{title}\" was paused — confirm availability to relist"
+      },
+      "assignment": {
+        "invited": "New mandate invitation: \"{title}\"",
+        "accepted": "An agent accepted your property assignment",
+        "rejected": "An agent declined your property assignment",
+        "published": "Your property \"{title}\" was published by your agent 🎉"
+      },
+      "chat": {
+        "new_inquiry": "New inquiry about \"{title}\"",
+        "new_message": "New message in your inbox"
+      },
+      "viewing": {
+        "requested": "New viewing request for \"{title}\"",
+        "confirmed": "Your viewing was confirmed",
+        "completed": "Viewing marked completed",
+        "cancelled": "A viewing was cancelled",
+        "no_show": "A viewing was marked no-show"
+      },
+      "offer": {
+        "received": "New offer on \"{title}\"",
+        "countered": "You received a counter-offer",
+        "accepted": "Your offer was accepted 🎉",
+        "rejected": "Your offer was declined"
+      },
+      "deal": {
+        "created": "Deal room opened for \"{title}\"",
+        "stage_advanced": "Your deal moved to the next stage",
+        "completed": "Your deal is complete 🎉"
+      },
+      "project": {
+        "update_published": "به‌روزرسانی جدید ساخت برای {title}"
+      }
     },
     "reasons": {
       "illegible": "Document illegible",
@@ -379,6 +398,16 @@
       "makeOffer": "Submit offer",
       "offerSent": "Offer submitted",
       "antiBypassNote": "For your safety, contact details are hidden in chat until a viewing is confirmed. All deals are protected by the platform."
+    },
+    "statusHelp": {
+      "draft": "فقط شما می‌بینید. کامل کنید و برای تأیید بفرستید.",
+      "pending_verification": "تیم ما مدارک را بررسی می‌کند — معمولاً تا ۲۴ ساعت.",
+      "verified_private": "تأییدشده اما هنوز عمومی نیست. برای عرضه به بازار مشاور انتخاب کنید.",
+      "live": "منتشرشده و قابل جست‌وجو.",
+      "paused": "از جست‌وجو پنهان است. برای انتشار مجدد تأیید کنید.",
+      "under_offer": "پیشنهادی پذیرفته شد — اتاق معامله باز است.",
+      "sold": "این فروش کامل شد.",
+      "rented": "این اجاره کامل شد."
     }
   },
   "chat": {
@@ -488,11 +517,26 @@
       "government_id": "Government ID"
     },
     "events": {
-      "deal.created": "Deal room opened",
-      "stage.completed": "Stage completed",
-      "stage.skipped": "Stage skipped",
-      "document.attached": "Document attached",
-      "deal.completed": "Deal completed 🎉"
+      "deal": {
+        "created": "Deal room opened",
+        "completed": "Deal completed 🎉"
+      },
+      "stage": {
+        "completed": "Stage completed",
+        "skipped": "Stage skipped"
+      },
+      "document": {
+        "attached": "Document attached"
+      },
+      "contract": {
+        "generated": "قرارداد ساخته شد",
+        "signature_added": "یکی از طرفین قرارداد را امضا کرد",
+        "signed": "قرارداد توسط هر دو طرف امضا شد"
+      },
+      "dispute": {
+        "opened": "یک اختلاف ثبت شد",
+        "resolved": "اختلاف رفع شد"
+      }
     },
     "tags": {
       "responsive": "Responsive",
@@ -1020,6 +1064,51 @@
       "resolved_upheld": "تأییدشده",
       "resolved_dismissed": "ردشده",
       "withdrawn": "پس‌گرفته"
+    }
+  },
+  "nextSteps": {
+    "title": "شروع کار",
+    "progress": "{done} از {total} انجام شد",
+    "step": {
+      "verify_profile": "نمایهٔ حرفه‌ای خود را تأیید کنید",
+      "verification_pending": "مدارک شما در حال بررسی است",
+      "subscription": "برای انتشار آگهی اشتراک بگیرید",
+      "create_listing": "اولین آگهی خود را بسازید",
+      "submit_listing": "{count} پیش‌نویس را برای تأیید بفرستید",
+      "awaiting_verification": "{count} آگهی در انتظار تأیید",
+      "choose_agents": "برای «{title}» مشاور انتخاب کنید",
+      "listing_live": "آگهی شما منتشر شده است",
+      "respond_mandates": "{count} دعوت در انتظار پاسخ شماست",
+      "create_project": "اولین پروژه خود را بسازید",
+      "answer_leads": "{count} درخواست بدون پاسخ",
+      "browse_listings": "ملک‌های تأییدشده را ببینید",
+      "save_favourites": "یک ملک را نشان کنید",
+      "book_viewing": "یک بازدید رزرو کنید"
+    },
+    "hint": {
+      "verify_profile": "مدارک را در پایین بارگذاری کنید. تا تأیید مدیر، امکان ثبت آگهی نیست.",
+      "verification_pending": "معمولاً تا ۲۴ ساعت",
+      "subscription": "تا زمان آماده‌شدن پرداخت، اشتراک را مدیر فعال می‌کند — از او بخواهید.",
+      "create_listing": "شش گام کوتاه: جزئیات، موقعیت، امکانات، تصاویر، مدارک، مرور.",
+      "submit_listing": "پیش‌نویس فقط برای شما دیده می‌شود. برای تأیید ارسال کنید.",
+      "awaiting_verification": "تیم ما در حال بررسی مدارک است",
+      "choose_agents": "آگهی فروش پس از تأیید خصوصی می‌ماند. مشاوران را انتخاب کنید — آن‌ها هرگز اطلاعات تماس شما را نمی‌بینند.",
+      "respond_mandates": "مالکی از شما دعوت کرده است. بپذیرید یا رد کنید.",
+      "answer_leads": "پاسخ سریع امتیاز رتبه‌بندی شما را بالا می‌برد.",
+      "book_viewing": "اطلاعات تماس پس از تأیید بازدید به اشتراک گذاشته می‌شود."
+    },
+    "cta": {
+      "verify_profile": "بارگذاری مدارک",
+      "subscription": "بیشتر",
+      "create_listing": "ساخت آگهی",
+      "submit_listing": "آگهی‌های من",
+      "choose_agents": "یافتن مشاور",
+      "respond_mandates": "بررسی دعوت‌ها",
+      "create_project": "ساخت پروژه",
+      "answer_leads": "باز کردن سرنخ‌ها",
+      "browse_listings": "شروع جست‌وجو",
+      "save_favourites": "شروع جست‌وجو",
+      "book_viewing": "یافتن ملک"
     }
   }
 }

@@ -136,6 +136,15 @@ async function main() {
   let mine = await req('GET', '/properties/mine', { token: owner });
   ok('2a resale approved → verified_private (not public)', mine.find((p) => p.id === draft.id)?.status === 'verified_private');
 
+  // The dashboard checklist has to name the non-obvious next move here: the
+  // listing is verified but invisible, and nothing else on the platform says so.
+  const ownerSteps = await req('GET', '/users/me/next-steps', { token: owner });
+  const stepKeys = ownerSteps.steps.map((s) => s.key);
+  ok('2a1 next-steps tells the owner to choose agents', ownerSteps.primary === 'choose_agents', `primary=${ownerSteps.primary} of ${stepKeys.join(',')}`);
+  const chooseStep = ownerSteps.steps.find((s) => s.key === 'choose_agents');
+  ok('2a2 it links straight to find-my-agent for that listing', chooseStep?.href === `/dashboard/listings/${draft.id}/find-agent`, chooseStep?.href ?? 'none');
+  ok('2a3 earlier steps show as done, not missing', stepKeys.includes('create_listing') && ownerSteps.steps.find((s) => s.key === 'create_listing')?.state === 'done');
+
   // find-my-agent: owner assigns THIS verified agent, agent accepts + publishes
   const agentId = (await req('GET', '/users/me', { token: agent })).id;
   const dir = await req('GET', '/agents/directory', { token: owner });
