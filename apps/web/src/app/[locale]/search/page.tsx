@@ -6,7 +6,14 @@ import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { apiPost, getAccessToken } from '../../../lib/api';
 import { Link } from '../../../i18n/routing';
-import { API_BASE, fmtGbp, type RegionInfo, type SearchHit } from '../../../lib/listings';
+import {
+  API_BASE,
+  fmtGbp,
+  type RegionInfo,
+  type RelaxableFilter,
+  type SearchHit,
+  type SearchSuggestions,
+} from '../../../lib/listings';
 
 const MapView = dynamic(() => import('../../../components/MapView'), { ssr: false });
 
@@ -28,6 +35,7 @@ function SearchInner() {
   const [regions, setRegions] = useState<RegionInfo[]>([]);
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [totalHits, setTotalHits] = useState(0);
+  const [suggestions, setSuggestions] = useState<SearchSuggestions | null>(null);
   const [view, setView] = useState<'list' | 'map'>('list');
   const [savedMsg, setSavedMsg] = useState(false);
 
@@ -49,7 +57,28 @@ function SearchInner() {
     const data = await res.json();
     setHits(data.hits ?? []);
     setTotalHits(data.totalHits ?? 0);
+    setSuggestions(data.suggestions ?? null);
   }, [filters]);
+
+  /**
+   * Drop one criterion and re-run — the `filters` effect picks the change up.
+   * `furnished` is relaxable server-side but has no control on this page, so
+   * it is filtered out of the suggestions rather than cleared here.
+   */
+  type ClearableFilter = Exclude<RelaxableFilter, 'furnished'>;
+  const clearFilter = (key: ClearableFilter) => setFilters((f) => ({ ...f, [key]: '' }));
+
+  const clearAllFilters = () =>
+    setFilters((f) => ({
+      ...f,
+      q: '',
+      kind: '',
+      region: '',
+      minPrice: '',
+      maxPrice: '',
+      minBeds: '',
+      deedType: '',
+    }));
 
   useEffect(() => {
     void runSearch();
@@ -65,6 +94,10 @@ function SearchInner() {
   };
 
   const selCls = 'rounded-lg border border-gray-300 px-3 py-2 text-sm';
+
+  const relaxable = (suggestions?.relax ?? []).filter(
+    (r): r is { filter: ClearableFilter; totalHits: number } => r.filter !== 'furnished',
+  );
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-8">
@@ -126,6 +159,66 @@ function SearchInner() {
       </div>
 
       <p className="mt-4 text-sm text-gray-500">{t('results', { count: totalHits })}</p>
+
+      {/* Zero results used to end here. Every route below was confirmed by the
+          API to have listings behind it, so none of them lands on another
+          empty page. */}
+      {totalHits === 0 && suggestions && (
+        <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50/60 p-6">
+          <p className="font-semibold text-gray-800">{t('noResults.title')}</p>
+          <p className="mt-1 text-sm text-gray-500">{t('noResults.body')}</p>
+
+          {relaxable.length > 0 && (
+            <div className="mt-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                {t('noResults.widenLabel')}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {relaxable.map((r) => (
+                  <button
+                    key={r.filter}
+                    onClick={() => clearFilter(r.filter)}
+                    className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm transition hover:border-brand-500 hover:text-brand-600"
+                  >
+                    {t(`noResults.drop.${r.filter}`)}{' '}
+                    <span className="text-gray-400">({r.totalHits})</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {suggestions.regions.length > 0 && (
+            <div className="mt-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">
+                {t('noResults.nearbyLabel')}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {suggestions.regions.map((r) => (
+                  <button
+                    key={r.slug}
+                    onClick={() => setFilters((f) => ({ ...f, region: r.slug }))}
+                    className="rounded-full border border-gray-300 bg-white px-4 py-1.5 text-sm transition hover:border-brand-500 hover:text-brand-600"
+                  >
+                    {r.nameI18n[locale] ?? r.nameI18n.en}{' '}
+                    <span className="text-gray-400">
+                      ({r.totalHits}
+                      {r.distanceKm != null && ` · ${Math.round(r.distanceKm)} km`})
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button
+            onClick={clearAllFilters}
+            className="mt-6 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-brand-900"
+          >
+            {t('noResults.clearAll', { count: suggestions.totalLive })}
+          </button>
+        </div>
+      )}
 
       {view === 'map' ? (
         <div className="mt-4">

@@ -53,6 +53,23 @@ export interface SearchHit {
   _geo?: { lat: number; lng: number };
 }
 
+/**
+ * Ways out of a zero-result search. The API only returns these when there are
+ * no hits, and only for routes it has confirmed do have results — so anything
+ * listed here can be offered to the user as a real next step.
+ */
+export const RELAXABLE_FILTERS = [
+  'q', 'kind', 'region', 'minPrice', 'maxPrice', 'minBeds', 'deedType', 'furnished',
+] as const;
+
+export type RelaxableFilter = (typeof RELAXABLE_FILTERS)[number];
+
+export interface SearchSuggestions {
+  relax: { filter: RelaxableFilter; totalHits: number }[];
+  regions: { slug: string; nameI18n: Record<string, string>; totalHits: number; distanceKm: number | null }[];
+  totalLive: number;
+}
+
 export interface RegionInfo {
   id: string;
   slug: string;

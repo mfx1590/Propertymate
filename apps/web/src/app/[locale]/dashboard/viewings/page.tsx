@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { api, apiGet } from '../../../../lib/api';
 import { useAuth } from '../../../../lib/auth';
+import { EmptyState } from '../../../../components/EmptyState';
 
 interface Viewing {
   id: string;
@@ -50,7 +51,14 @@ export default function ViewingsPage() {
   return (
     <div className="max-w-3xl">
       <h1 className="text-2xl font-bold">{t('title')}</h1>
-      {items.length === 0 && <p className="mt-6 text-gray-500">{t('empty')}</p>}
+      {items.length === 0 && (
+        <EmptyState
+          icon="📅"
+          title={t('emptyState.title')}
+          body={t('emptyState.body')}
+          action={{ label: t('emptyState.action'), href: '/search' }}
+        />
+      )}
       <ul className="mt-6 space-y-2">
         {items.map((v) => {
           const isHost = v.hostUserId === me?.id;

@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { apiGet, apiPost } from '../../../../lib/api';
 import { Link } from '../../../../i18n/routing';
 import { fmtMoney, type Property } from '../../../../lib/listings';
+import { EmptyState } from '../../../../components/EmptyState';
 
 const STATUS_STYLES: Record<string, string> = {
   draft: 'bg-gray-100 text-gray-600',
@@ -67,7 +68,14 @@ export default function MyListingsPage() {
         </Link>
       </div>
 
-      {items.length === 0 && <p className="mt-8 text-gray-500">{t('board.empty')}</p>}
+      {items.length === 0 && (
+        <EmptyState
+          icon="🏠"
+          title={t('board.emptyState.title')}
+          body={t('board.emptyState.body')}
+          action={{ label: t('board.emptyState.action'), href: '/dashboard/listings/new' }}
+        />
+      )}
       {featureError && (
         <p className="mb-3 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{featureError}</p>
       )}

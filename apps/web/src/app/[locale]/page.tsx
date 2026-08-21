@@ -60,6 +60,39 @@ export default async function HomePage({ params: { locale } }: { params: { local
         </div>
       </section>
 
+      {/* why verification exists — the premise of the whole product. "How it
+          works" below describes the mechanics; a first-time visitor needs the
+          stakes before the mechanics mean anything. Claims here are limited to
+          what the verification engine actually does (Plan §4), and whyFooter
+          keeps the promise honest: a documentary check is not legal advice. */}
+      <section className="border-b border-gray-100">
+        <div className="mx-auto max-w-6xl px-4 py-16">
+          <p className="text-sm font-semibold uppercase tracking-wide text-brand-600">
+            {t('home.whyEyebrow')}
+          </p>
+          <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight">{t('home.whyTitle')}</h2>
+          <p className="mt-4 max-w-3xl text-gray-600">{t('home.whyBody')}</p>
+
+          <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-gray-200 bg-gray-200 sm:grid-cols-3">
+            {(['deed', 'seller', 'stale'] as const).map((risk) => (
+              <div key={risk} className="bg-white p-6">
+                <p className="text-sm font-medium text-gray-400">
+                  {t(`home.risk.${risk}.question`)}
+                </p>
+                <p className="mt-3 font-semibold text-brand-600">
+                  {t(`home.risk.${risk}.answerTitle`)}
+                </p>
+                <p className="mt-1.5 text-sm leading-relaxed text-gray-600">
+                  {t(`home.risk.${risk}.answerBody`)}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-6 max-w-3xl text-sm text-gray-500">{t('home.whyFooter')}</p>
+        </div>
+      </section>
+
       {/* regions */}
       <section className="mx-auto max-w-6xl px-4 py-16">
         <h2 className="text-2xl font-bold">{t('home.browseByRegion')}</h2>

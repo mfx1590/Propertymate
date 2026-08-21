@@ -179,7 +179,6 @@
   "mandates": {
     "title": "Yetki belgeleri",
     "subtitle": "Size atanan özel satılık mülkler. Mal sahibi kimliği gizli kalır — tüm iletişim platform aracılığıyla yürür.",
-    "empty": "Henüz atama yok. Mal sahipleri danışmanları dizinden seçer.",
     "ownerAsk": "Mal sahibi fiyatı",
     "termLabel": "Süre",
     "months": "ay",
@@ -193,7 +192,12 @@
     "alreadyPublished": "Yayınlandı",
     "publishedTitle": "Yayınladığınız ilanlar",
     "listPrice": "Liste fiyatı",
-    "yourCommission": "Komisyonunuz"
+    "yourCommission": "Komisyonunuz",
+    "emptyState": {
+      "action": "Herkese açık profilimi tamamla",
+      "body": "Özel yeniden satış mülklerinin sahipleri emlakçılarını dizinden seçer; sizi onların karşısına çıkaran şey eksiksiz ve doğrulanmış bir profildir.",
+      "title": "Henüz yetki yok"
+    }
   },
   "adminSettings": {
     "title": "Platform ayarları",
@@ -361,7 +365,6 @@
     "board": {
       "title": "İlanlarım",
       "newListing": "Yeni ilan",
-      "empty": "Henüz ilan yok. İlkini oluşturun!",
       "untitled": "Başlıksız taslak",
       "views": "görüntülenme",
       "saves": "kayıt",
@@ -369,7 +372,12 @@
       "findAgent": "Danışmanımı bul →",
       "confirmAvailability": "Hâlâ satılık/kiralık onayla",
       "view": "Görüntüle",
-      "feature": "Öne çıkar"
+      "feature": "Öne çıkar",
+      "emptyState": {
+        "action": "İlk ilanınızı oluşturun",
+        "body": "Bir mülk ekleyin; alıcılara açılmadan önce ekibimiz tapuyu ve mülkiyeti kontrol eder.",
+        "title": "Henüz ilan yok"
+      }
     },
     "detail": {
       "verified": "Doğrulanmış",
@@ -422,7 +430,6 @@
   },
   "viewings": {
     "title": "Görüntülemeler",
-    "empty": "Henüz görüntüleme yok.",
     "asHost": "Ev sahibisiniz",
     "asCustomer": "Ziyaretçisiniz",
     "status": {
@@ -435,13 +442,17 @@
     "confirm": "Onayla",
     "complete": "Tamamlandı işaretle",
     "noShow": "Gelmedi",
-    "cancel": "İptal"
+    "cancel": "İptal",
+    "emptyState": {
+      "action": "Doğrulanmış ilanlara göz atın",
+      "body": "Herhangi bir ilan sayfasından görüntüleme talep edebilirsiniz. İlan sahibi olarak ağırladığınız görüntülemeler de burada görünür.",
+      "title": "Henüz görüntüleme yok"
+    }
   },
   "offers": {
     "title": "Teklifler",
     "received": "Alınan",
     "sent": "Gönderilen",
-    "none": "Henüz yok.",
     "counterOf": "karşı teklif",
     "status": {
       "submitted": "Gönderildi",
@@ -455,12 +466,21 @@
     "counter": "Karşı teklif",
     "counterAmount": "Karşı teklif (GBP)",
     "withdraw": "Geri çek",
-    "disabled": "Şu anda platformda yeni teklifler kapalı. Devam eden teklifleriniz aşağıda görünmeye devam eder."
+    "disabled": "Şu anda platformda yeni teklifler kapalı. Devam eden teklifleriniz aşağıda görünmeye devam eder.",
+    "emptyReceived": {
+      "action": "İlanlarıma git",
+      "body": "Alıcıların ilanlarınıza yaptığı teklifler burada görünür; kabul edebilir, reddedebilir veya karşı teklif verebilirsiniz.",
+      "title": "Alınan teklif yok"
+    },
+    "emptySent": {
+      "action": "Doğrulanmış ilanlara göz atın",
+      "body": "Bir mülke yaptığınız teklifler, satıcının yanıtları ve karşı teklifleriyle birlikte burada görünür.",
+      "title": "Gönderilen teklif yok"
+    }
   },
   "deals": {
     "title": "İşlemler",
     "subtitle": "İşlemleriniz — kabul edilen tekliften teslime kadar takip edilir.",
-    "empty": "Henüz işlem yok. Bir teklif kabul edildiğinde işlem odası açılır.",
     "kind": {
       "purchase": "Satın alma",
       "rental": "Kiralama"
@@ -569,6 +589,11 @@
       "timeline": "Zaman çizelgesi",
       "openChat": "İşlem sohbetini aç",
       "signFirst": "İki taraf da sözleşmeyi imzalamadan bu aşama tamamlanamaz."
+    },
+    "emptyState": {
+      "action": "Doğrulanmış ilanlara göz atın",
+      "body": "Bir satıcı teklifi kabul ettiğinde ya da bir projede daire rezerve ettiğinizde işlem odası kendiliğinden açılır ve teslime kadar her adımı takip eder.",
+      "title": "Henüz işlem yok"
     }
   },
   "search": {
@@ -600,7 +625,24 @@
     "mapView": "Harita",
     "listView": "Liste",
     "saveSearch": "Aramayı kaydet",
-    "saved": "Kaydedildi ✓"
+    "saved": "Kaydedildi ✓",
+    "noResults": {
+      "title": "Bu filtrelerin tümüne uyan ilan yok",
+      "body": "Genellikle sorun filtrelerin tamamı değil, içlerinden biridir. Aşağıdaki seçeneklerin her birinin arkasında ilan var.",
+      "widenLabel": "Bir filtreyi kaldır",
+      "nearbyLabel": "Yakındakileri dene",
+      "clearAll": "Tüm filtreleri temizle ({count} ilan)",
+      "drop": {
+        "deedType": "Tapu türü fark etmez",
+        "furnished": "Eşyalı ya da değil",
+        "kind": "Satılık ve kiralık",
+        "maxPrice": "Üst fiyat sınırı yok",
+        "minBeds": "Oda sayısı fark etmez",
+        "minPrice": "Alt fiyat sınırı yok",
+        "q": "Arama kelimelerini yok say",
+        "region": "Tüm bölgeler"
+      }
+    }
   },
   "home": {
     "heroTitle": "Her ilan doğrulanmış. Her satıcı gerçek.",
@@ -608,12 +650,33 @@
     "searchPlaceholder": "Bölgeye göre ara, örn. Girne",
     "browseByRegion": "Bölgeye göre keşfet",
     "howItWorks": "Nasıl çalışır",
-    "step1Title": "Belgeler kontrol edilir",
-    "step1Body": "Koçanlar, kimlikler ve lisanslar, ilan yayına girmeden önce doğrulama ekibimizce incelenir.",
-    "step2Title": "Koçan türü gösterilir",
-    "step2Body": "Türk, Eşdeğer, Tahsis veya Yabancı — ne aldığınızı her zaman bilirsiniz.",
-    "step3Title": "Tamamlanana kadar rehberlik",
-    "step3Body": "Görüntülemeler, teklifler, sözleşmeler ve teslim tek bir işlem odasında adım adım takip edilir."
+    "step1Title": "Yalnızca doğrulanmış evleri arayın",
+    "step1Body": "Sonuçlardaki her şey belge kontrolünden geçti. Ayıklamanız gereken bir doğrulanmamış kategori yok.",
+    "step2Title": "Tapu türünü baştan görün",
+    "step2Body": "Türk, Eşdeğer, Tahsis veya Yabancı, geçtiği kontrollerin yanında her ilanda gösterilir.",
+    "step3Title": "Tek bir işlem odasında ilerleyin",
+    "step3Body": "Görüntülemeler, sözleşmeler, kapora ve teslim tek yerde; her adım iki taraf için de kayıt altında.",
+    "whyEyebrow": "PropVerify neden var",
+    "whyTitle": "İlan vermek herkesin elinde. Kontrol eden neredeyse yok.",
+    "whyBody": "Kuzey Kıbrıs'ta aynı ev, satıldıktan aylar sonra bile beş ayrı sitede üç farklı fiyatla durabiliyor; tapunun türü ise ne satın aldığınızı sessizce değiştiriyor. Alıcı bunu çoğu zaman kendi dili ve hukuk sistemi olmayan bir ortamda tek başına çözmek zorunda kalıyor. Bu yüzden kontrolü önce biz yapıyor, yalnızca geçenleri yayınlıyoruz.",
+    "risk": {
+      "deed": {
+        "question": "Tapu gerçek mi, hangi türden?",
+        "answerTitle": "Koçanı kendimiz okuyoruz",
+        "answerBody": "Her satılık ilanın arkasında yüklenmiş bir tapu var. Ekibimiz bunu Türk, Eşdeğer, Tahsis veya Yabancı olarak etiketliyor ve bu etiket ilanın üzerinde yazıyor; çünkü tür, ne aldığınızı belirliyor."
+      },
+      "seller": {
+        "question": "Bu kişinin satma hakkı var mı?",
+        "answerTitle": "Tapudaki adı eşleştiriyoruz",
+        "answerBody": "Mülk sahipleri tapuyla eşleşmesi gereken bir kimlik yüklüyor. Emlakçılar lisans ve imzalı mülk sahibi yetkisi; acenteler ve geliştiriciler şirket kaydı ve inşaat izinleri ekliyor. Geçemeyen bir profil hiç ilan veremiyor."
+      },
+      "stale": {
+        "question": "Hâlâ satışta mı?",
+        "answerTitle": "Onaylanmayan ilan düşer",
+        "answerBody": "İlan sahibi her 90 günde bir mülkün hâlâ müsait olduğunu onaylamak zorunda. Onaylamazsa ilan aramadan otomatik olarak kalkar; yani gördüğünüz her sonucun arkasında bu çeyrekte biri durmuş demektir."
+      }
+    },
+    "whyFooter": "Doğrulama belgeye dayalı bir kontroldür; hukuki danışmanlık ya da tapu garantisi değildir. Ne gördüğümüzü size açıkça söyleriz ve imzadan önce yine de kendi avukatınıza danışmanızı öneririz."
   },
   "projects": {
     "status": {
@@ -642,7 +705,12 @@
       "view": "Görüntüle",
       "delivery": "Teslim",
       "noDelivery": "Teslim tarihi belirlenmedi",
-      "availability": "{total} daireden {available} tanesi müsait"
+      "availability": "{total} daireden {available} tanesi müsait",
+      "emptyState": {
+        "action": "İlk projenizi oluşturun",
+        "body": "Bir proje; geliştirmenizin daire envanterini, ödeme planlarını ve inşaat güncellemelerini barındırır ve alıcılar doğrudan buradan daire rezerve edebilir.",
+        "title": "Henüz proje yok"
+      }
     },
     "editor": {
       "title": "Proje bilgileri",
@@ -932,7 +1000,6 @@
     "avgResponse": "Ort. ilk yanıt",
     "allStages": "Tüm aşamalar",
     "allListings": "Tüm ilanlar",
-    "empty": "Henüz talep yok. Biri iletişime geçtiğinde burada görünür.",
     "unread": "{n} okunmamış",
     "needsReply": "Yanıt gerekiyor",
     "contactHidden": "İletişim bilgisi onaylanmış randevudan sonra görünür",
@@ -964,6 +1031,11 @@
       "accepted": "kabul",
       "rejected": "reddedildi",
       "withdrawn": "geri çekildi"
+    },
+    "emptyState": {
+      "action": "İlanlarıma git",
+      "body": "Yayındaki ilanlarınıza gelen sorular, görüntüleme talepleri ve teklifler, herkese açık profilinizde görünen yanıt sürenizle birlikte burada toplanır.",
+      "title": "Henüz talep yok"
     }
   },
   "contract": {

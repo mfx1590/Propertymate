@@ -179,7 +179,6 @@
   "mandates": {
     "title": "Mandates",
     "subtitle": "Private resale properties assigned to you. Owner identity stays confidential — the platform mediates all communication.",
-    "empty": "No assignments yet. Owners choose agents from the directory.",
     "ownerAsk": "Owner asking price",
     "termLabel": "Term",
     "months": "months",
@@ -193,7 +192,12 @@
     "alreadyPublished": "Published",
     "publishedTitle": "Your published listings",
     "listPrice": "List price",
-    "yourCommission": "Your commission"
+    "yourCommission": "Your commission",
+    "emptyState": {
+      "action": "تکمیل نمایه عمومی من",
+      "body": "مالکان املاک فروش خصوصی، مشاوران خود را از فهرست انتخاب می‌کنند؛ بنابراین یک نمایه کامل و تأییدشده است که شما را پیش چشم آن‌ها می‌آورد.",
+      "title": "هنوز نمایندگی‌ای ندارید"
+    }
   },
   "adminSettings": {
     "title": "Platform settings",
@@ -361,7 +365,6 @@
     "board": {
       "title": "My listings",
       "newListing": "New listing",
-      "empty": "No listings yet. Create your first one!",
       "untitled": "Untitled draft",
       "views": "views",
       "saves": "saves",
@@ -369,7 +372,12 @@
       "findAgent": "Find my agent →",
       "confirmAvailability": "Confirm still available",
       "view": "View",
-      "feature": "ویژه کن"
+      "feature": "ویژه کن",
+      "emptyState": {
+        "action": "اولین آگهی خود را بسازید",
+        "body": "ملکی اضافه کنید؛ پیش از آنکه برای خریداران منتشر شود، تیم ما سند و مالکیت آن را بررسی می‌کند.",
+        "title": "هنوز آگهی‌ای ندارید"
+      }
     },
     "detail": {
       "verified": "Verified",
@@ -422,7 +430,6 @@
   },
   "viewings": {
     "title": "Viewings",
-    "empty": "No viewings yet.",
     "asHost": "You host",
     "asCustomer": "You visit",
     "status": {
@@ -435,13 +442,17 @@
     "confirm": "Confirm",
     "complete": "Mark completed",
     "noShow": "No-show",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "emptyState": {
+      "action": "دیدن آگهی‌های تأییدشده",
+      "body": "از صفحه هر آگهی می‌توانید درخواست بازدید بدهید. بازدیدهایی که به عنوان آگهی‌دهنده میزبان آن هستید نیز اینجا نشان داده می‌شود.",
+      "title": "هنوز بازدیدی ندارید"
+    }
   },
   "offers": {
     "title": "Offers",
     "received": "Received",
     "sent": "Sent",
-    "none": "None yet.",
     "counterOf": "counter-offer",
     "status": {
       "submitted": "Submitted",
@@ -455,12 +466,21 @@
     "counter": "Counter",
     "counterAmount": "Counter (GBP)",
     "withdraw": "Withdraw",
-    "disabled": "در حال حاضر ثبت پیشنهاد جدید در پلتفرم غیرفعال است. مواردی که در جریان هستند همچنان در پایین نمایش داده می‌شوند."
+    "disabled": "در حال حاضر ثبت پیشنهاد جدید در پلتفرم غیرفعال است. مواردی که در جریان هستند همچنان در پایین نمایش داده می‌شوند.",
+    "emptyReceived": {
+      "action": "رفتن به آگهی‌های من",
+      "body": "پیشنهادهای خریداران برای آگهی‌های شما اینجا نمایش داده می‌شود تا آن‌ها را بپذیرید، رد کنید یا پیشنهاد متقابل بدهید.",
+      "title": "پیشنهادی دریافت نشده"
+    },
+    "emptySent": {
+      "action": "دیدن آگهی‌های تأییدشده",
+      "body": "پیشنهادهایی که برای یک ملک می‌دهید، همراه با پاسخ‌ها و پیشنهادهای متقابل فروشنده، اینجا نشان داده می‌شود.",
+      "title": "پیشنهادی ارسال نشده"
+    }
   },
   "deals": {
     "title": "Deals",
     "subtitle": "Your transactions, tracked from accepted offer to handover.",
-    "empty": "No deals yet. A deal room opens when an offer is accepted.",
     "kind": {
       "purchase": "Purchase",
       "rental": "Rental"
@@ -569,6 +589,11 @@
       "timeline": "Timeline",
       "openChat": "Open deal chat",
       "signFirst": "تا زمانی که هر دو طرف قرارداد را امضا نکنند، این مرحله کامل نمی‌شود."
+    },
+    "emptyState": {
+      "action": "دیدن آگهی‌های تأییدشده",
+      "body": "اتاق معامله زمانی که فروشنده پیشنهادی را بپذیرد یا شما واحدی را در یک پروژه رزرو کنید خودبه‌خود باز می‌شود و همه مراحل را تا تحویل دنبال می‌کند.",
+      "title": "هنوز معامله‌ای ندارید"
     }
   },
   "search": {
@@ -600,7 +625,24 @@
     "mapView": "Map",
     "listView": "List",
     "saveSearch": "Save search",
-    "saved": "Saved ✓"
+    "saved": "Saved ✓",
+    "noResults": {
+      "title": "هیچ ملکی با همهٔ این فیلترها جور نیست",
+      "body": "معمولاً یکی از معیارها مشکل‌ساز است، نه همهٔ آن‌ها. پشت هر گزینهٔ زیر همین حالا آگهی وجود دارد.",
+      "widenLabel": "یک فیلتر را بردار",
+      "nearbyLabel": "اطراف را ببین",
+      "clearAll": "پاک کردن همهٔ فیلترها ({count} آگهی)",
+      "drop": {
+        "deedType": "هر نوع سند",
+        "furnished": "مبله یا بدون مبله",
+        "kind": "فروش و اجاره",
+        "maxPrice": "بدون حداکثر قیمت",
+        "minBeds": "هر تعداد اتاق خواب",
+        "minPrice": "بدون حداقل قیمت",
+        "q": "نادیده گرفتن کلمات جست‌وجو",
+        "region": "همهٔ مناطق"
+      }
+    }
   },
   "home": {
     "heroTitle": "Every listing verified. Every seller real.",
@@ -608,12 +650,33 @@
     "searchPlaceholder": "Search by region, e.g. Kyrenia",
     "browseByRegion": "Browse by region",
     "howItWorks": "How it works",
-    "step1Title": "Documents checked",
-    "step1Body": "Title deeds, IDs and licenses are reviewed by our verification team before any listing goes live.",
-    "step2Title": "Deed type shown",
-    "step2Body": "Turkish, Exchange, Allocation or Foreign — you always know what you're buying.",
-    "step3Title": "Guided to completion",
-    "step3Body": "Viewings, offers, contracts and handover tracked step by step in one deal room."
+    "step1Title": "فقط خانه‌های تأییدشده را بگردید",
+    "step1Body": "هر آنچه در نتایج است از بررسی مدارک گذشته است. دستهٔ تأییدنشده‌ای وجود ندارد که ناچار باشید کنار بگذارید.",
+    "step2Title": "نوع سند را از همان اول ببینید",
+    "step2Body": "ترکی، تهاتری، تخصیصی یا خارجی روی هر آگهی، کنار بررسی‌هایی که قبول شده، نشان داده می‌شود.",
+    "step3Title": "در یک اتاق معاملهٔ واحد پیش بروید",
+    "step3Body": "بازدیدها، قراردادها، بیعانه و تحویل همه در یک جا، و هر مرحله برای هر دو طرف ثبت می‌شود.",
+    "whyEyebrow": "چرا PropVerify وجود دارد",
+    "whyTitle": "هرکسی می‌تواند آگهی بگذارد. تقریباً هیچ‌کس بررسی نمی‌کند.",
+    "whyBody": "در قبرس شمالی یک خانه می‌تواند ماه‌ها پس از فروش، در پنج سایت با سه قیمت بماند؛ و نوع سند بی‌سروصدا تعیین می‌کند که واقعاً چه چیزی می‌خرید. خریدار معمولاً باید این‌ها را تنها و در زبان و نظام حقوقی‌ای که از آنِ او نیست حل کند. برای همین ما اول بررسی می‌کنیم و تنها چیزی را منتشر می‌کنیم که از بررسی عبور کند.",
+    "risk": {
+      "deed": {
+        "question": "سند واقعی است و از چه نوعی است؟",
+        "answerTitle": "خودمان کوچان را می‌خوانیم",
+        "answerBody": "پشت هر آگهی فروش یک سند بارگذاری‌شده وجود دارد. تیم ما آن را ترکی، تهاتری، تخصیصی یا خارجی برچسب می‌زند و همان برچسب روی آگهی نوشته می‌شود، چون نوع سند تعیین می‌کند چه می‌خرید."
+      },
+      "seller": {
+        "question": "آیا این شخص حق فروش دارد؟",
+        "answerTitle": "نام روی سند را تطبیق می‌دهیم",
+        "answerBody": "مالکان مدرک هویتی بارگذاری می‌کنند که باید با سند بخواند. مشاوران پروانه و وکالت امضاشدهٔ مالک اضافه می‌کنند و آژانس‌ها و سازندگان، ثبت شرکت و پروانهٔ ساخت. نمایه‌ای که رد شود اصلاً نمی‌تواند آگهی بگذارد."
+      },
+      "stale": {
+        "question": "اصلاً هنوز در بازار هست؟",
+        "answerTitle": "آگهی تأییدنشده حذف می‌شود",
+        "answerBody": "هر ۹۰ روز آگهی‌دهنده باید تأیید کند ملک هنوز موجود است. اگر تأیید نکند، آگهی به‌طور خودکار از جست‌وجو کنار می‌رود؛ یعنی پشت هر نتیجه‌ای که می‌بینید کسی در همین فصل ایستاده است."
+      }
+    },
+    "whyFooter": "تأیید یک بررسی مبتنی بر مدارک است، نه مشاورهٔ حقوقی و نه تضمین مالکیت. ما دقیقاً می‌گوییم چه دیده‌ایم و باز هم توصیه می‌کنیم پیش از امضا با وکیل خودتان مشورت کنید."
   },
   "projects": {
     "status": {
@@ -642,7 +705,12 @@
       "view": "مشاهده",
       "delivery": "تحویل",
       "noDelivery": "تاریخ تحویل تعیین نشده",
-      "availability": "{available} از {total} واحد موجود"
+      "availability": "{available} از {total} واحد موجود",
+      "emptyState": {
+        "action": "اولین پروژه خود را بسازید",
+        "body": "هر پروژه فهرست واحدها، طرح‌های پرداخت و به‌روزرسانی‌های ساخت را نگه می‌دارد و خریداران می‌توانند مستقیماً از همان‌جا واحدی را رزرو کنند.",
+        "title": "هنوز پروژه‌ای ندارید"
+      }
     },
     "editor": {
       "title": "مشخصات پروژه",
@@ -932,7 +1000,6 @@
     "avgResponse": "میانگین اولین پاسخ",
     "allStages": "همهٔ مراحل",
     "allListings": "همهٔ آگهی‌ها",
-    "empty": "هنوز سرنخی نیست. به محض تماس کسی اینجا نمایان می‌شود.",
     "unread": "{n} خوانده‌نشده",
     "needsReply": "نیازمند پاسخ",
     "contactHidden": "اطلاعات تماس پس از بازدید تأییدشده نمایان می‌شود",
@@ -964,6 +1031,11 @@
       "accepted": "پذیرفته",
       "rejected": "ردشده",
       "withdrawn": "پس‌گرفته"
+    },
+    "emptyState": {
+      "action": "رفتن به آگهی‌های من",
+      "body": "پرسش‌ها، درخواست‌های بازدید و پیشنهادها برای آگهی‌های فعال شما، همراه با زمان پاسخ‌گویی که در نمایه عمومی شما دیده می‌شود، اینجا جمع می‌شوند.",
+      "title": "هنوز سرنخی ندارید"
     }
   },
   "contract": {

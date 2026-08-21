@@ -11,6 +11,7 @@ import {
   type LeadInbox,
   type LeadStage,
 } from '../../../../lib/leads';
+import { EmptyState } from '../../../../components/EmptyState';
 
 /**
  * Lead inbox (Plan §6.2): inquiries, viewings and offers per listing, with the
@@ -86,7 +87,12 @@ export default function LeadsPage() {
       </div>
 
       {data.leads.length === 0 ? (
-        <p className="mt-8 text-gray-500">{t('empty')}</p>
+        <EmptyState
+          icon="📥"
+          title={t('emptyState.title')}
+          body={t('emptyState.body')}
+          action={{ label: t('emptyState.action'), href: '/dashboard/listings' }}
+        />
       ) : (
         <ul className="mt-6 space-y-3">
           {data.leads.map((lead) => (

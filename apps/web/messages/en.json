@@ -179,7 +179,6 @@
   "mandates": {
     "title": "Mandates",
     "subtitle": "Private resale properties assigned to you. Owner identity stays confidential — the platform mediates all communication.",
-    "empty": "No assignments yet. Owners choose agents from the directory.",
     "ownerAsk": "Owner asking price",
     "termLabel": "Term",
     "months": "months",
@@ -193,7 +192,12 @@
     "alreadyPublished": "Published",
     "publishedTitle": "Your published listings",
     "listPrice": "List price",
-    "yourCommission": "Your commission"
+    "yourCommission": "Your commission",
+    "emptyState": {
+      "action": "Complete my public profile",
+      "body": "Owners of private resale properties pick their agents from the directory, so a complete verified profile is what puts you in front of them.",
+      "title": "No mandates yet"
+    }
   },
   "adminSettings": {
     "title": "Platform settings",
@@ -361,7 +365,6 @@
     "board": {
       "title": "My listings",
       "newListing": "New listing",
-      "empty": "No listings yet. Create your first one!",
       "untitled": "Untitled draft",
       "views": "views",
       "saves": "saves",
@@ -369,7 +372,12 @@
       "findAgent": "Find my agent →",
       "confirmAvailability": "Confirm still available",
       "view": "View",
-      "feature": "Feature"
+      "feature": "Feature",
+      "emptyState": {
+        "action": "Create your first listing",
+        "body": "Add a property and our team checks the title deed and ownership before it goes live to buyers.",
+        "title": "No listings yet"
+      }
     },
     "detail": {
       "verified": "Verified",
@@ -422,7 +430,6 @@
   },
   "viewings": {
     "title": "Viewings",
-    "empty": "No viewings yet.",
     "asHost": "You host",
     "asCustomer": "You visit",
     "status": {
@@ -435,13 +442,17 @@
     "confirm": "Confirm",
     "complete": "Mark completed",
     "noShow": "No-show",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "emptyState": {
+      "action": "Browse verified listings",
+      "body": "Request a viewing from any listing page. Viewings you host as a lister show up here too.",
+      "title": "No viewings yet"
+    }
   },
   "offers": {
     "title": "Offers",
     "received": "Received",
     "sent": "Sent",
-    "none": "None yet.",
     "counterOf": "counter-offer",
     "status": {
       "submitted": "Submitted",
@@ -455,12 +466,21 @@
     "counter": "Counter",
     "counterAmount": "Counter (GBP)",
     "withdraw": "Withdraw",
-    "disabled": "New offers are switched off on the platform right now. Anything already in progress is still shown below."
+    "disabled": "New offers are switched off on the platform right now. Anything already in progress is still shown below.",
+    "emptyReceived": {
+      "action": "Go to my listings",
+      "body": "Offers buyers make on your listings appear here, ready for you to accept, reject or counter.",
+      "title": "No offers received"
+    },
+    "emptySent": {
+      "action": "Browse verified listings",
+      "body": "Offers you make on a property appear here, together with the seller's replies and counter-offers.",
+      "title": "No offers sent"
+    }
   },
   "deals": {
     "title": "Deals",
     "subtitle": "Your transactions, tracked from accepted offer to handover.",
-    "empty": "No deals yet. A deal room opens when an offer is accepted.",
     "kind": {
       "purchase": "Purchase",
       "rental": "Rental"
@@ -569,6 +589,11 @@
       "timeline": "Timeline",
       "openChat": "Open deal chat",
       "signFirst": "Both parties must sign the contract before this stage can complete."
+    },
+    "emptyState": {
+      "action": "Browse verified listings",
+      "body": "A deal room opens by itself when a seller accepts an offer or you reserve a unit in a development, then tracks every step through to handover.",
+      "title": "No deals yet"
     }
   },
   "search": {
@@ -600,7 +625,24 @@
     "mapView": "Map",
     "listView": "List",
     "saveSearch": "Save search",
-    "saved": "Saved ✓"
+    "saved": "Saved ✓",
+    "noResults": {
+      "title": "Nothing matches all of these filters",
+      "body": "That usually means one criterion is doing the damage rather than all of them. Each option below already has listings behind it.",
+      "widenLabel": "Drop a filter",
+      "nearbyLabel": "Try nearby",
+      "clearAll": "Clear all filters ({count} listings)",
+      "drop": {
+        "deedType": "Any deed type",
+        "furnished": "Furnished or not",
+        "kind": "Buy and rent",
+        "maxPrice": "No maximum price",
+        "minBeds": "Any bedrooms",
+        "minPrice": "No minimum price",
+        "q": "Ignore the search words",
+        "region": "Any region"
+      }
+    }
   },
   "home": {
     "heroTitle": "Every listing verified. Every seller real.",
@@ -608,12 +650,33 @@
     "searchPlaceholder": "Search by region, e.g. Kyrenia",
     "browseByRegion": "Browse by region",
     "howItWorks": "How it works",
-    "step1Title": "Documents checked",
-    "step1Body": "Title deeds, IDs and licenses are reviewed by our verification team before any listing goes live.",
-    "step2Title": "Deed type shown",
-    "step2Body": "Turkish, Exchange, Allocation or Foreign — you always know what you're buying.",
-    "step3Title": "Guided to completion",
-    "step3Body": "Viewings, offers, contracts and handover tracked step by step in one deal room."
+    "step1Title": "Search only verified homes",
+    "step1Body": "Everything in the results has cleared document checks. There is no unverified tier you have to filter out.",
+    "step2Title": "See the deed type up front",
+    "step2Body": "Turkish, Exchange, Allocation or Foreign is shown on every listing, next to the checks it passed.",
+    "step3Title": "Move in one tracked deal room",
+    "step3Body": "Viewings, contracts, deposit and handover happen in one place, with every step recorded for both sides.",
+    "whyEyebrow": "Why PropVerify exists",
+    "whyTitle": "Anyone can post a property. Almost nobody checks one.",
+    "whyBody": "In Northern Cyprus the same home can sit on five sites at three prices months after it sold, and the type of title deed quietly changes what you are actually buying. Buyers are left to work that out alone, usually in a language and a legal system that isn't theirs. So we do the checking first, and publish only what passes.",
+    "risk": {
+      "deed": {
+        "question": "Is the deed real, and what kind is it?",
+        "answerTitle": "We read the koçan ourselves",
+        "answerBody": "Every resale listing is backed by an uploaded title deed. Our team tags it Turkish, Exchange, Allocation or Foreign, and that tag is printed on the listing, because the type decides what you are buying."
+      },
+      "seller": {
+        "question": "Does this person have the right to sell it?",
+        "answerTitle": "We match the name on the deed",
+        "answerBody": "Owners upload ID that has to match the deed. Agents add a licence and a signed owner mandate; agencies and developers add company registration and construction permits. A profile that fails cannot list at all."
+      },
+      "stale": {
+        "question": "Is it even still on the market?",
+        "answerTitle": "Listings expire unless confirmed",
+        "answerBody": "Every 90 days the lister has to confirm the property is still available. If they don't, it drops out of search automatically, so every result you see is one somebody stood behind this quarter."
+      }
+    },
+    "whyFooter": "Verification is a documentary check, not legal advice or a guarantee of title. We tell you exactly what we saw, and we still recommend your own lawyer before you sign."
   },
   "projects": {
     "status": {
@@ -642,7 +705,12 @@
       "view": "View",
       "delivery": "Delivery",
       "noDelivery": "Delivery date not set",
-      "availability": "{available} of {total} available"
+      "availability": "{available} of {total} available",
+      "emptyState": {
+        "action": "Create your first project",
+        "body": "A project holds your development's unit inventory, payment plans and construction updates, and buyers can reserve a unit straight from it.",
+        "title": "No projects yet"
+      }
     },
     "editor": {
       "title": "Project details",
@@ -932,7 +1000,6 @@
     "avgResponse": "Avg first response",
     "allStages": "All stages",
     "allListings": "All listings",
-    "empty": "No leads yet. They appear here as soon as someone enquires.",
     "unread": "{n} unread",
     "needsReply": "Needs a reply",
     "contactHidden": "Contact shown after a confirmed viewing",
@@ -964,6 +1031,11 @@
       "accepted": "accepted",
       "rejected": "rejected",
       "withdrawn": "withdrawn"
+    },
+    "emptyState": {
+      "action": "Go to my listings",
+      "body": "Enquiries, viewing requests and offers on your live listings all arrive here, along with the response time shown on your public profile.",
+      "title": "No leads yet"
     }
   },
   "contract": {

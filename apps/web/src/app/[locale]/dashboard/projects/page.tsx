@@ -6,6 +6,7 @@ import { ApiError, apiGet, apiPost } from '../../../../lib/api';
 import { Link, useRouter } from '../../../../i18n/routing';
 import { fmtMoney } from '../../../../lib/listings';
 import { PROJECT_STATUS_STYLES, pickI18n, type MyProject } from '../../../../lib/projects';
+import { EmptyState } from '../../../../components/EmptyState';
 
 export default function MyProjectsPage() {
   const t = useTranslations('projects');
@@ -52,7 +53,14 @@ export default function MyProjectsPage() {
         <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
       )}
 
-      {items.length === 0 && <p className="mt-8 text-gray-500">{t('board.empty')}</p>}
+      {items.length === 0 && (
+        <EmptyState
+          icon="🏗️"
+          title={t('board.emptyState.title')}
+          body={t('board.emptyState.body')}
+          action={{ label: t('board.emptyState.action'), onClick: startDraft, disabled: busy }}
+        />
+      )}
 
       <ul className="mt-6 space-y-3">
         {items.map((p) => {

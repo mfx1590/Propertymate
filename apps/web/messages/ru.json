@@ -179,7 +179,6 @@
   "mandates": {
     "title": "Mandates",
     "subtitle": "Private resale properties assigned to you. Owner identity stays confidential — the platform mediates all communication.",
-    "empty": "No assignments yet. Owners choose agents from the directory.",
     "ownerAsk": "Owner asking price",
     "termLabel": "Term",
     "months": "months",
@@ -193,7 +192,12 @@
     "alreadyPublished": "Published",
     "publishedTitle": "Your published listings",
     "listPrice": "List price",
-    "yourCommission": "Your commission"
+    "yourCommission": "Your commission",
+    "emptyState": {
+      "action": "Заполнить публичный профиль",
+      "body": "Владельцы закрытых объектов сами выбирают агентов из каталога, поэтому именно полный проверенный профиль выводит вас к ним.",
+      "title": "Пока нет поручений"
+    }
   },
   "adminSettings": {
     "title": "Platform settings",
@@ -361,7 +365,6 @@
     "board": {
       "title": "My listings",
       "newListing": "New listing",
-      "empty": "No listings yet. Create your first one!",
       "untitled": "Untitled draft",
       "views": "views",
       "saves": "saves",
@@ -369,7 +372,12 @@
       "findAgent": "Find my agent →",
       "confirmAvailability": "Confirm still available",
       "view": "View",
-      "feature": "Продвинуть"
+      "feature": "Продвинуть",
+      "emptyState": {
+        "action": "Создать первое объявление",
+        "body": "Добавьте объект — наша команда проверит документ о праве собственности, прежде чем объявление станет видно покупателям.",
+        "title": "Пока нет объявлений"
+      }
     },
     "detail": {
       "verified": "Verified",
@@ -422,7 +430,6 @@
   },
   "viewings": {
     "title": "Viewings",
-    "empty": "No viewings yet.",
     "asHost": "You host",
     "asCustomer": "You visit",
     "status": {
@@ -435,13 +442,17 @@
     "confirm": "Confirm",
     "complete": "Mark completed",
     "noShow": "No-show",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "emptyState": {
+      "action": "Смотреть проверенные объявления",
+      "body": "Заявку на просмотр можно отправить со страницы любого объявления. Просмотры, которые вы проводите как продавец, тоже появятся здесь.",
+      "title": "Пока нет просмотров"
+    }
   },
   "offers": {
     "title": "Offers",
     "received": "Received",
     "sent": "Sent",
-    "none": "None yet.",
     "counterOf": "counter-offer",
     "status": {
       "submitted": "Submitted",
@@ -455,12 +466,21 @@
     "counter": "Counter",
     "counterAmount": "Counter (GBP)",
     "withdraw": "Withdraw",
-    "disabled": "Новые предложения сейчас отключены на платформе. Всё, что уже в процессе, по-прежнему показано ниже."
+    "disabled": "Новые предложения сейчас отключены на платформе. Всё, что уже в процессе, по-прежнему показано ниже.",
+    "emptyReceived": {
+      "action": "Перейти к моим объявлениям",
+      "body": "Предложения покупателей по вашим объявлениям появятся здесь — их можно принять, отклонить или сделать встречное.",
+      "title": "Предложений не поступало"
+    },
+    "emptySent": {
+      "action": "Смотреть проверенные объявления",
+      "body": "Предложения, которые вы делаете по объекту, появятся здесь вместе с ответами и встречными предложениями продавца.",
+      "title": "Вы не отправляли предложений"
+    }
   },
   "deals": {
     "title": "Deals",
     "subtitle": "Your transactions, tracked from accepted offer to handover.",
-    "empty": "No deals yet. A deal room opens when an offer is accepted.",
     "kind": {
       "purchase": "Purchase",
       "rental": "Rental"
@@ -569,6 +589,11 @@
       "timeline": "Timeline",
       "openChat": "Open deal chat",
       "signFirst": "Обе стороны должны подписать договор, иначе этап не завершить."
+    },
+    "emptyState": {
+      "action": "Смотреть проверенные объявления",
+      "body": "Комната сделки открывается сама, когда продавец принимает предложение или вы бронируете квартиру в проекте, и ведёт вас по всем этапам вплоть до передачи ключей.",
+      "title": "Пока нет сделок"
     }
   },
   "search": {
@@ -600,7 +625,24 @@
     "mapView": "Map",
     "listView": "List",
     "saveSearch": "Save search",
-    "saved": "Saved ✓"
+    "saved": "Saved ✓",
+    "noResults": {
+      "title": "Под все эти фильтры ничего не подходит",
+      "body": "Обычно мешает один критерий, а не все сразу. За каждым вариантом ниже уже есть объявления.",
+      "widenLabel": "Убрать фильтр",
+      "nearbyLabel": "Посмотреть рядом",
+      "clearAll": "Сбросить все фильтры ({count} объявлений)",
+      "drop": {
+        "deedType": "Любой тип документа",
+        "furnished": "С мебелью или без",
+        "kind": "Продажа и аренда",
+        "maxPrice": "Без верхней цены",
+        "minBeds": "Любое число спален",
+        "minPrice": "Без нижней цены",
+        "q": "Не учитывать поисковые слова",
+        "region": "Любой регион"
+      }
+    }
   },
   "home": {
     "heroTitle": "Every listing verified. Every seller real.",
@@ -608,12 +650,33 @@
     "searchPlaceholder": "Search by region, e.g. Kyrenia",
     "browseByRegion": "Browse by region",
     "howItWorks": "How it works",
-    "step1Title": "Documents checked",
-    "step1Body": "Title deeds, IDs and licenses are reviewed by our verification team before any listing goes live.",
-    "step2Title": "Deed type shown",
-    "step2Body": "Turkish, Exchange, Allocation or Foreign — you always know what you're buying.",
-    "step3Title": "Guided to completion",
-    "step3Body": "Viewings, offers, contracts and handover tracked step by step in one deal room."
+    "step1Title": "Ищите только проверенные объекты",
+    "step1Body": "Всё в выдаче прошло проверку документов. Здесь нет непроверенной категории, которую нужно отсеивать.",
+    "step2Title": "Тип документа виден сразу",
+    "step2Body": "Турецкий, обменный, выделенный или иностранный указан в каждом объявлении рядом с пройденными проверками.",
+    "step3Title": "Ведите сделку в одной комнате",
+    "step3Body": "Просмотры, договоры, задаток и передача ключей — в одном месте, каждый шаг зафиксирован для обеих сторон.",
+    "whyEyebrow": "Зачем нужен PropVerify",
+    "whyTitle": "Разместить объявление может каждый. Проверяет почти никто.",
+    "whyBody": "На Северном Кипре один и тот же дом месяцами висит на пяти сайтах по трём ценам уже после продажи, а тип документа о собственности незаметно меняет то, что вы на самом деле покупаете. Разбираться в этом покупателю приходится в одиночку, обычно на чужом языке и в незнакомой правовой системе. Поэтому проверку мы берём на себя и публикуем только то, что её прошло.",
+    "risk": {
+      "deed": {
+        "question": "Документ настоящий и какого он типа?",
+        "answerTitle": "Мы сами читаем кочан",
+        "answerBody": "За каждым объявлением о продаже стоит загруженный документ о праве собственности. Наша команда помечает его как турецкий, обменный, выделенный или иностранный, и эта пометка стоит прямо в объявлении, потому что от типа зависит, что именно вы покупаете."
+      },
+      "seller": {
+        "question": "Есть ли у этого человека право продавать?",
+        "answerTitle": "Мы сверяем имя в документе",
+        "answerBody": "Владельцы загружают удостоверение личности, которое должно совпадать с документом. Агенты добавляют лицензию и подписанное поручение владельца, агентства и застройщики — регистрацию компании и разрешения на строительство. Профиль, не прошедший проверку, не может размещать объявления вовсе."
+      },
+      "stale": {
+        "question": "Объект вообще ещё продаётся?",
+        "answerTitle": "Без подтверждения объявление снимается",
+        "answerBody": "Каждые 90 дней продавец обязан подтвердить, что объект всё ещё доступен. Если он этого не делает, объявление автоматически исчезает из поиска — значит, за каждым результатом кто-то поручился в этом квартале."
+      }
+    },
+    "whyFooter": "Проверка — это работа с документами, а не юридическая консультация и не гарантия права собственности. Мы прямо сообщаем, что увидели, и всё же советуем показать сделку своему юристу до подписания."
   },
   "projects": {
     "status": {
@@ -642,7 +705,12 @@
       "view": "Смотреть",
       "delivery": "Сдача",
       "noDelivery": "Дата сдачи не указана",
-      "availability": "Свободно {available} из {total}"
+      "availability": "Свободно {available} из {total}",
+      "emptyState": {
+        "action": "Создать первый проект",
+        "body": "Проект содержит перечень квартир, планы оплаты и ход строительства, и покупатели могут забронировать квартиру прямо из него.",
+        "title": "Пока нет проектов"
+      }
     },
     "editor": {
       "title": "Данные проекта",
@@ -932,7 +1000,6 @@
     "avgResponse": "Ср. первый ответ",
     "allStages": "Все этапы",
     "allListings": "Все объявления",
-    "empty": "Заявок пока нет. Они появятся, как только кто-то обратится.",
     "unread": "{n} непрочитанных",
     "needsReply": "Нужен ответ",
     "contactHidden": "Контакты откроются после подтверждённого показа",
@@ -964,6 +1031,11 @@
       "accepted": "принято",
       "rejected": "отклонено",
       "withdrawn": "отозвано"
+    },
+    "emptyState": {
+      "action": "Перейти к моим объявлениям",
+      "body": "Запросы, заявки на просмотр и предложения по вашим активным объявлениям собираются здесь вместе со временем ответа, которое видно в вашем публичном профиле.",
+      "title": "Пока нет обращений"
     }
   },
   "contract": {

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { apiGet, apiPost } from '../../../../lib/api';
 import { fmtMoney } from '../../../../lib/listings';
+import { EmptyState } from '../../../../components/EmptyState';
 
 interface Offer {
   id: string;
@@ -111,7 +112,16 @@ export default function OffersPage() {
       )}
 
       <h2 className="mt-6 font-semibold text-gray-700">{t('received')}</h2>
-      {data.received.length === 0 && <p className="mt-2 text-sm text-gray-500">{t('none')}</p>}
+      {/* Receiving an offer needs listings, not the toggle — that action stays
+          useful even while new offers are switched off. */}
+      {data.received.length === 0 && (
+        <EmptyState
+          icon="📥"
+          title={t('emptyReceived.title')}
+          body={t('emptyReceived.body')}
+          action={{ label: t('emptyReceived.action'), href: '/dashboard/listings' }}
+        />
+      )}
       <ul className="mt-2 space-y-2">
         {data.received.map((o) => (
           <OfferCard key={o.id} o={o} received />
@@ -119,7 +129,17 @@ export default function OffersPage() {
       </ul>
 
       <h2 className="mt-8 font-semibold text-gray-700">{t('sent')}</h2>
-      {data.sent.length === 0 && <p className="mt-2 text-sm text-gray-500">{t('none')}</p>}
+      {/* No CTA while the toggle is off: sending the user to a listing to make
+          an offer they cannot make is exactly the dead end this pass removes.
+          The amber banner above already explains why. */}
+      {data.sent.length === 0 && (
+        <EmptyState
+          icon="📤"
+          title={t('emptySent.title')}
+          body={t('emptySent.body')}
+          action={offersEnabled ? { label: t('emptySent.action'), href: '/search' } : undefined}
+        />
+      )}
       <ul className="mt-2 space-y-2">
         {data.sent.map((o) => (
           <OfferCard key={o.id} o={o} received={false} />

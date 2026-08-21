@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { apiGet, apiPost } from '../../../../lib/api';
 import { fmtGbp } from '../../../../lib/listings';
+import { EmptyState } from '../../../../components/EmptyState';
 
 interface Assignment {
   id: string;
@@ -73,7 +74,17 @@ export default function MandatesPage() {
       <h1 className="text-2xl font-bold">{t('title')}</h1>
       <p className="mt-1 text-sm text-gray-500">{t('subtitle')}</p>
 
-      {assignments.length === 0 && <p className="mt-6 text-gray-500">{t('empty')}</p>}
+      {/* Mandates is a solo-agent nav entry (§2.2 registry), so the profile the
+          owner actually browses is the solo_agent one. There is nothing to
+          "create" here — an agent gets mandates by being findable. */}
+      {assignments.length === 0 && (
+        <EmptyState
+          icon="🗝️"
+          title={t('emptyState.title')}
+          body={t('emptyState.body')}
+          action={{ label: t('emptyState.action'), href: '/dashboard/profile/solo_agent' }}
+        />
+      )}
 
       <div className="mt-6 space-y-4">
         {assignments.map((a) => (

@@ -34,6 +34,63 @@ export interface ListingDocument {
 
 const INDEX_NAME = 'listings';
 
+export type SearchSort = 'newest' | 'price_asc' | 'price_desc';
+
+export interface SearchParams {
+  q?: string;
+  kind?: string;
+  region?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minBeds?: number;
+  deedType?: string;
+  furnished?: boolean;
+}
+
+/**
+ * The criteria a zero-result search can offer to drop, in the order they are
+ * probed. `sort` and `page` are absent on purpose: neither narrows anything,
+ * so relaxing them could never turn up a result.
+ */
+const RELAXABLE = [
+  'q',
+  'kind',
+  'region',
+  'minPrice',
+  'maxPrice',
+  'minBeds',
+  'deedType',
+  'furnished',
+] as const satisfies readonly (keyof SearchParams)[];
+
+export interface NearbyRegion {
+  slug: string;
+  nameI18n: Record<string, string>;
+  totalHits: number;
+  /** Null when either region has no coordinates seeded. */
+  distanceKm: number | null;
+}
+
+export interface SearchSuggestions {
+  /** Dropping this one criterion, on its own, finds `totalHits` listings. */
+  relax: { filter: (typeof RELAXABLE)[number]; totalHits: number }[];
+  regions: NearbyRegion[];
+  /** What clearing every filter would find — the always-available way out. */
+  totalLive: number;
+}
+
+const EARTH_RADIUS_KM = 6371;
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(a));
+}
+
 /**
  * Plan §8 ranking: verified > freshness > completeness > lister reputation.
  * "Verified" needs no rule — only verified listings are ever indexed.
@@ -144,18 +201,7 @@ export class SearchService implements OnModuleInit {
     }
   }
 
-  async search(params: {
-    q?: string;
-    kind?: string;
-    region?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    minBeds?: number;
-    deedType?: string;
-    furnished?: boolean;
-    sort?: 'newest' | 'price_asc' | 'price_desc';
-    page?: number;
-  }) {
+  private buildFilters(params: SearchParams): string[] {
     const filters: string[] = [];
     if (params.kind) filters.push(`kind = ${params.kind}`);
     if (params.region) filters.push(`regionSlug = ${params.region}`);
@@ -164,6 +210,11 @@ export class SearchService implements OnModuleInit {
     if (params.minBeds !== undefined) filters.push(`bedrooms >= ${params.minBeds}`);
     if (params.deedType) filters.push(`deedType = ${params.deedType}`);
     if (params.furnished !== undefined) filters.push(`furnished = ${params.furnished}`);
+    return filters;
+  }
+
+  async search(params: SearchParams & { sort?: SearchSort; page?: number }) {
+    const filters = this.buildFilters(params);
 
     const sortMap = {
       newest: ['createdAtTs:desc'],
@@ -184,7 +235,95 @@ export class SearchService implements OnModuleInit {
       totalHits: result.totalHits,
       page: result.page,
       totalPages: result.totalPages,
+      // A zero-result page is a dead end unless it can say what to drop, so the
+      // recovery routes are computed here rather than guessed at in the client:
+      // every suggestion returned is one we have just confirmed has results.
+      suggestions:
+        result.totalHits === 0 ? await this.suggestRelaxations(params) : undefined,
     };
+  }
+
+  /** `totalHits` for a set of filters, fetching as few documents as possible. */
+  private async countFor(params: SearchParams): Promise<number> {
+    const filters = this.buildFilters(params);
+    const res = await this.index.search(params.q ?? '', {
+      filter: filters.length ? filters.join(' AND ') : undefined,
+      hitsPerPage: 1,
+      page: 1,
+    });
+    return res.totalHits ?? 0;
+  }
+
+  /**
+   * Ways out of a zero-result search (Plan §0 UX pass).
+   *
+   * Two kinds of escape, both verified against the index before being offered:
+   * drop exactly one criterion and see if that alone was the blocker, and — if
+   * a region was chosen — which other regions hold the same search, nearest
+   * first. Anything that would still return nothing is left out.
+   */
+  private async suggestRelaxations(params: SearchParams): Promise<SearchSuggestions> {
+    const active = RELAXABLE.filter((key) => {
+      const v = params[key];
+      return v !== undefined && v !== '';
+    });
+
+    const [totalLive, relaxCounts, regions] = await Promise.all([
+      this.countFor({}),
+      Promise.all(active.map((key) => this.countFor({ ...params, [key]: undefined }))),
+      params.region ? this.nearbyRegions(params) : Promise.resolve([]),
+    ]);
+
+    return {
+      relax: active
+        .map((filter, i) => ({ filter, totalHits: relaxCounts[i] }))
+        .filter((r) => r.totalHits > 0)
+        .sort((a, b) => b.totalHits - a.totalHits),
+      regions,
+      totalLive,
+    };
+  }
+
+  /**
+   * Same search, region dropped, counted per region. Ordered by real distance
+   * from the region the user picked so "nearby" means nearby — falling back to
+   * result count when a region has no coordinates seeded.
+   */
+  private async nearbyRegions(params: SearchParams): Promise<NearbyRegion[]> {
+    const filters = this.buildFilters({ ...params, region: undefined });
+    const res = await this.index.search(params.q ?? '', {
+      filter: filters.length ? filters.join(' AND ') : undefined,
+      facets: ['regionSlug'],
+      hitsPerPage: 1,
+      page: 1,
+    });
+
+    const counts = res.facetDistribution?.regionSlug ?? {};
+    const slugs = Object.keys(counts).filter((s) => s !== params.region && counts[s] > 0);
+    if (slugs.length === 0) return [];
+
+    const rows = await this.prisma.region.findMany({
+      where: { slug: { in: [...slugs, params.region!] } },
+      select: { slug: true, nameI18n: true, lat: true, lng: true },
+    });
+    const origin = rows.find((r) => r.slug === params.region);
+
+    return rows
+      .filter((r) => r.slug !== params.region)
+      .map((r) => ({
+        slug: r.slug,
+        nameI18n: r.nameI18n as Record<string, string>,
+        totalHits: counts[r.slug],
+        distanceKm:
+          origin?.lat != null && origin.lng != null && r.lat != null && r.lng != null
+            ? haversineKm(origin.lat, origin.lng, r.lat, r.lng)
+            : null,
+      }))
+      .sort((a, b) => {
+        if (a.distanceKm == null || b.distanceKm == null) return b.totalHits - a.totalHits;
+        return a.distanceKm - b.distanceKm;
+      })
+      .slice(0, 3);
   }
 
   /** Rebuild the whole index from the database (ops/recovery tool). */

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { apiGet } from '../../../../lib/api';
 import { Link } from '../../../../i18n/routing';
 import { fmtMoney } from '../../../../lib/listings';
+import { EmptyState } from '../../../../components/EmptyState';
 
 interface DealRow {
   id: string;
@@ -36,7 +37,14 @@ export default function DealsPage() {
     <div className="max-w-3xl">
       <h1 className="text-2xl font-bold">{t('title')}</h1>
       <p className="mt-1 text-sm text-gray-500">{t('subtitle')}</p>
-      {deals.length === 0 && <p className="mt-6 text-gray-500">{t('empty')}</p>}
+      {deals.length === 0 && (
+        <EmptyState
+          icon="🤝"
+          title={t('emptyState.title')}
+          body={t('emptyState.body')}
+          action={{ label: t('emptyState.action'), href: '/search' }}
+        />
+      )}
       <ul className="mt-6 space-y-3">
         {deals.map((d) => (
           <li key={d.id}>
