@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "PropVerify",
+    "slug": "propverify",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "propverify",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#eef7f2"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.propverify.app"
+    },
+    "android": {
+      "package": "com.propverify.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0d5f58"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-notifications",
+        {
+          "color": "#0d5f58"
+        }
+      ],
+      "expo-localization"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "apiBase": "http://localhost:4000"
+    }
+  }
+}

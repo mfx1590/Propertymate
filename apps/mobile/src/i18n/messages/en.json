@@ -1,0 +1,171 @@
+{
+  "common": {
+    "appName": "PropVerify",
+    "verified": "Verified",
+    "search": "Search",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "cancel": "Cancel",
+    "send": "Send",
+    "retry": "Try again",
+    "loading": "Loading…",
+    "error": "Something went wrong.",
+    "close": "Close",
+    "back": "Back"
+  },
+  "tabs": {
+    "search": "Search",
+    "saved": "Saved",
+    "viewings": "Viewings",
+    "messages": "Messages",
+    "alerts": "Alerts"
+  },
+  "auth": {
+    "title": "Sign in to PropVerify",
+    "subtitle": "Every listing here has cleared a document check before you see it.",
+    "phoneTab": "Phone",
+    "emailTab": "Email",
+    "phoneLabel": "Phone number",
+    "phonePlaceholder": "+90 533 123 4567",
+    "sendCode": "Send code",
+    "codeLabel": "6-digit code",
+    "codePlaceholder": "123456",
+    "verify": "Verify and sign in",
+    "resend": "Send a new code",
+    "devCode": "Dev build: your code is {code}",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "emailSignIn": "Sign in",
+    "browseInstead": "Browse without signing in",
+    "signedInAs": "Signed in as {who}",
+    "needAccount": "Sign in to use this",
+    "needAccountBody": "Favourites, viewings and messages are tied to your account."
+  },
+  "search": {
+    "title": "Find your property",
+    "placeholder": "Search by region, e.g. Kyrenia",
+    "results": "{count} verified listings",
+    "anyKind": "Buy or rent",
+    "forSale": "For sale",
+    "forRent": "For rent",
+    "anyRegion": "All regions",
+    "anyBeds": "Any beds",
+    "beds": "bd",
+    "baths": "ba",
+    "filters": "Filters",
+    "apply": "Show results",
+    "clear": "Clear",
+    "noResults": {
+      "title": "Nothing matches all of these filters",
+      "body": "That usually means one criterion is doing the damage rather than all of them. Each option below already has listings behind it.",
+      "widenLabel": "Drop a filter",
+      "nearbyLabel": "Try nearby",
+      "clearAll": "Clear all filters ({count} listings)",
+      "drop": {
+        "q": "Ignore the search words",
+        "kind": "Buy and rent",
+        "region": "Any region",
+        "minPrice": "No minimum price",
+        "maxPrice": "No maximum price",
+        "minBeds": "Any bedrooms",
+        "deedType": "Any deed type",
+        "furnished": "Furnished or not"
+      }
+    }
+  },
+  "deed": {
+    "turkish": "Turkish",
+    "exchange": "Exchange",
+    "allocation": "Allocation",
+    "foreign": "Foreign",
+    "na": "Not stated"
+  },
+  "listing": {
+    "about": "About this property",
+    "features": "Features",
+    "location": "Location",
+    "deed": "Deed type",
+    "listed": "Listed",
+    "save": "Save",
+    "saved": "Saved",
+    "trustTitle": "Why this listing is here",
+    "trustBody": "The title deed and the lister's ID were checked by our team before this went live, and the lister has confirmed it is still available.",
+    "enquire": "Message the lister",
+    "requestViewing": "Request a viewing",
+    "viewingRequested": "Viewing requested",
+    "messagePlaceholder": "Ask about this property…",
+    "sent": "Sent",
+    "antiBypass": "Phone numbers, emails and social handles are removed from messages until a viewing is confirmed.",
+    "notFound": "This listing is no longer available."
+  },
+  "features": {
+    "pool": "Pool",
+    "sea_view": "Sea view",
+    "mountain_view": "Mountain view",
+    "garden": "Garden",
+    "garage": "Garage",
+    "balcony": "Balcony",
+    "air_conditioning": "Air conditioning",
+    "solar_water": "Solar water",
+    "generator": "Generator",
+    "white_goods": "White goods",
+    "elevator": "Elevator",
+    "fireplace": "Fireplace"
+  },
+  "saved": {
+    "title": "Saved",
+    "favourites": "Favourites",
+    "searches": "Saved searches",
+    "emptyTitle": "Nothing saved yet",
+    "emptyBody": "Tap the heart on any listing to keep it here, and save a search to get alerted when something new matches.",
+    "emptyAction": "Browse verified listings"
+  },
+  "viewings": {
+    "title": "Viewings",
+    "asHost": "You host",
+    "asCustomer": "You visit",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "emptyTitle": "No viewings yet",
+    "emptyBody": "Request a viewing from any listing. Viewings you host as a lister show up here too.",
+    "emptyAction": "Browse verified listings",
+    "requestTitle": "Request a viewing",
+    "whenLabel": "Preferred day and time",
+    "notesLabel": "Anything the lister should know (optional)",
+    "submit": "Send request",
+    "status": {
+      "requested": "Requested",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "no_show": "No-show"
+    }
+  },
+  "chat": {
+    "title": "Messages",
+    "emptyTitle": "No conversations yet",
+    "emptyBody": "Message a lister from any listing — contact details stay hidden until a viewing is confirmed.",
+    "emptyAction": "Browse verified listings",
+    "placeholder": "Write a message…",
+    "anonymous": "Identity hidden until a viewing is confirmed",
+    "scrubbed": "Contact details removed",
+    "threadEmpty": "No messages yet. Say hello."
+  },
+  "alerts": {
+    "title": "Alerts",
+    "markAllRead": "Mark all read",
+    "emptyTitle": "Nothing to catch up on",
+    "emptyBody": "Verification results, viewing updates and replies to your messages arrive here — and on this device once you allow notifications.",
+    "emptyAction": "Browse verified listings",
+    "pushOn": "Push notifications are on for this device.",
+    "pushOff": "Turn on notifications to hear about viewings and replies while the app is closed.",
+    "enablePush": "Turn on notifications"
+  },
+  "account": {
+    "title": "Account",
+    "language": "Language",
+    "notifications": "Notifications",
+    "signOutConfirm": "Sign out of PropVerify?",
+    "webNote": "Creating and verifying listings happens on the website."
+  }
+}

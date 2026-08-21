@@ -1,0 +1,171 @@
+{
+  "common": {
+    "appName": "PropVerify",
+    "verified": "Doğrulandı",
+    "search": "Ara",
+    "signIn": "Giriş yap",
+    "signOut": "Çıkış yap",
+    "cancel": "Vazgeç",
+    "send": "Gönder",
+    "retry": "Tekrar dene",
+    "loading": "Yükleniyor…",
+    "error": "Bir şeyler ters gitti.",
+    "close": "Kapat",
+    "back": "Geri"
+  },
+  "tabs": {
+    "search": "Ara",
+    "saved": "Kayıtlı",
+    "viewings": "Görüntüleme",
+    "messages": "Mesajlar",
+    "alerts": "Bildirim"
+  },
+  "auth": {
+    "title": "PropVerify'a giriş yapın",
+    "subtitle": "Buradaki her ilan, siz görmeden önce belge kontrolünden geçti.",
+    "phoneTab": "Telefon",
+    "emailTab": "E-posta",
+    "phoneLabel": "Telefon numarası",
+    "phonePlaceholder": "+90 533 123 4567",
+    "sendCode": "Kod gönder",
+    "codeLabel": "6 haneli kod",
+    "codePlaceholder": "123456",
+    "verify": "Doğrula ve giriş yap",
+    "resend": "Yeni kod gönder",
+    "devCode": "Geliştirme sürümü: kodunuz {code}",
+    "emailLabel": "E-posta",
+    "passwordLabel": "Şifre",
+    "emailSignIn": "Giriş yap",
+    "browseInstead": "Giriş yapmadan gezin",
+    "signedInAs": "{who} olarak giriş yapıldı",
+    "needAccount": "Bunun için giriş yapın",
+    "needAccountBody": "Favoriler, görüntülemeler ve mesajlar hesabınıza bağlıdır."
+  },
+  "search": {
+    "title": "Mülkünüzü bulun",
+    "placeholder": "Bölgeye göre arayın, örn. Girne",
+    "results": "{count} doğrulanmış ilan",
+    "anyKind": "Satılık veya kiralık",
+    "forSale": "Satılık",
+    "forRent": "Kiralık",
+    "anyRegion": "Tüm bölgeler",
+    "anyBeds": "Oda sayısı",
+    "beds": "oda",
+    "baths": "banyo",
+    "filters": "Filtreler",
+    "apply": "Sonuçları göster",
+    "clear": "Temizle",
+    "noResults": {
+      "title": "Bu filtrelerin tümüne uyan ilan yok",
+      "body": "Genellikle sorun filtrelerin tamamı değil, içlerinden biridir. Aşağıdaki seçeneklerin her birinin arkasında ilan var.",
+      "widenLabel": "Bir filtreyi kaldır",
+      "nearbyLabel": "Yakındakileri dene",
+      "clearAll": "Tüm filtreleri temizle ({count} ilan)",
+      "drop": {
+        "q": "Arama kelimelerini yok say",
+        "kind": "Satılık ve kiralık",
+        "region": "Tüm bölgeler",
+        "minPrice": "Alt fiyat sınırı yok",
+        "maxPrice": "Üst fiyat sınırı yok",
+        "minBeds": "Oda sayısı fark etmez",
+        "deedType": "Tapu türü fark etmez",
+        "furnished": "Eşyalı ya da değil"
+      }
+    }
+  },
+  "deed": {
+    "turkish": "Türk",
+    "exchange": "Eşdeğer",
+    "allocation": "Tahsis",
+    "foreign": "Yabancı",
+    "na": "Belirtilmemiş"
+  },
+  "listing": {
+    "about": "Bu mülk hakkında",
+    "features": "Özellikler",
+    "location": "Konum",
+    "deed": "Tapu türü",
+    "listed": "İlan tarihi",
+    "save": "Kaydet",
+    "saved": "Kaydedildi",
+    "trustTitle": "Bu ilan neden burada",
+    "trustBody": "Tapu ve ilan sahibinin kimliği, ilan yayına girmeden önce ekibimizce kontrol edildi ve ilan sahibi mülkün hâlâ müsait olduğunu onayladı.",
+    "enquire": "İlan sahibine mesaj gönder",
+    "requestViewing": "Görüntüleme talep et",
+    "viewingRequested": "Görüntüleme talep edildi",
+    "messagePlaceholder": "Bu mülk hakkında sorun…",
+    "sent": "Gönderildi",
+    "antiBypass": "Görüntüleme onaylanana kadar telefon, e-posta ve sosyal medya bilgileri mesajlardan kaldırılır.",
+    "notFound": "Bu ilan artık mevcut değil."
+  },
+  "features": {
+    "pool": "Havuz",
+    "sea_view": "Deniz manzarası",
+    "mountain_view": "Dağ manzarası",
+    "garden": "Bahçe",
+    "garage": "Garaj",
+    "balcony": "Balkon",
+    "air_conditioning": "Klima",
+    "solar_water": "Güneş enerjili su",
+    "generator": "Jeneratör",
+    "white_goods": "Beyaz eşya",
+    "elevator": "Asansör",
+    "fireplace": "Şömine"
+  },
+  "saved": {
+    "title": "Kayıtlı",
+    "favourites": "Favoriler",
+    "searches": "Kayıtlı aramalar",
+    "emptyTitle": "Henüz kayıt yok",
+    "emptyBody": "Beğendiğiniz ilanı kalp simgesiyle burada tutun; bir aramayı kaydederek yeni eşleşmelerden haberdar olun.",
+    "emptyAction": "Doğrulanmış ilanlara göz atın"
+  },
+  "viewings": {
+    "title": "Görüntülemeler",
+    "asHost": "Siz ağırlıyorsunuz",
+    "asCustomer": "Siz geziyorsunuz",
+    "confirm": "Onayla",
+    "cancel": "İptal et",
+    "emptyTitle": "Henüz görüntüleme yok",
+    "emptyBody": "Herhangi bir ilandan görüntüleme talep edebilirsiniz. İlan sahibi olarak ağırladıklarınız da burada görünür.",
+    "emptyAction": "Doğrulanmış ilanlara göz atın",
+    "requestTitle": "Görüntüleme talep et",
+    "whenLabel": "Tercih ettiğiniz gün ve saat",
+    "notesLabel": "İlan sahibinin bilmesi gerekenler (isteğe bağlı)",
+    "submit": "Talebi gönder",
+    "status": {
+      "requested": "Talep edildi",
+      "confirmed": "Onaylandı",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal edildi",
+      "no_show": "Gelinmedi"
+    }
+  },
+  "chat": {
+    "title": "Mesajlar",
+    "emptyTitle": "Henüz sohbet yok",
+    "emptyBody": "Herhangi bir ilandan ilan sahibine mesaj gönderin — iletişim bilgileri, görüntüleme onaylanana kadar gizli kalır.",
+    "emptyAction": "Doğrulanmış ilanlara göz atın",
+    "placeholder": "Bir mesaj yazın…",
+    "anonymous": "Görüntüleme onaylanana kadar kimlik gizli",
+    "scrubbed": "İletişim bilgileri kaldırıldı",
+    "threadEmpty": "Henüz mesaj yok. Bir merhaba deyin."
+  },
+  "alerts": {
+    "title": "Bildirimler",
+    "markAllRead": "Tümünü okundu işaretle",
+    "emptyTitle": "Şu an bir şey yok",
+    "emptyBody": "Doğrulama sonuçları, görüntüleme güncellemeleri ve mesaj yanıtları burada görünür — bildirimlere izin verirseniz bu cihazda da.",
+    "emptyAction": "Doğrulanmış ilanlara göz atın",
+    "pushOn": "Bu cihaz için bildirimler açık.",
+    "pushOff": "Uygulama kapalıyken görüntüleme ve yanıtlardan haberdar olmak için bildirimleri açın.",
+    "enablePush": "Bildirimleri aç"
+  },
+  "account": {
+    "title": "Hesap",
+    "language": "Dil",
+    "notifications": "Bildirimler",
+    "signOutConfirm": "PropVerify'dan çıkılsın mı?",
+    "webNote": "İlan oluşturma ve doğrulama işlemleri web sitesinde yapılır."
+  }
+}

@@ -22,8 +22,15 @@ async function bootstrap() {
   // consistent error shape + logging; no stack/DB detail leaks to clients
   app.useGlobalFilters(new AllExceptionsFilter(app.get(HttpAdapterHost), logger));
 
+  // The dev default covers both front ends: Next on :3000 and Expo's web
+  // preview on :8081. Native builds of the mobile app send no Origin at all,
+  // so CORS never applies to a real device — only to the browser preview.
+  // Production always sets CORS_ORIGIN explicitly (see docs/deployment.md).
   app.enableCors({
-    origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:3000'],
+    origin: process.env.CORS_ORIGIN?.split(',') ?? [
+      'http://localhost:3000',
+      'http://localhost:8081',
+    ],
     credentials: true,
   });
 
