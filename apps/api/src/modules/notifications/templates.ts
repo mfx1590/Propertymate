@@ -208,6 +208,100 @@ export const NOTIFICATION_TEMPLATES: Record<string, TemplateDef> = {
     { title: 'Ход строительства', body: 'Новое обновление по вашему проекту: {title}.' },
     { title: 'به‌روزرسانی ساخت', body: 'به‌روزرسانی جدید پروژهٔ شما: {title}.' },
   ),
+
+  // §13.2 moderation. These go to two different people: `report_*` to the
+  // profile owner who reported, `review_removed` / `warning` / `banned` to the
+  // reviewer who wrote it. None of them quote the removed text back.
+  'moderation.report_upheld': T(
+    {
+      title: 'The review you reported was removed',
+      body: 'An admin removed the comment on that review. The rating itself still counts towards your score.',
+    },
+    {
+      title: 'Bildirdiğiniz yorum kaldırıldı',
+      body: 'Bir yönetici o değerlendirmedeki yorumu kaldırdı. Puanın kendisi ortalamanıza sayılmaya devam ediyor.',
+    },
+    {
+      title: 'Отмеченный вами отзыв удалён',
+      body: 'Администратор удалил комментарий к этому отзыву. Сама оценка по-прежнему учитывается в вашем рейтинге.',
+    },
+    {
+      title: 'نظری که گزارش کردید حذف شد',
+      body: 'یکی از مدیران متن آن نظر را حذف کرد. خود امتیاز همچنان در میانگین شما حساب می‌شود.',
+    },
+  ),
+  'moderation.report_dismissed': T(
+    {
+      title: 'The review you reported stands',
+      body: 'An admin reviewed your report and found nothing that breaks the rules, so the review stays as written.',
+    },
+    {
+      title: 'Bildirdiğiniz yorum kaldı',
+      body: 'Bir yönetici bildiriminizi inceledi ve kuralları ihlal eden bir şey bulmadı; değerlendirme yazıldığı gibi kalıyor.',
+    },
+    {
+      title: 'Отзыв, на который вы пожаловались, остаётся',
+      body: 'Администратор рассмотрел жалобу и не нашёл нарушений, поэтому отзыв остаётся без изменений.',
+    },
+    {
+      title: 'نظری که گزارش کردید باقی می‌ماند',
+      body: 'یکی از مدیران گزارش شما را بررسی کرد و موردی خلاف قوانین نیافت؛ بنابراین نظر به همان شکل باقی می‌ماند.',
+    },
+  ),
+  'moderation.review_removed': T(
+    {
+      title: 'Your review comment was removed',
+      body: 'An admin removed the comment you left on a completed deal. Reason: {reason}',
+    },
+    {
+      title: 'Değerlendirme yorumunuz kaldırıldı',
+      body: 'Bir yönetici, tamamlanmış bir işlem için yazdığınız yorumu kaldırdı. Gerekçe: {reason}',
+    },
+    {
+      title: 'Ваш комментарий к отзыву удалён',
+      body: 'Администратор удалил комментарий, оставленный вами по завершённой сделке. Причина: {reason}',
+    },
+    {
+      title: 'متن نظر شما حذف شد',
+      body: 'یکی از مدیران متنی را که برای یک معاملهٔ تکمیل‌شده نوشته بودید حذف کرد. دلیل: {reason}',
+    },
+  ),
+  'moderation.warning': T(
+    {
+      title: 'Warning on your account',
+      body: 'This is warning {count} of {limit}. Reaching {limit} suspends your account permanently. Reason: {reason}',
+    },
+    {
+      title: 'Hesabınız hakkında uyarı',
+      body: 'Bu, {limit} uyarıdan {count}. uyarıdır. {limit} uyarıya ulaşmak hesabınızı kalıcı olarak kapatır. Gerekçe: {reason}',
+    },
+    {
+      title: 'Предупреждение по вашему аккаунту',
+      body: 'Это предупреждение {count} из {limit}. При {limit} аккаунт закрывается навсегда. Причина: {reason}',
+    },
+    {
+      title: 'اخطار برای حساب شما',
+      body: 'این اخطار {count} از {limit} است. رسیدن به {limit} اخطار حساب شما را برای همیشه می‌بندد. دلیل: {reason}',
+    },
+  ),
+  'moderation.banned': T(
+    {
+      title: 'Your account has been closed',
+      body: 'After {count} warnings your account has been permanently closed and you have been signed out of every device.',
+    },
+    {
+      title: 'Hesabınız kapatıldı',
+      body: '{count} uyarıdan sonra hesabınız kalıcı olarak kapatıldı ve tüm cihazlardan çıkış yapıldı.',
+    },
+    {
+      title: 'Ваш аккаунт закрыт',
+      body: 'После {count} предупреждений ваш аккаунт закрыт навсегда, и вы вышли из системы на всех устройствах.',
+    },
+    {
+      title: 'حساب شما بسته شد',
+      body: 'پس از {count} اخطار، حساب شما برای همیشه بسته شد و از همهٔ دستگاه‌ها خارج شدید.',
+    },
+  ),
 };
 
 /** `{placeholder}` interpolation against the notification payload. */

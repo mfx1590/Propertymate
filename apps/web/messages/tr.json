@@ -60,7 +60,9 @@
       "analytics": "Performans",
       "platformAnalytics": "Platform analitiği",
       "notificationSettings": "Bildirim ayarları",
-      "referrals": "Davet et, kazan"
+      "referrals": "Davet et, kazan",
+      "myReviews": "Değerlendirmelerim",
+      "reviewReports": "Değerlendirme bildirimleri"
     },
     "roles": {
       "customer": "Müşteri",
@@ -969,7 +971,8 @@
       "viewing": "Görüntülemeler",
       "offer": "Teklifler",
       "deal": "İşlemler",
-      "project": "Proje güncellemeleri"
+      "project": "Proje güncellemeleri",
+      "moderation": "Moderasyon"
     },
     "hint": {
       "verification": "İlan ve belge kararları",
@@ -1182,5 +1185,63 @@
       "save_favourites": "Aramaya başla",
       "book_viewing": "Mülk bul"
     }
+  },
+  "myReviews": {
+    "title": "Değerlendirmelerim",
+    "subtitle": "İşlem tamamladığınız kişilerin sizin hakkınızda yazdıkları. Alıcıların gördüğünün tam olarak aynısı.",
+    "summary": "{count} değerlendirme · {avg} ortalama",
+    "removed": "Bir yönetici bu yorumu kaldırdı. Puan ortalamanıza sayılmaya devam ediyor.",
+    "report": "Bu değerlendirmeyi bildir",
+    "reasonPlaceholder": "Bu neden kuralları ihlal ediyor? Açık olun — bunu bir yönetici okuyacak.",
+    "submitReport": "Bildirimi gönder",
+    "cancel": "Vazgeç",
+    "alreadyReported": "Bu değerlendirmeyi bildirdiniz. Bir yönetici inceleyecek.",
+    "cannotDeleteNote": "Bir değerlendirmeyi siz silemezsiniz, sizin adınıza da kimse silemez — bu platformdaki puanları okumaya değer kılan da budur. Kuralları ihlal eden bir yorum varsa bildirin, kararı yönetici versin.",
+    "reportsTitle": "Bildirimleriniz",
+    "reportStatus": {
+      "open": "Yöneticide",
+      "upheld": "Yorum kaldırıldı",
+      "dismissed": "Değerlendirme kaldı"
+    },
+    "emptyState": {
+      "title": "Henüz değerlendirme yok",
+      "body": "Değerlendirmeyi yalnızca sizinle işlem tamamlamış biri yazabilir ve yalnızca iki taraf da puan verdikten sonra görünür. Sahte değerlendirmenin bu kadar az olmasının sebebi budur.",
+      "action": "İşlemlerime bak"
+    },
+    "starsLabel": "5 yıldız üzerinden {stars}"
+  },
+  "adminReviews": {
+    "title": "Değerlendirme bildirimleri",
+    "subtitle": "Profil sahipleri değerlendirmeleri silemez. Bir değerlendirmeyi bildirdiklerinde burada görünür.",
+    "all": "Tümü",
+    "status": {
+      "open": "Açık",
+      "upheld": "Yorum kaldırıldı",
+      "dismissed": "Değerlendirme kaldı"
+    },
+    "reportedBy": "{who} tarafından bildirildi",
+    "review": "Bu bildirimi incele",
+    "alreadyRemoved": "(yorum zaten kaldırıldı)",
+    "detailTitle": "Bu bildirime karar verin",
+    "close": "Kapat",
+    "theReview": "Değerlendirme",
+    "theReport": "Bildirim",
+    "theAuthor": "Değerlendirmeyi yazan",
+    "strikes": "Kayıtlarda {limit} uyarıdan {count} tanesi var",
+    "priorRemovals": "Bu kişinin daha önce {count} yorumu kaldırıldı",
+    "banWarning": "Bir uyarı daha bu hesabı kalıcı olarak kapatır.",
+    "noteLabel": "Karar notu",
+    "notePlaceholder": "Ne karar verdiniz ve neden? Bu gerekçeyi yazan kişi görecek.",
+    "warnAuthor": "Yazana uyarı da ver",
+    "starsNote": "Yorumu kaldırmak yalnızca metni gizler. Yıldız puanı sayılmaya devam eder; böylece bir bildirim, bildirilen profilin puanını asla yükseltemez.",
+    "removeComment": "Yorumu kaldır",
+    "dismiss": "Değerlendirme kalsın",
+    "alreadyDecided": "Karar verilmiş: {status}",
+    "emptyState": {
+      "title": "Moderasyon bekleyen bir şey yok",
+      "body": "Bildirilen değerlendirmeler burada görünür. Profil sahipleri kendileri hakkında yazılan bir değerlendirmeyi bildirebilir ama asla kendileri kaldıramaz.",
+      "action": "Tüm bildirimleri göster"
+    },
+    "starsLabel": "5 yıldız üzerinden {stars}"
   }
 }

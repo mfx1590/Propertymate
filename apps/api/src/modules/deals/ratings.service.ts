@@ -89,16 +89,42 @@ export class RatingsService {
     return { id: rating.id, revealed };
   }
 
-  /** Public reviews on a profile — only revealed ones, reviewer identity withheld (§6.5, §13.2). */
+  /**
+   * Public reviews on a profile — only revealed ones, reviewer identity
+   * withheld (§6.5, §13.2).
+   *
+   * A moderated review keeps its stars and tags and loses only its text
+   * (§13.2): the average must not move when a comment is removed, or a
+   * professional could raise their own score by reporting every bad write-up.
+   * The row is still returned, flagged `removed`, rather than disappearing —
+   * a review that silently vanishes looks like censorship to the next reader.
+   *
+   * `id` is included so the subject of a review can report it.
+   */
   async publicReviews(rateeId: string) {
     const rows = await this.prisma.rating.findMany({
       where: { rateeId, revealedAt: { not: null } },
-      select: { stars: true, tags: true, comment: true, revealedAt: true },
+      select: {
+        id: true,
+        stars: true,
+        tags: true,
+        comment: true,
+        commentRemovedAt: true,
+        revealedAt: true,
+      },
       orderBy: { revealedAt: 'desc' },
       take: 50,
     });
     const avg = rows.length ? rows.reduce((s, r) => s + r.stars, 0) / rows.length : null;
-    return { count: rows.length, avgStars: avg, reviews: rows };
+    return {
+      count: rows.length,
+      avgStars: avg,
+      reviews: rows.map(({ commentRemovedAt, comment, ...r }) => ({
+        ...r,
+        comment: commentRemovedAt ? null : comment,
+        removed: Boolean(commentRemovedAt),
+      })),
+    };
   }
 
   /** Daily via the BullMQ `maintenance` queue: reveal ratings older than 14 days

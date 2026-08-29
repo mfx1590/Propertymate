@@ -26,6 +26,7 @@ export const NOTIFICATION_CATEGORIES = [
   'offer',
   'deal',
   'project',
+  'moderation',
 ] as const;
 
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
@@ -54,6 +55,9 @@ export const DEFAULT_CHANNELS: Record<NotificationCategory, NotificationChannel[
   offer: ['in_app', 'push', 'email', 'whatsapp'],
   deal: ['in_app', 'push', 'email'],
   project: ['in_app', 'push'],
+  // A removed review, a warning or a ban has to reach the person even if they
+  // never open the app again — email is not optional here in practice.
+  moderation: ['in_app', 'push', 'email'],
 };
 
 /** in_app is always delivered; the preferences API refuses to switch it off. */

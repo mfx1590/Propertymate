@@ -29,6 +29,7 @@ import { LeadsModule } from './modules/leads/leads.module';
 import { ContractsModule } from './modules/contracts/contracts.module';
 import { ReferralsModule } from './modules/referrals/referrals.module';
 import { DisputesModule } from './modules/disputes/disputes.module';
+import { ModerationModule } from './modules/moderation/moderation.module';
 import { JobsModule } from './jobs/jobs.module';
 
 @Module({
@@ -61,6 +62,7 @@ import { JobsModule } from './jobs/jobs.module';
     ContractsModule,
     ReferralsModule,
     DisputesModule,
+    ModerationModule,
     JobsModule,
   ],
   providers: [

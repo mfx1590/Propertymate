@@ -28,7 +28,7 @@ const PERMISSIONS: Record<string, string[]> = {
     // buyers complete their own deal stages (legal_check, deposit_recorded);
     // the deals service still enforces party + completesBy on every advance
     'deal.participate', 'deal.stage.complete', 'deal.document.upload',
-    'rating.create', 'dispute.open',
+    'rating.create', 'dispute.open', 'review.report',
   ],
   owner: [
     'listing.create', 'listing.update.own', 'listing.delete.own',
@@ -37,7 +37,7 @@ const PERMISSIONS: Record<string, string[]> = {
     'viewing.host', 'offer.respond',
     'chat.participate',
     'deal.participate', 'deal.stage.complete', 'deal.document.upload',
-    'rating.create', 'dispute.open',
+    'rating.create', 'dispute.open', 'review.report',
     'analytics.own.view',
   ],
   solo_agent: [
@@ -47,7 +47,7 @@ const PERMISSIONS: Record<string, string[]> = {
     'viewing.request', 'viewing.host', 'offer.create', 'offer.respond',
     'chat.participate',
     'deal.participate', 'deal.stage.complete', 'deal.document.upload',
-    'rating.create', 'dispute.open',
+    'rating.create', 'dispute.open', 'review.report',
     'analytics.own.view',
   ],
   agency: [
@@ -58,7 +58,7 @@ const PERMISSIONS: Record<string, string[]> = {
     'viewing.request', 'viewing.host', 'offer.create', 'offer.respond',
     'chat.participate',
     'deal.participate', 'deal.stage.complete', 'deal.document.upload',
-    'rating.create', 'dispute.open',
+    'rating.create', 'dispute.open', 'review.report',
     'analytics.own.view',
   ],
   // An agency member works listings exactly like a solo agent. `agents.manage`
@@ -72,7 +72,7 @@ const PERMISSIONS: Record<string, string[]> = {
     'viewing.request', 'viewing.host', 'offer.create', 'offer.respond',
     'chat.participate',
     'deal.participate', 'deal.stage.complete', 'deal.document.upload',
-    'rating.create', 'dispute.open',
+    'rating.create', 'dispute.open', 'review.report',
     'analytics.own.view',
   ],
   developer: [
@@ -81,12 +81,12 @@ const PERMISSIONS: Record<string, string[]> = {
     'offer.respond',
     'chat.participate',
     'deal.participate', 'deal.stage.complete', 'deal.document.upload',
-    'rating.create', 'dispute.open',
+    'rating.create', 'dispute.open', 'review.report',
     'analytics.own.view',
   ],
   admin: [
     'verification.review', 'user.manage', 'listing.moderate',
-    'dispute.resolve', 'analytics.view', 'audit.view', 'cms.manage',
+    'dispute.resolve', 'review.moderate', 'analytics.view', 'audit.view', 'cms.manage',
     'chat.participate', 'deal.participate',
   ],
 };

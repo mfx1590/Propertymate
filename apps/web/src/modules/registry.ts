@@ -30,6 +30,7 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
       { labelKey: 'myListings', href: '/dashboard/listings' },
       { labelKey: 'leads', href: '/dashboard/leads' },
       { labelKey: 'analytics', href: '/dashboard/analytics' },
+      { labelKey: 'myReviews', href: '/dashboard/reviews' },
     ],
   },
   solo_agent: {
@@ -41,6 +42,7 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
       { labelKey: 'mandates', href: '/dashboard/mandates' },
       { labelKey: 'leads', href: '/dashboard/leads' },
       { labelKey: 'analytics', href: '/dashboard/analytics' },
+      { labelKey: 'myReviews', href: '/dashboard/reviews' },
       { labelKey: 'profile', href: '/dashboard/profile/solo_agent' },
     ],
   },
@@ -53,6 +55,7 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
       { labelKey: 'team', href: '/dashboard/team' },
       { labelKey: 'leads', href: '/dashboard/leads' },
       { labelKey: 'analytics', href: '/dashboard/analytics' },
+      { labelKey: 'myReviews', href: '/dashboard/reviews' },
       { labelKey: 'profile', href: '/dashboard/profile/agency' },
     ],
   },
@@ -66,6 +69,7 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
       { labelKey: 'myListings', href: '/dashboard/listings' },
       { labelKey: 'leads', href: '/dashboard/leads' },
       { labelKey: 'analytics', href: '/dashboard/analytics' },
+      { labelKey: 'myReviews', href: '/dashboard/reviews' },
     ],
   },
   developer: {
@@ -76,6 +80,7 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
       { labelKey: 'projects', href: '/dashboard/projects' },
       { labelKey: 'leads', href: '/dashboard/leads' },
       { labelKey: 'analytics', href: '/dashboard/analytics' },
+      { labelKey: 'myReviews', href: '/dashboard/reviews' },
       { labelKey: 'profile', href: '/dashboard/profile/developer' },
     ],
   },
@@ -91,6 +96,7 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
       { labelKey: 'platformAnalytics', href: '/dashboard/admin/analytics' },
       { labelKey: 'users', href: '/dashboard/admin/users' },
       { labelKey: 'disputes', href: '/dashboard/admin/disputes' },
+      { labelKey: 'reviewReports', href: '/dashboard/admin/reviews' },
     ],
   },
   // customer intentionally has no module: customers use the public site

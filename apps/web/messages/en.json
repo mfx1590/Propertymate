@@ -60,7 +60,9 @@
       "analytics": "Performance",
       "platformAnalytics": "Platform analytics",
       "notificationSettings": "Notification settings",
-      "referrals": "Invite & earn"
+      "referrals": "Invite & earn",
+      "myReviews": "My reviews",
+      "reviewReports": "Review reports"
     },
     "roles": {
       "customer": "Customer",
@@ -969,7 +971,8 @@
       "viewing": "Viewings",
       "offer": "Offers",
       "deal": "Deals",
-      "project": "Project updates"
+      "project": "Project updates",
+      "moderation": "Moderation"
     },
     "hint": {
       "verification": "Listing and document decisions",
@@ -1182,5 +1185,63 @@
       "save_favourites": "Start searching",
       "book_viewing": "Find a property"
     }
+  },
+  "myReviews": {
+    "title": "My reviews",
+    "subtitle": "What the people you have completed deals with said about you. This is exactly what buyers see.",
+    "summary": "{count} reviews · {avg} average",
+    "removed": "An admin removed this comment. The rating still counts towards your average.",
+    "report": "Report this review",
+    "reasonPlaceholder": "Why does this break the rules? Be specific — an admin reads this.",
+    "submitReport": "Send report",
+    "cancel": "Cancel",
+    "alreadyReported": "You have reported this review. An admin will look at it.",
+    "cannotDeleteNote": "You cannot delete a review, and neither can anyone else on your behalf — that is what makes the ratings on this platform worth reading. If one breaks the rules, report it and an admin will decide.",
+    "reportsTitle": "Your reports",
+    "reportStatus": {
+      "open": "With an admin",
+      "upheld": "Comment removed",
+      "dismissed": "Review stands"
+    },
+    "emptyState": {
+      "title": "No reviews yet",
+      "body": "A review can only be written by someone you completed a deal with, and only after both sides have rated. That is why there are so few fake ones.",
+      "action": "See my deals"
+    },
+    "starsLabel": "{stars} out of 5 stars"
+  },
+  "adminReviews": {
+    "title": "Review reports",
+    "subtitle": "Profile owners cannot delete reviews. When they report one, it lands here.",
+    "all": "All",
+    "status": {
+      "open": "Open",
+      "upheld": "Comment removed",
+      "dismissed": "Review stands"
+    },
+    "reportedBy": "Reported by {who}",
+    "review": "Review this report",
+    "alreadyRemoved": "(comment already removed)",
+    "detailTitle": "Decide this report",
+    "close": "Close",
+    "theReview": "The review",
+    "theReport": "The report",
+    "theAuthor": "Who wrote the review",
+    "strikes": "{count} of {limit} warnings on record",
+    "priorRemovals": "{count} of their comments have been removed before",
+    "banWarning": "One more warning closes this account permanently.",
+    "noteLabel": "Decision note",
+    "notePlaceholder": "What did you decide and why? The author sees this reason.",
+    "warnAuthor": "Also warn the author",
+    "starsNote": "Removing a comment hides the text only. The star rating keeps counting, so a report can never raise the reported profile's score.",
+    "removeComment": "Remove the comment",
+    "dismiss": "Leave the review",
+    "alreadyDecided": "Already decided: {status}",
+    "emptyState": {
+      "title": "Nothing to moderate",
+      "body": "Reported reviews appear here. Owners can report a review written about them but can never remove one themselves.",
+      "action": "Show all reports"
+    },
+    "starsLabel": "{stars} out of 5 stars"
   }
 }

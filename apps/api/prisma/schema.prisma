@@ -3,7 +3,7 @@
 // i18n text stored as jsonb {en, tr, ru, fa}.
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   // "native" covers the developer machine; the debian target is what the
   // Docker image runs on (node:20-bookworm-slim). Without it the container
   // starts and then dies looking for a query engine it never generated.
@@ -212,6 +212,15 @@ enum DisputeStatus {
   withdrawn
 }
 
+/// Outcome of a reported review (Plan §13.2). `upheld` means the *message* was
+/// removed — never the rating itself, so a profile owner cannot lift their
+/// score by getting comments pulled.
+enum ReviewReportStatus {
+  open
+  upheld
+  dismissed
+}
+
 // ─────────────────────── users / roles / RBAC ───────────────────────
 
 model User {
@@ -257,6 +266,8 @@ model User {
   dealParties        DealParty[]
   ratingsGiven       Rating[]                  @relation("RatingRater")
   ratingsReceived    Rating[]                  @relation("RatingRatee")
+  reviewReportsMade  ReviewReport[]            @relation("ReviewReportReporter")
+  warnings           UserWarning[]             @relation("UserWarningTarget")
   notifications      Notification[]
   propertiesCreated  Property[]                @relation("PropertyCreator")
   propertiesOwned    Property[]                @relation("PropertyOwner")
@@ -325,18 +336,18 @@ model AdminProfile {
 }
 
 model AgentProfile {
-  userId             String   @id @map("user_id")
-  licenseNo          String?  @map("license_no")
+  userId             String    @id @map("user_id")
+  licenseNo          String?   @map("license_no")
   bio                String?
-  regions            String[] @default([])
-  responseTimeAvgSec Int?     @map("response_time_avg_sec")
-  dealCount          Int      @default(0) @map("deal_count")
-  ratingAvg          Float?   @map("rating_avg")
+  regions            String[]  @default([])
+  responseTimeAvgSec Int?      @map("response_time_avg_sec")
+  dealCount          Int       @default(0) @map("deal_count")
+  ratingAvg          Float?    @map("rating_avg")
   /// Upheld disputes ÷ completed deals — the negative term of the ranking score.
-  disputeRate        Float?   @map("dispute_rate")
+  disputeRate        Float?    @map("dispute_rate")
   /// f(rating_avg, deal_count, response_time, dispute_rate) 0–100, nightly (§6.5).
   /// Boosts this lister's listings in search and orders the find-my-agent directory.
-  rankingScore       Float?   @map("ranking_score")
+  rankingScore       Float?    @map("ranking_score")
   rankingComputedAt  DateTime? @map("ranking_computed_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -531,10 +542,10 @@ model Property {
   updatedAt               DateTime       @updatedAt @map("updated_at")
   deletedAt               DateTime?      @map("deleted_at")
 
-  createdBy       User           @relation("PropertyCreator", fields: [createdByUserId], references: [id])
-  onBehalfOfOwner User?          @relation("PropertyOwner", fields: [onBehalfOfOwnerId], references: [id])
-  mandateDocument Document?      @relation("PropertyMandate", fields: [mandateDocumentId], references: [id])
-  region          Region         @relation(fields: [regionId], references: [id])
+  createdBy       User                     @relation("PropertyCreator", fields: [createdByUserId], references: [id])
+  onBehalfOfOwner User?                    @relation("PropertyOwner", fields: [onBehalfOfOwnerId], references: [id])
+  mandateDocument Document?                @relation("PropertyMandate", fields: [mandateDocumentId], references: [id])
+  region          Region                   @relation(fields: [regionId], references: [id])
   media           PropertyMedia[]
   viewEvents      PropertyViewEvent[]
   recommendations PropertyRecommendation[] @relation("RecommendationSource")
@@ -796,7 +807,7 @@ model Offer {
 // ─────────────────────── deals (Plan §7) ───────────────────────
 
 model PipelineTemplate {
-  id String @id @default(cuid())
+  id     String   @id @default(cuid())
   /// resolution key: `purchase`, `rental`, `project_purchase` (§6.3 off-plan units).
   /// Several templates can share a DealKind — a project-unit deal is still kind=purchase.
   key    String   @unique
@@ -911,24 +922,73 @@ model Rating {
   revealedAt DateTime? @map("revealed_at") // both-submit-or-14-days rule (Plan §6.5)
   createdAt  DateTime  @default(now()) @map("created_at")
 
-  deal  Deal @relation(fields: [dealId], references: [id])
-  rater User @relation("RatingRater", fields: [raterId], references: [id])
-  ratee User @relation("RatingRatee", fields: [rateeId], references: [id])
+  /// Moderation (§13.2). Set when an admin upholds a report: the comment stops
+  /// being served publicly, but `stars` and `tags` still count towards the
+  /// score. The original text is deliberately kept for the audit trail rather
+  /// than overwritten — a removal has to be reviewable after the fact.
+  commentRemovedAt     DateTime? @map("comment_removed_at")
+  commentRemovedReason String?   @map("comment_removed_reason")
+
+  deal    Deal           @relation(fields: [dealId], references: [id])
+  rater   User           @relation("RatingRater", fields: [raterId], references: [id])
+  ratee   User           @relation("RatingRatee", fields: [rateeId], references: [id])
+  reports ReviewReport[]
 
   @@unique([dealId, raterId, rateeId])
   @@map("ratings")
 }
 
+/// A profile owner flagging a review about them (Plan §13.2). Owners can never
+/// delete a review; reporting it to an admin is the only lever they have.
+model ReviewReport {
+  id                String             @id @default(cuid())
+  ratingId          String             @map("rating_id")
+  reportedByUserId  String             @map("reported_by_user_id")
+  reason            String
+  status            ReviewReportStatus @default(open)
+  resolutionNote    String?            @map("resolution_note")
+  resolvedByAdminId String?            @map("resolved_by_admin_id")
+  resolvedAt        DateTime?          @map("resolved_at")
+  createdAt         DateTime           @default(now()) @map("created_at")
+
+  rating     Rating @relation(fields: [ratingId], references: [id], onDelete: Cascade)
+  reportedBy User   @relation("ReviewReportReporter", fields: [reportedByUserId], references: [id])
+
+  /// One report per owner per review — re-reporting the same comment must not
+  /// let an owner flood the queue until an admin gives in.
+  @@unique([ratingId, reportedByUserId])
+  @@index([status])
+  @@map("review_reports")
+}
+
+/// A strike against a reviewer whose comment was removed (Plan §13.2).
+/// Accumulating `moderation.warnings_before_ban` of these bans the account.
+model UserWarning {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  issuedByAdminId String   @map("issued_by_admin_id")
+  reason          String
+  /// What produced the warning, so the ban decision is auditable end to end.
+  sourceType      String   @default("review_report") @map("source_type")
+  sourceId        String?  @map("source_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user User @relation("UserWarningTarget", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_warnings")
+}
+
 model Dispute {
-  id                  String        @id @default(cuid())
-  dealId              String        @map("deal_id")
-  openedBy            String        @map("opened_by")
-  againstUserId       String        @map("against_user_id")
-  reason              String
-  status              DisputeStatus @default(open)
-  resolutionNote      String?       @map("resolution_note")
-  resolvedByAdminId   String?       @map("resolved_by_admin_id")
-  createdAt           DateTime      @default(now()) @map("created_at")
+  id                String        @id @default(cuid())
+  dealId            String        @map("deal_id")
+  openedBy          String        @map("opened_by")
+  againstUserId     String        @map("against_user_id")
+  reason            String
+  status            DisputeStatus @default(open)
+  resolutionNote    String?       @map("resolution_note")
+  resolvedByAdminId String?       @map("resolved_by_admin_id")
+  createdAt         DateTime      @default(now()) @map("created_at")
 
   deal Deal @relation(fields: [dealId], references: [id])
 
@@ -1067,16 +1127,16 @@ model ContractSignature {
 /// One row per invitee, so `refereeId` is unique — a person can be referred
 /// once, and a race between two codes resolves to whoever landed first.
 model Referral {
-  id          String         @id @default(cuid())
-  referrerId  String         @map("referrer_id")
-  refereeId   String         @unique @map("referee_id")
+  id                   String         @id @default(cuid())
+  referrerId           String         @map("referrer_id")
+  refereeId            String         @unique @map("referee_id")
   /// the code as typed at signup, kept even if the referrer's code is reissued
-  code        String
-  status      ReferralStatus @default(pending)
-  qualifiedAt DateTime?      @map("qualified_at")
+  code                 String
+  status               ReferralStatus @default(pending)
+  qualifiedAt          DateTime?      @map("qualified_at")
   /// what the invitee did to qualify it — a published listing id (§8)
-  qualifyingPropertyId String? @map("qualifying_property_id")
-  createdAt   DateTime       @default(now()) @map("created_at")
+  qualifyingPropertyId String?        @map("qualifying_property_id")
+  createdAt            DateTime       @default(now()) @map("created_at")
 
   referrer User @relation("ReferralReferrer", fields: [referrerId], references: [id], onDelete: Cascade)
   referee  User @relation("ReferralReferee", fields: [refereeId], references: [id], onDelete: Cascade)
@@ -1089,16 +1149,16 @@ model Referral {
 /// Earned, not bought — payments are Phase 3, so this table is deliberately
 /// independent of any billing concept.
 model FeaturedCredit {
-  id         String       @id @default(cuid())
-  userId     String       @map("user_id")
-  status     CreditStatus @default(available)
+  id               String       @id @default(cuid())
+  userId           String       @map("user_id")
+  status           CreditStatus @default(available)
   /// `referral` today; `purchase` when Phase 3 payments land
-  source     String       @default("referral")
-  referralId String?      @map("referral_id")
-  usedOnPropertyId String? @map("used_on_property_id")
-  usedAt     DateTime?    @map("used_at")
-  expiresAt  DateTime?    @map("expires_at")
-  createdAt  DateTime     @default(now()) @map("created_at")
+  source           String       @default("referral")
+  referralId       String?      @map("referral_id")
+  usedOnPropertyId String?      @map("used_on_property_id")
+  usedAt           DateTime?    @map("used_at")
+  expiresAt        DateTime?    @map("expires_at")
+  createdAt        DateTime     @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -1189,15 +1249,15 @@ model Subscription {
 /// §13.4 find-my-agent: owner invites agents to work a private resale.
 /// The agent NEVER receives owner contact details.
 model AgentAssignment {
-  id             String           @id @default(cuid())
-  propertyId     String           @map("property_id")
-  ownerUserId    String           @map("owner_user_id")
-  agentUserId    String           @map("agent_user_id")
-  termMonths     Int              @map("term_months")
-  status         AssignmentStatus @default(invited)
-  invitedAt      DateTime         @default(now()) @map("invited_at")
-  respondedAt    DateTime?        @map("responded_at")
-  expiresAt      DateTime         @map("expires_at")
+  id          String           @id @default(cuid())
+  propertyId  String           @map("property_id")
+  ownerUserId String           @map("owner_user_id")
+  agentUserId String           @map("agent_user_id")
+  termMonths  Int              @map("term_months")
+  status      AssignmentStatus @default(invited)
+  invitedAt   DateTime         @default(now()) @map("invited_at")
+  respondedAt DateTime?        @map("responded_at")
+  expiresAt   DateTime         @map("expires_at")
 
   @@index([agentUserId, status])
   @@index([propertyId, status])
@@ -1209,14 +1269,14 @@ model AgentAssignment {
 /// Rotating refresh tokens (Plan §2.1: access 15min / refresh 30d rotating).
 /// Only the sha256 of the token is stored; rotation revokes the used token.
 model RefreshToken {
-  id        String    @id @default(cuid())
-  userId    String    @map("user_id")
-  tokenHash String    @unique @map("token_hash")
-  expiresAt DateTime  @map("expires_at")
-  revokedAt DateTime? @map("revoked_at")
-  replacedByTokenId String? @map("replaced_by_token_id")
-  createdAt DateTime  @default(now()) @map("created_at")
-  ip        String?
+  id                String    @id @default(cuid())
+  userId            String    @map("user_id")
+  tokenHash         String    @unique @map("token_hash")
+  expiresAt         DateTime  @map("expires_at")
+  revokedAt         DateTime? @map("revoked_at")
+  replacedByTokenId String?   @map("replaced_by_token_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  ip                String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

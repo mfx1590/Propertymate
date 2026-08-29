@@ -32,6 +32,9 @@ export const PERMISSION_KEYS = [
   // ratings & disputes
   'rating.create',
   'dispute.open',
+  // §13.2: report a review written about you — the service still checks you
+  // are its subject; the permission only admits reviewable roles.
+  'review.report',
   // agency team
   'agency.agents.manage',
   // analytics — a pro sees their OWN performance; `analytics.view` is the
@@ -42,6 +45,7 @@ export const PERMISSION_KEYS = [
   'user.manage',
   'listing.moderate',
   'dispute.resolve',
+  'review.moderate',
   'analytics.view',
   'audit.view',
   'cms.manage',
