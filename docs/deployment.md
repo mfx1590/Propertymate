@@ -14,13 +14,21 @@ Docker Compose, with Caddy terminating TLS.
 
 ## 1. DNS
 
-Point both records at the VPS IP, before you deploy — Caddy requests
+Point all three records at the VPS IP **before** you deploy — Caddy requests
 certificates on first boot and needs the names to resolve.
 
 | Type | Name | Value |
 |---|---|---|
-| A | `app` | your VPS IP |
+| A | `@` | your VPS IP |
+| A | `www` | your VPS IP |
 | A | `api` | your VPS IP |
+
+The app sits on the **apex** so the listing pages — the SEO surface (§1) —
+live on the brand hostname. `www` is required, not optional: the Caddyfile
+redirects it to the apex, and Caddy requests a certificate for every site it
+is given at boot, so a missing `www` record produces repeated failures. If you
+would rather run the app on `app.<domain>`, set `APP_DOMAIN` to that, drop the
+`www` record, and delete the `www.{$APP_DOMAIN}` block from the Caddyfile.
 
 Giving the API its own hostname keeps browser requests same-site and lets Caddy
 serve listing photos from `api.<domain>/media` without exposing MinIO.
@@ -33,16 +41,35 @@ curl -fsSL https://get.docker.com | sh
 
 ## 3. Get the code and configure
 
+The repository is private, so HTTPS will prompt for credentials. Use a
+read-only **deploy key** rather than putting an account-wide token on a
+public-facing box:
+
 ```bash
-git clone https://github.com/mfx1590/Propertymate.git && cd Propertymate
+ssh-keygen -t ed25519 -C "propertymate-vps" -f ~/.ssh/id_ed25519 -N ""
+cat ~/.ssh/id_ed25519.pub
+```
+
+Add that key at repo → Settings → Deploy keys, leaving **write access
+unchecked** — the server only ever pulls. The key has no passphrase so that
+`git pull` runs unattended, which is exactly why it must be read-only.
+
+```bash
+git clone git@github.com:mfx1590/Propertymate.git && cd Propertymate
 cp .env.production.example .env.production
 ```
 
-Edit `.env.production`. Every `CHANGE_ME` must be replaced — generate each one
-separately:
+Edit `.env.production`. All five `CHANGE_ME` placeholders must be replaced,
+each with its own value:
 
 ```bash
-openssl rand -base64 32
+for k in POSTGRES_PASSWORD MEILI_MASTER_KEY S3_SECRET_KEY JWT_ACCESS_SECRET JWT_REFRESH_SECRET; do sed -i "s|^$k=CHANGE_ME$|$k=$(openssl rand -base64 32)|" .env.production; done
+```
+
+Verify none were missed — this should print nothing:
+
+```bash
+grep CHANGE_ME .env.production
 ```
 
 Set `APP_DOMAIN` and `API_DOMAIN` to the hostnames from step 1. Leave
@@ -70,7 +97,7 @@ docker compose -f docker-compose.prod.yml logs -f
 The API applies its own migrations on boot, so there is no separate migrate
 step. Once healthy:
 
-- app → `https://app.<your-domain>`
+- app → `https://<your-domain>`
 - API health → `https://api.<your-domain>/health/ready`
 
 ## 5. Sign in

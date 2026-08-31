@@ -6,6 +6,20 @@
 	reverse_proxy web:3000
 }
 
+# One canonical hostname matters here because the listing pages are the SEO
+# surface (Plan §1) and duplicate www/non-www copies split their ranking.
+#
+# REQUIRES a `www` A record pointing at this server. Caddy requests a
+# certificate for every site it is given at startup, not lazily, so if the
+# name does not resolve it will retry and fail — noisy in the log and it
+# counts against Let's Encrypt's failed-validation limits.
+#
+# Delete this block if APP_DOMAIN is a subdomain (`app.example.com`) rather
+# than an apex: `www.app.example.com` is not a name you want a cert for.
+www.{$APP_DOMAIN} {
+	redir https://{$APP_DOMAIN}{uri} permanent
+}
+
 {$API_DOMAIN} {
 	encode gzip
 
