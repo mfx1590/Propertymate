@@ -155,6 +155,17 @@
       },
       "project": {
         "update_published": "به‌روزرسانی جدید ساخت برای {title}"
+      },
+      "moderation": {
+        "report_upheld": "نظری که گزارش کردید حذف شد",
+        "report_dismissed": "نظری که گزارش کردید باقی ماند",
+        "review_removed": "متن نظر شما توسط مدیر حذف شد",
+        "warning": "اخطار {count} از {limit} برای حساب شما",
+        "banned": "حساب شما پس از {count} اخطار بسته شد"
+      },
+      "discovery": {
+        "new_matches": "{count} آگهی تأییدشدهٔ تازه با «{name}» هم‌خوانی دارد",
+        "price_drop": "«{title}» ‏{pct}٪ کم شد — اکنون £{newPrice}"
       }
     },
     "reasons": {
@@ -644,7 +655,8 @@
         "q": "نادیده گرفتن کلمات جست‌وجو",
         "region": "همهٔ مناطق"
       }
-    }
+    },
+    "reducedBy": "↓ {pct}٪ کاهش"
   },
   "home": {
     "heroTitle": "Every listing verified. Every seller real.",

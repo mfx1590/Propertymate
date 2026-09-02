@@ -50,6 +50,8 @@ export interface SearchHit {
   deedType: string;
   furnished: boolean;
   coverUrl: string | null;
+  /** §6.1: percent below the highest price this listing has asked, if any. */
+  priceReducedPct?: number | null;
   _geo?: { lat: number; lng: number };
 }
 

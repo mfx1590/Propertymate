@@ -27,7 +27,8 @@
     "test:e2e:admin": "node test/e2e/admin-console-flows.mjs",
     "test:e2e:search": "node test/e2e/search-suggestion-flows.mjs",
     "test:e2e:push": "node test/e2e/push-device-flows.mjs",
-    "test:e2e:moderation": "node test/e2e/review-moderation-flows.mjs"
+    "test:e2e:moderation": "node test/e2e/review-moderation-flows.mjs",
+    "test:e2e:alerts": "node test/e2e/discovery-alert-flows.mjs"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

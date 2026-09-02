@@ -24,6 +24,7 @@ export interface ListingDocument {
   features: string[];
   coverUrl: string | null;
   createdAtTs: number;
+  priceReducedPct: number | null;
   /** §8 ranking inputs — see RANKING_RULES. */
   featured: number;
   freshnessTier: number;
@@ -45,6 +46,8 @@ export interface SearchParams {
   minBeds?: number;
   deedType?: string;
   furnished?: boolean;
+  /** Epoch ms. Only listings indexed after this — used by saved-search alerts. */
+  createdAfterTs?: number;
 }
 
 /**
@@ -145,6 +148,9 @@ export class SearchService implements OnModuleInit {
         filterableAttributes: [
           'kind', 'regionSlug', 'bedrooms', 'bathrooms', 'deedType', 'furnished',
           'priceBaseGbp', 'areaM2', 'features', '_geo', 'featured',
+          // filterable as well as sortable: saved-search alerts ask "what
+          // appeared since I last told this user", which is a filter, not a sort
+          'createdAtTs',
         ],
         sortableAttributes: ['priceBaseGbp', 'createdAtTs', 'pricePerM2'],
         searchableAttributes: ['title', 'description', 'regionName', 'district'],
@@ -210,7 +216,28 @@ export class SearchService implements OnModuleInit {
     if (params.minBeds !== undefined) filters.push(`bedrooms >= ${params.minBeds}`);
     if (params.deedType) filters.push(`deedType = ${params.deedType}`);
     if (params.furnished !== undefined) filters.push(`furnished = ${params.furnished}`);
+    if (params.createdAfterTs !== undefined) {
+      filters.push(`createdAtTs > ${params.createdAfterTs}`);
+    }
     return filters;
+  }
+
+  /**
+   * Hit count only, for the saved-search alert sweep.
+   *
+   * Deliberately not `search()`: that computes zero-result relaxation
+   * suggestions, which is exactly the branch an alert query takes when there
+   * is nothing new — so the common case would cost eight extra Meilisearch
+   * round trips per saved search, every night, to build advice nobody reads.
+   */
+  async countMatching(params: SearchParams): Promise<number> {
+    const filters = this.buildFilters(params);
+    const result = await this.index.search(params.q ?? '', {
+      filter: filters.length ? filters.join(' AND ') : undefined,
+      hitsPerPage: 1,
+      page: 1,
+    });
+    return result.totalHits;
   }
 
   async search(params: SearchParams & { sort?: SearchSort; page?: number }) {
@@ -383,6 +410,7 @@ export class SearchService implements OnModuleInit {
       include: {
         media: { orderBy: { sortOrder: 'asc' } },
         region: { select: { slug: true, nameI18n: true } },
+        priceChanges: { select: { oldBaseGbp: true }, orderBy: { createdAt: 'desc' }, take: 20 },
       },
     });
     if (!p || p.status !== 'live') return null;
@@ -409,6 +437,16 @@ export class SearchService implements OnModuleInit {
       priceAmount: p.listPriceGbp ? priceBaseGbp : Number(p.priceAmount),
       priceCurrency: p.listPriceGbp ? 'GBP' : p.priceCurrency,
       pricePerM2: p.areaM2 ? Math.round(priceBaseGbp / p.areaM2) : null,
+      // §6.1 "reduced" badge. Measured against the highest price the listing
+      // has ever asked, so nudging the price up and back down cannot fake one.
+      // Percentage only — the absolute history is the owner's ask (§13.5).
+      priceReducedPct: (() => {
+        if (p.priceChanges.length === 0) return null;
+        const peak = Math.max(...p.priceChanges.map((c) => Number(c.oldBaseGbp)), Number(p.priceBaseGbp));
+        const now = Number(p.priceBaseGbp);
+        if (!(peak > 0) || now >= peak) return null;
+        return Math.round(((peak - now) / peak) * 1000) / 10;
+      })(),
       bedrooms: p.bedrooms,
       bathrooms: p.bathrooms,
       areaM2: p.areaM2,

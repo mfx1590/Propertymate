@@ -88,15 +88,57 @@ export class PropertiesService {
       data.region = { connect: { id: region.id } };
     }
 
+    // Captured before the update so the history row can record both sides.
+    let priceChange: {
+      oldAmount: number;
+      newAmount: number;
+      currency: string;
+      oldBaseGbp: number;
+      newBaseGbp: number;
+    } | null = null;
+
     if (dto.priceAmount !== undefined || dto.priceCurrency !== undefined) {
       const amount = dto.priceAmount ?? Number(property.priceAmount);
       const currency = dto.priceCurrency ?? property.priceCurrency;
+      const baseGbp = await this.toBaseGbp(amount, currency);
       data.priceAmount = amount;
       data.priceCurrency = currency;
-      data.priceBaseGbp = await this.toBaseGbp(amount, currency);
+      data.priceBaseGbp = baseGbp;
+
+      const oldBaseGbp = Number(property.priceBaseGbp);
+      // Only a real movement on an already-priced listing counts. A draft
+      // being filled in for the first time (0 → 200000) is not a price change,
+      // and re-saving the form unchanged must not manufacture history.
+      if (oldBaseGbp > 0 && baseGbp > 0 && baseGbp !== oldBaseGbp) {
+        priceChange = {
+          oldAmount: Number(property.priceAmount),
+          newAmount: amount,
+          currency,
+          oldBaseGbp,
+          newBaseGbp: baseGbp,
+        };
+      }
     }
 
     const updated = await this.prisma.property.update({ where: { id: propertyId }, data });
+
+    if (priceChange) {
+      await this.prisma.propertyPriceChange.create({
+        data: {
+          propertyId,
+          oldAmount: priceChange.oldAmount,
+          newAmount: priceChange.newAmount,
+          currency: priceChange.currency,
+          oldBaseGbp: priceChange.oldBaseGbp,
+          newBaseGbp: priceChange.newBaseGbp,
+          changePct:
+            Math.round(
+              ((priceChange.newBaseGbp - priceChange.oldBaseGbp) / priceChange.oldBaseGbp) * 10000,
+            ) / 100,
+          changedByUserId: userId,
+        },
+      });
+    }
     await this.audit.log({
       actorId: userId,
       action: 'listing.update',
@@ -414,6 +456,19 @@ export class PropertiesService {
         media: { orderBy: { sortOrder: 'asc' } },
         region: { select: { slug: true, nameI18n: true, lat: true, lng: true } },
         createdBy: { select: { id: true } },
+        // §6.1: the price trajectory is public. A listing that has come down
+        // is the single most useful signal a buyer can have, and hiding it
+        // would only benefit the seller.
+        priceChanges: {
+          orderBy: { createdAt: 'desc' },
+          take: 20,
+          select: {
+            oldBaseGbp: true,
+            newBaseGbp: true,
+            changePct: true,
+            createdAt: true,
+          },
+        },
       },
     });
     if (!property) throw new NotFoundException('Listing not found');
@@ -432,6 +487,18 @@ export class PropertiesService {
     }
 
     const { createdBy, ...rest } = property;
+
+    // A single "reduced by N%" figure for the card badge, measured from the
+    // highest price the listing has held to what it asks now — so a seller
+    // cannot hide a reduction by nudging the price up and back down.
+    const priceReducedPct = (() => {
+      const changes = property.priceChanges;
+      if (changes.length === 0) return null;
+      const peak = Math.max(...changes.map((c) => Number(c.oldBaseGbp)), Number(rest.priceBaseGbp));
+      const now = Number(rest.priceBaseGbp);
+      if (!(peak > 0) || now >= peak) return null;
+      return Math.round(((peak - now) / peak) * 1000) / 10;
+    })();
     if (!isOwner) {
       // §13.5: public sees ONLY the final buyer price — never the profit/commission breakdown.
       // §13.4: strip internal identity fields so owner/agent anonymity holds.
@@ -445,6 +512,7 @@ export class PropertiesService {
         onBehalfOfOwnerId,
         publishedByAgentId,
         mandateDocumentId,
+        priceChanges,
         ...pub
       } = rest;
       const finalGbp = rest.listPriceGbp ?? priceBaseGbp;
@@ -454,6 +522,15 @@ export class PropertiesService {
         priceCurrency: 'GBP',
         priceBaseGbp: finalGbp,
         listPriceGbp: rest.listPriceGbp,
+        // Percentages only. The absolute amounts on a price-change row are the
+        // *owner's* ask, and on a mediated resale (§13.4) that is not the price
+        // the public is shown — publishing it would expose the agent's margin,
+        // which §13.5 forbids. A percentage move is the same either way.
+        priceChanges: priceChanges.map((c) => ({
+          changePct: Number(c.changePct),
+          createdAt: c.createdAt,
+        })),
+        priceReducedPct,
         isOwner: false,
       };
     }

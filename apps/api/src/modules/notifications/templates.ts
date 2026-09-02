@@ -302,6 +302,46 @@ export const NOTIFICATION_TEMPLATES: Record<string, TemplateDef> = {
       body: 'پس از {count} اخطار، حساب شما برای همیشه بسته شد و از همهٔ دستگاه‌ها خارج شدید.',
     },
   ),
+
+  // §6.1 discovery alerts. These are the only notifications a user receives
+  // without having done something first, so both name the saved search or
+  // property that caused them — an unexplained nudge is what gets muted.
+  'discovery.new_matches': T(
+    {
+      title: '{count} new verified listings',
+      body: '{count} new listings match “{name}”. Every one has already passed a document check.',
+    },
+    {
+      title: '{count} yeni doğrulanmış ilan',
+      body: '“{name}” aramanıza uyan {count} yeni ilan var. Hepsi belge kontrolünden geçti.',
+    },
+    {
+      title: '{count} новых проверенных объявлений',
+      body: 'Под «{name}» подходят {count} новых объявления. Все уже прошли проверку документов.',
+    },
+    {
+      title: '{count} آگهی تأییدشدهٔ تازه',
+      body: '{count} آگهی تازه با «{name}» هم‌خوانی دارد. همهٔ آن‌ها بررسی مدارک را گذرانده‌اند.',
+    },
+  ),
+  'discovery.price_drop': T(
+    {
+      title: 'Price reduced on a saved property',
+      body: '“{title}” dropped {pct}% — from £{oldPrice} to £{newPrice}.',
+    },
+    {
+      title: 'Kaydettiğiniz mülkün fiyatı düştü',
+      body: '“{title}” %{pct} düştü — £{oldPrice} yerine £{newPrice}.',
+    },
+    {
+      title: 'Цена на сохранённый объект снижена',
+      body: '«{title}» подешевел на {pct}% — с £{oldPrice} до £{newPrice}.',
+    },
+    {
+      title: 'قیمت ملکی که ذخیره کرده‌اید کم شد',
+      body: '«{title}» ‏{pct}٪ کاهش یافت — از £{oldPrice} به £{newPrice}.',
+    },
+  ),
 };
 
 /** `{placeholder}` interpolation against the notification payload. */

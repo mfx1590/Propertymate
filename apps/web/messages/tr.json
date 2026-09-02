@@ -155,6 +155,17 @@
       },
       "project": {
         "update_published": "{title} için yeni inşaat güncellemesi"
+      },
+      "moderation": {
+        "report_upheld": "Bildirdiğiniz yorum kaldırıldı",
+        "report_dismissed": "Bildirdiğiniz değerlendirme yerinde kaldı",
+        "review_removed": "Yorumunuz bir moderatör tarafından kaldırıldı",
+        "warning": "Hesabınızda {limit} uyarıdan {count}. uyarı",
+        "banned": "{count} uyarıdan sonra hesabınız kapatıldı"
+      },
+      "discovery": {
+        "new_matches": "“{name}” aramanıza uyan {count} yeni doğrulanmış ilan",
+        "price_drop": "“{title}” %{pct} düştü — şimdi £{newPrice}"
       }
     },
     "reasons": {
@@ -644,7 +655,8 @@
         "q": "Arama kelimelerini yok say",
         "region": "Tüm bölgeler"
       }
-    }
+    },
+    "reducedBy": "↓ %{pct} indirim"
   },
   "home": {
     "heroTitle": "Her ilan doğrulanmış. Her satıcı gerçek.",

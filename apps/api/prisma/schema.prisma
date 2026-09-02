@@ -547,6 +547,7 @@ model Property {
   mandateDocument Document?                @relation("PropertyMandate", fields: [mandateDocumentId], references: [id])
   region          Region                   @relation(fields: [regionId], references: [id])
   media           PropertyMedia[]
+  priceChanges    PropertyPriceChange[]
   viewEvents      PropertyViewEvent[]
   recommendations PropertyRecommendation[] @relation("RecommendationSource")
   recommendedBy   PropertyRecommendation[] @relation("RecommendationTarget")
@@ -707,10 +708,42 @@ model SavedSearch {
   @@map("saved_searches")
 }
 
+/// Every price change on a live listing (Plan §6.1 "price-drop notifications
+/// on favorites"). Recorded as a row rather than a mutable "previousPrice"
+/// column so a listing that drifts down over weeks keeps its whole trajectory —
+/// which is what a buyer actually wants to see, and what market insights will
+/// need later.
+///
+/// Base GBP is stored alongside the quoted amount because listings are priced
+/// in several currencies: comparing a drop across them is only meaningful in
+/// the common base, and re-converting historic amounts at today's FX rate
+/// would invent price movements that never happened.
+model PropertyPriceChange {
+  id              String   @id @default(cuid())
+  propertyId      String   @map("property_id")
+  oldAmount       Decimal  @map("old_amount") @db.Decimal(14, 2)
+  newAmount       Decimal  @map("new_amount") @db.Decimal(14, 2)
+  currency        String
+  oldBaseGbp      Decimal  @map("old_base_gbp") @db.Decimal(14, 2)
+  newBaseGbp      Decimal  @map("new_base_gbp") @db.Decimal(14, 2)
+  /// Signed percentage against the base price; negative is a reduction.
+  changePct       Decimal  @map("change_pct") @db.Decimal(6, 2)
+  changedByUserId String?  @map("changed_by_user_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, createdAt])
+  @@map("property_price_changes")
+}
+
 model Favorite {
-  userId     String   @map("user_id")
-  propertyId String   @map("property_id")
-  createdAt  DateTime @default(now()) @map("created_at")
+  userId      String    @map("user_id")
+  propertyId  String    @map("property_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  /// Last price-drop alert sent for this pairing, so a listing that keeps
+  /// falling notifies once per drop rather than once per job run.
+  lastAlertAt DateTime? @map("last_alert_at")
 
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)

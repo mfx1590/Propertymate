@@ -27,6 +27,7 @@ export const NOTIFICATION_CATEGORIES = [
   'deal',
   'project',
   'moderation',
+  'discovery',
 ] as const;
 
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
@@ -58,6 +59,10 @@ export const DEFAULT_CHANNELS: Record<NotificationCategory, NotificationChannel[
   // A removed review, a warning or a ban has to reach the person even if they
   // never open the app again — email is not optional here in practice.
   moderation: ['in_app', 'push', 'email'],
+  // §6.1 saved-search and price-drop alerts. Email is the channel that
+  // actually brings someone back days later; WhatsApp is deliberately absent
+  // — a marketing-shaped nudge there is how a business number gets reported.
+  discovery: ['in_app', 'push', 'email'],
 };
 
 /** in_app is always delivered; the preferences API refuses to switch it off. */

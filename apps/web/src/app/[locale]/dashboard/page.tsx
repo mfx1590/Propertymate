@@ -83,9 +83,17 @@ export default function DashboardOverview() {
   };
 
   const notifText = (n: AppNotification) => {
-    const title = (n.payload?.title as string) ?? (n.payload?.roleKey as string) ?? '';
+    // Pass the WHOLE payload, not just `title`. next-intl throws on a
+    // placeholder it has no value for, and the catch below turns that into a
+    // raw key on screen — which is the §0 step-10 defect all over again. Any
+    // template needing {count} or {pct} would have hit it.
+    const values: Record<string, string | number> = { title: '' };
+    for (const [k, v] of Object.entries(n.payload ?? {})) {
+      if (typeof v === 'string' || typeof v === 'number') values[k] = v;
+    }
+    values.title = values.title || (n.payload?.roleKey as string) || '';
     try {
-      return t(`notifications.${n.templateKey}`, { title });
+      return t(`notifications.${n.templateKey}`, values);
     } catch {
       return n.templateKey;
     }

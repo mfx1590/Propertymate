@@ -19,6 +19,10 @@ const SCHEDULE: { name: string; pattern: string }[] = [
   { name: 'reputation', pattern: '0 2 * * *' }, // 02:00 — after reveals, so scores see them
   { name: 'recommendations', pattern: '0 3 * * *' }, // 03:00 — co-visitation rebuild (§8)
   { name: 'featured-expiry', pattern: '0 4 * * *' }, // 04:00 — lapse credits + featured windows (§8)
+  // 07:00 — after the 06:00 freshness sweep has paused anything stale, so
+  // an alert never points at a listing that is about to disappear (§6.1)
+  { name: 'saved-search-alerts', pattern: '0 7 * * *' },
+  { name: 'price-drop-alerts', pattern: '15 7 * * *' },
 ];
 
 @Injectable()

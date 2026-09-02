@@ -6,6 +6,7 @@ import { AssignmentsService } from '../modules/marketplace/assignments.service';
 import { RatingsService } from '../modules/deals/ratings.service';
 import { ReputationService } from '../modules/deals/reputation.service';
 import { RecommendationsService } from '../modules/search/recommendations.service';
+import { AlertsService } from '../modules/search/alerts.service';
 import { ReferralsService } from '../modules/referrals/referrals.service';
 import { MAINTENANCE_QUEUE } from './jobs.constants';
 
@@ -24,6 +25,7 @@ export class MaintenanceProcessor extends WorkerHost {
     private readonly reputation: ReputationService,
     private readonly recommendations: RecommendationsService,
     private readonly referrals: ReferralsService,
+    private readonly alerts: AlertsService,
   ) {
     super();
   }
@@ -43,6 +45,10 @@ export class MaintenanceProcessor extends WorkerHost {
         return this.recommendations.rebuild();
       case 'featured-expiry':
         return this.referrals.expireSweep();
+      case 'saved-search-alerts':
+        return this.alerts.runSavedSearchAlerts();
+      case 'price-drop-alerts':
+        return this.alerts.runPriceDropAlerts();
       default:
         this.logger.warn(`Unknown maintenance job: ${job.name}`);
         return { skipped: job.name };

@@ -264,7 +264,16 @@ function SearchInner() {
                     {h.bathrooms != null && `${h.bathrooms} ${t('baths')} · `}
                     {h.areaM2 != null && `${h.areaM2} m²`}
                   </p>
-                  <p className="mt-2 text-lg font-bold text-brand-600">{fmtGbp(h.priceBaseGbp)}</p>
+                  <div className="mt-2 flex flex-wrap items-baseline gap-2">
+                    <p className="text-lg font-bold text-brand-600">{fmtGbp(h.priceBaseGbp)}</p>
+                    {/* §6.1: a listing that has come down is the strongest
+                        signal on the card, so it sits beside the price. */}
+                    {h.priceReducedPct ? (
+                      <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+                        {t('reducedBy', { pct: h.priceReducedPct })}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               </Link>
             </li>

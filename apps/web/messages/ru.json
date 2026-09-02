@@ -155,6 +155,17 @@
       },
       "project": {
         "update_published": "Новое обновление по строительству: {title}"
+      },
+      "moderation": {
+        "report_upheld": "Отзыв, на который вы пожаловались, удалён",
+        "report_dismissed": "Отзыв, на который вы пожаловались, остаётся",
+        "review_removed": "Ваш комментарий удалён модератором",
+        "warning": "Предупреждение {count} из {limit} по вашему аккаунту",
+        "banned": "Ваш аккаунт закрыт после {count} предупреждений"
+      },
+      "discovery": {
+        "new_matches": "{count} новых проверенных объявлений по «{name}»",
+        "price_drop": "«{title}» подешевел на {pct}% — теперь £{newPrice}"
       }
     },
     "reasons": {
@@ -644,7 +655,8 @@
         "q": "Не учитывать поисковые слова",
         "region": "Любой регион"
       }
-    }
+    },
+    "reducedBy": "↓ снижена на {pct}%"
   },
   "home": {
     "heroTitle": "Every listing verified. Every seller real.",
