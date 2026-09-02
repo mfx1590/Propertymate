@@ -8,7 +8,8 @@
     "start": "next start -p 3000",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "echo \"no lint configured yet\"",
-    "test": "echo \"no tests yet\""
+    "test": "node scripts/check-i18n.mjs",
+    "check:i18n": "node scripts/check-i18n.mjs"
   },
   "dependencies": {
     "@propverify/shared": "*",

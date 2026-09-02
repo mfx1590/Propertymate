@@ -90,7 +90,12 @@ with Meta in each of the four languages.
 > `update: {}` was changed to actually write, since as it stood a corrected translation would never have
 > reached an already-seeded database.
 >
-> Still worth adding: a CI check on the untranslated ratio, so this cannot drift back silently.
+> **Guarded in CI since 2026-09-02** by `apps/web/scripts/check-i18n.mjs`, which runs as the web
+> workspace's `test` script. It checks three things, not one: key parity, ICU-aware placeholder
+> parity (so a lost `{count}` fails the build rather than throwing at runtime), and untranslated
+> values. The last uses an **allowlist, not a ratio** — a threshold silently tolerates whatever is
+> already broken and only ever creeps upward, whereas a named exception has to be argued for. All
+> three failure modes were verified by deliberately breaking a locale file.
 
 > **Local infra note:** the Redis host port is overridable via `REDIS_PORT` (compose defaults to
 > `6379`) for machines where another project already holds 6379.
