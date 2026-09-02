@@ -50,9 +50,19 @@ const fetchListings = cache(async (slug: string): Promise<SearchHit[]> => {
   return json.hits ?? [];
 });
 
-export function generateStaticParams() {
-  return LOCALES.flatMap((locale) => REGION_SLUGS.map((slug) => ({ locale, slug })));
-}
+/**
+ * Deliberately NOT prerendered with `generateStaticParams`.
+ *
+ * These pages need the API, and nothing guarantees one is running when the
+ * bundle is built — CI builds with no API at all, and `docker compose up -d
+ * --build` builds the web image before the API container is serving. Baking
+ * the fetch into the build made both fail.
+ *
+ * Rendering on demand costs nothing that matters here: a crawler still gets
+ * fully server-rendered HTML, and `revalidate` below caches the result for
+ * five minutes, so the stats stay fresh without a rebuild.
+ */
+export const revalidate = 300;
 
 /**
  * The region's name in the reader's language.
