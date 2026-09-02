@@ -29,7 +29,8 @@
     "test:e2e:push": "node test/e2e/push-device-flows.mjs",
     "test:e2e:moderation": "node test/e2e/review-moderation-flows.mjs",
     "test:e2e:alerts": "node test/e2e/discovery-alert-flows.mjs",
-    "test:e2e:regions": "node test/e2e/region-page-flows.mjs"
+    "test:e2e:regions": "node test/e2e/region-page-flows.mjs",
+    "test:e2e:mandate": "node test/e2e/agent-mandate-flows.mjs"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

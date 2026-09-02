@@ -30,6 +30,12 @@ const PARTY_LABEL: Record<string, string> = {
   agent_buyer_side: 'Tenant agent',
 };
 
+/** A mandate is signed by the owner and the appointed agent (§13.4). */
+const MANDATE_PARTY_LABEL: Record<string, string> = {
+  seller: 'Owner',
+  agent_seller_side: 'Appointed agent',
+};
+
 /**
  * Contract generation + typed e-sign (Plan §7, §6.2).
  *
@@ -288,6 +294,133 @@ export class ContractsService {
     return deal;
   }
 
+  /**
+   * Generates (or returns) the agent mandate for an accepted assignment.
+   *
+   * This is the instrument that actually authorises an agent to market someone
+   * else's property under §13.4 — until now an agent could publish a private
+   * resale with nothing signed at all, which is a strange gap in a platform
+   * whose whole premise is that paperwork was checked.
+   *
+   * Scoped to the assignment rather than a deal: a mandate is signed long
+   * before any buyer exists, and it survives the deal that may never happen.
+   */
+  async generateForAssignment(userId: string, assignmentId: string, ip?: string) {
+    const assignment = await this.prisma.agentAssignment.findUnique({
+      where: { id: assignmentId },
+    });
+    if (!assignment) throw new NotFoundException('Assignment not found');
+    if (![assignment.ownerUserId, assignment.agentUserId].includes(userId)) {
+      throw new ForbiddenException('Not a party to this assignment');
+    }
+
+    const existing = await this.prisma.contract.findFirst({ where: { assignmentId } });
+    if (existing) return this.detail(userId, existing.id);
+
+    // Only once the agent has taken the instruction. An invited-but-unanswered
+    // assignment has nothing to put a signature against.
+    if (assignment.status !== 'accepted') {
+      throw new BadRequestException(
+        `A mandate exists once the agent accepts (assignment is ${assignment.status})`,
+      );
+    }
+
+    const property = await this.prisma.property.findUnique({
+      where: { id: assignment.propertyId },
+      select: {
+        titleI18n: true,
+        district: true,
+        priceBaseGbp: true,
+        region: { select: { nameI18n: true } },
+      },
+    });
+
+    const terms = {
+      propertyTitle: (property?.titleI18n as { en?: string })?.en ?? '',
+      address: [property?.district, (property?.region.nameI18n as { en?: string })?.en]
+        .filter(Boolean)
+        .join(', '),
+      ownerAskGbp: property ? Number(property.priceBaseGbp) : null,
+      termMonths: assignment.termMonths,
+      expiresAt: assignment.expiresAt.toISOString(),
+      generatedAt: new Date().toISOString(),
+    };
+
+    const document = await this.prisma.document.create({
+      data: {
+        ownerUserId: userId,
+        entityType: 'assignment',
+        entityId: assignmentId,
+        documentType: 'agent_mandate',
+        storageKey: '',
+        mime: 'application/pdf',
+        size: 0,
+        sha256: '',
+        status: 'approved',
+      },
+    });
+
+    const contract = await this.prisma.contract.create({
+      data: {
+        kind: 'agent_mandate',
+        assignmentId,
+        propertyId: assignment.propertyId,
+        documentId: document.id,
+        terms: terms as unknown as Prisma.InputJsonValue,
+        signatures: {
+          create: [
+            { userId: assignment.ownerUserId, partyRole: 'seller' },
+            { userId: assignment.agentUserId, partyRole: 'agent_seller_side' },
+          ],
+        },
+      },
+    });
+
+    await this.renderAndStore(contract.id);
+    await this.audit.log({
+      actorId: userId,
+      action: 'contract.generated',
+      entityType: 'contract',
+      entityId: contract.id,
+      after: { assignmentId, kind: 'agent_mandate' },
+      ip,
+    });
+
+    const other =
+      userId === assignment.ownerUserId ? assignment.agentUserId : assignment.ownerUserId;
+    await this.notifications
+      .notify(other, 'assignment.accepted', { title: terms.propertyTitle })
+      .catch(() => undefined);
+
+    return this.detail(userId, contract.id);
+  }
+
+  /** The mandate for an assignment, or null before one is generated. */
+  async mandateForAssignment(userId: string, assignmentId: string) {
+    const assignment = await this.prisma.agentAssignment.findUnique({
+      where: { id: assignmentId },
+      select: { ownerUserId: true, agentUserId: true },
+    });
+    if (!assignment) throw new NotFoundException('Assignment not found');
+    if (![assignment.ownerUserId, assignment.agentUserId].includes(userId)) {
+      throw new ForbiddenException('Not a party to this assignment');
+    }
+    const contract = await this.prisma.contract.findFirst({ where: { assignmentId } });
+    return contract ? this.detail(userId, contract.id) : null;
+  }
+
+  /**
+   * Whether a signed mandate exists — read by the publish guard (§13.4) when
+   * `mandate.required_before_publish` is on.
+   */
+  async assignmentMandateSigned(assignmentId: string): Promise<boolean> {
+    const contract = await this.prisma.contract.findFirst({
+      where: { assignmentId },
+      select: { status: true },
+    });
+    return contract?.status === 'signed';
+  }
+
   private termsFor(deal: Awaited<ReturnType<ContractsService['loadDeal']>>) {
     const price = deal.snapshot ? Number(deal.snapshot.priceAgreed) : null;
     const region = (deal.property?.region.nameI18n as { en?: string })?.en ?? '';
@@ -318,6 +451,21 @@ export class ContractsService {
         },
       },
     });
+
+    const parties = contract.signatures.map((sig) => ({
+      role:
+        (contract.kind === 'agent_mandate' ? MANDATE_PARTY_LABEL : PARTY_LABEL)[sig.partyRole] ??
+        sig.partyRole,
+      name: sig.user.email ?? sig.user.phone ?? sig.userId,
+      typedName: sig.typedName,
+      signedAt: sig.signedAt,
+    }));
+
+    if (contract.kind === 'agent_mandate') {
+      const buffer = await this.pdf.render(this.mandateSpec(contract, parties));
+      await this.store(contract, buffer);
+      return;
+    }
 
     const terms = contract.terms as {
       propertyTitle: string;
@@ -371,12 +519,7 @@ export class ContractsService {
           body: 'This agreement is governed by the law of the Turkish Republic of Northern Cyprus. It records the commercial terms agreed between the parties and does not replace independent legal advice.',
         },
       ],
-      parties: contract.signatures.map((s) => ({
-        role: PARTY_LABEL[s.partyRole] ?? s.partyRole,
-        name: s.user.email ?? s.user.phone ?? s.userId,
-        typedName: s.typedName,
-        signedAt: s.signedAt,
-      })),
+      parties,
       footer:
         'Generated by PropVerify. This document is stored privately and served only over short-lived, ' +
         'permission-checked links. Electronic signatures recorded on this document are accompanied by an ' +
@@ -384,6 +527,14 @@ export class ContractsService {
     };
 
     const buffer = await this.pdf.render(spec);
+    await this.store(contract, buffer);
+  }
+
+  /** One storage path for every contract kind, so they cannot drift apart. */
+  private async store(
+    contract: { id: string; documentId: string; document: { storageKey: string } },
+    buffer: Buffer,
+  ) {
     const key = contract.document.storageKey || `contracts/${contract.id}.pdf`;
     await this.storage.putPrivateDocument(key, buffer, 'application/pdf');
     await this.prisma.document.update({
@@ -394,5 +545,74 @@ export class ContractsService {
         sha256: createHash('sha256').update(buffer).digest('hex'),
       },
     });
+  }
+
+  /**
+   * The mandate PDF (§13.4). Its clauses record the three things that make the
+   * arrangement unusual and are therefore worth stating in writing: the owner
+   * stays anonymous, the agent's commission sits on top of the owner's asking
+   * price rather than inside it, and the appointment lapses on a fixed date.
+   */
+  private mandateSpec(
+    contract: { id: string; createdAt: Date; terms: unknown },
+    parties: ContractSpec['parties'],
+  ): ContractSpec {
+    const terms = contract.terms as {
+      propertyTitle: string;
+      address: string;
+      ownerAskGbp: number | null;
+      termMonths: number;
+      expiresAt: string;
+    };
+    const ask =
+      terms.ownerAskGbp === null ? '—' : `GBP ${terms.ownerAskGbp.toLocaleString('en-GB')}`;
+
+    return {
+      title: 'Agency Mandate',
+      reference: `Mandate ref ${contract.id} · generated by PropVerify`,
+      intro:
+        'This mandate appoints the agent named below to market the property described, for the term ' +
+        'stated, on the terms recorded here. It is executed by electronic signature: each party types ' +
+        'their full name, and the platform records the name, the time and the originating IP address.',
+      facts: [
+        ['Property', terms.propertyTitle || '—'],
+        ['Address', terms.address || '—'],
+        ["Owner's asking price", ask],
+        ['Term', `${terms.termMonths} months`],
+        ['Expires', terms.expiresAt.slice(0, 10)],
+        ['Mandate date', new Date(contract.createdAt).toISOString().slice(0, 10)],
+      ],
+      clauses: [
+        {
+          heading: 'Appointment',
+          body: `The owner appoints the agent to market the property for ${terms.termMonths} months from the date of this mandate. The appointment lapses automatically on the expiry date above; it does not roll over, and the owner is free to appoint different agents afterwards.`,
+        },
+        {
+          heading: "Owner's asking price",
+          body: `The owner requires ${ask} for the property and receives that amount in full on completion. The platform fee and the agent's commission are added on top of it and are paid by the buyer, so neither reduces what the owner receives.`,
+        },
+        {
+          heading: 'Anonymity and communication',
+          body: 'The agent is not given the owner\u2019s contact details, and the owner is not given the buyer\u2019s. All communication runs through the platform, and a platform representative attends any stage that must happen in person. The agent shall not attempt to contact the owner outside the platform.',
+        },
+        {
+          heading: 'Non-exclusivity',
+          body: 'The owner may appoint more than one agent to the same property at the same time. Commission is earned by the agent whose introduction leads to the completed sale, as recorded by the platform.',
+        },
+        {
+          heading: 'Conduct',
+          body: 'The agent shall market the property accurately and only on the terms recorded here, shall not advertise it at a price other than the published list price, and shall not sub-instruct another agent without the owner\u2019s written agreement.',
+        },
+        {
+          heading: 'Governing law',
+          body: 'This mandate is governed by the law of the Turkish Republic of Northern Cyprus. It records the commercial terms agreed between the parties and does not replace independent legal advice.',
+        },
+      ],
+      parties,
+      footer:
+        'Generated by PropVerify. This document is stored privately and served only over short-lived, ' +
+        'permission-checked links. Electronic signatures recorded on this document are accompanied by an ' +
+        'immutable audit trail retained by the platform.',
+    };
   }
 }

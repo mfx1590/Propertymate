@@ -31,7 +31,21 @@ export class DocumentsController {
           where: { dealId: doc.entityId, userId: user.sub },
         })) > 0;
 
-      if (!isParty) {
+      // The same principle one step earlier: an agent mandate (§13.4) hangs off
+      // an assignment rather than a deal, and the owner has to be able to read
+      // the document they are being asked to sign — even though the agent is
+      // the one who pressed generate and therefore owns the row.
+      const isAssignmentParty =
+        !isParty &&
+        doc.entityType === 'assignment' &&
+        (await this.prisma.agentAssignment.count({
+          where: {
+            id: doc.entityId,
+            OR: [{ ownerUserId: user.sub }, { agentUserId: user.sub }],
+          },
+        })) > 0;
+
+      if (!isParty && !isAssignmentParty) {
         const perms = await this.roles.getPermissionsForUser(user.sub);
         if (!perms.has('verification.review')) {
           throw new ForbiddenException('Not allowed to access this document');

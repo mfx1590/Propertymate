@@ -204,6 +204,23 @@ export class AssignmentsService {
     if (a.status !== 'accepted') throw new BadRequestException('Accept the assignment first');
     if (a.expiresAt < new Date()) throw new BadRequestException('Assignment expired');
 
+    // §6.2/§13.4: a signed mandate is what actually authorises an agent to
+    // market someone else's property. Gated behind a setting and OFF by
+    // default, following the `offers.enabled` precedent — the document and the
+    // signing flow are complete, and turning this on makes it load-bearing
+    // without a code change. Existing deployments keep working until then.
+    if (await this.settings.get('mandate.required_before_publish', false)) {
+      const signed = await this.prisma.contract.findFirst({
+        where: { assignmentId, status: 'signed' },
+        select: { id: true },
+      });
+      if (!signed) {
+        throw new BadRequestException(
+          'MANDATE_REQUIRED: both the owner and the agent must sign the mandate before publishing',
+        );
+      }
+    }
+
     const property = await this.prisma.property.findUnique({ where: { id: a.propertyId } });
     if (!property) throw new NotFoundException('Listing not found');
     if (property.status !== 'verified_private') {

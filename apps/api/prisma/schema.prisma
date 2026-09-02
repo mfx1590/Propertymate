@@ -1120,6 +1120,10 @@ model Contract {
   status     ContractStatus @default(awaiting_signatures)
   dealId     String?        @map("deal_id")
   propertyId String?        @map("property_id")
+  /// Set on an `agent_mandate` instead of `dealId`: a mandate is the instrument
+  /// that authorises an agent to market a property (§13.4), signed long before
+  /// any deal exists. Exactly one of `dealId` / `assignmentId` is populated.
+  assignmentId String?      @map("assignment_id")
   documentId String         @unique @map("document_id")
   /// Frozen terms the PDF was rendered from — the PDF is the artefact, this is
   /// the queryable record of what was actually agreed.
@@ -1132,6 +1136,7 @@ model Contract {
   signatures ContractSignature[]
 
   @@index([dealId])
+  @@index([assignmentId])
   @@map("contracts")
 }
 
