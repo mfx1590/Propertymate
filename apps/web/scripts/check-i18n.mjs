@@ -31,6 +31,7 @@ const ALLOWED_IDENTICAL = {
   'auth.phonePlaceholder': 'example number; the format is the point',
   'notificationSettings.channel.push': 'used as-is in ru; fa is translated',
   'notificationSettings.channel.whatsapp': 'brand name',
+  'paymentSchedule.planLabel': 'tr: "Plan" is the Turkish word too',
   // The English name for these regions is already the Turkish name.
   'regionPage.names.iskele': 'Turkish place name',
   'regionPage.names.guzelyurt': 'Turkish place name',

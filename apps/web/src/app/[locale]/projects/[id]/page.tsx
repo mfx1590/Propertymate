@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { API_BASE, fmtMoney } from '../../../../lib/listings';
 import { UNIT_STATUS_STYLES, pickI18n, type ProjectDetail } from '../../../../lib/projects';
 import { InquireBox, ProjectMap, ReserveButton } from './parts';
+import { PaymentSchedule } from '../../../../components/PaymentSchedule';
 
 async function fetchProject(id: string): Promise<ProjectDetail | null> {
   const res = await fetch(`${API_BASE}/projects/${id}`, { cache: 'no-store' });
@@ -205,6 +206,14 @@ export default async function ProjectDetailPage({
                   </div>
                 ))}
               </div>
+
+              {/* The cards above give the shape of each plan; this turns the
+                  chosen one into dated rows against a real unit price. */}
+              <PaymentSchedule
+                plans={p.paymentPlans!}
+                units={p.units ?? []}
+                deliveryDate={p.deliveryDate}
+              />
             </>
           )}
 

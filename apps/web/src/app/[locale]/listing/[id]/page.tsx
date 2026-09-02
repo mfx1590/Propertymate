@@ -8,6 +8,7 @@ import { Link } from '../../../../i18n/routing';
 import { ActionBox, CompareButton, DetailMap, FavoriteButton } from './parts';
 import { CurrencySwitcher } from '../../../../components/CurrencySwitcher';
 import { Money } from '../../../../components/Money';
+import { AffordabilityCalculator } from '../../../../components/AffordabilityCalculator';
 
 interface SimilarListing {
   id: string;
@@ -157,6 +158,8 @@ export default async function ListingDetailPage({
           </div>
         </div>
       </div>
+
+      <AffordabilityCalculator priceGbp={Number(p.priceBaseGbp)} />
 
       {/* gallery */}
       {p.media.length > 0 && (

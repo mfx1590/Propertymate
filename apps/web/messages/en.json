@@ -1329,5 +1329,44 @@
       "guzelyurt": "Güzelyurt is citrus country — an agricultural west-coast region that is quieter and more spread out than the coastal resorts. It appeals to buyers looking for land and space rather than a sea-view apartment.",
       "lefke": "Lefke is a small university town in the far west, backed by mountains and known for its greenery and slow pace. It is the least developed of the six regions and the furthest from the main tourist coast."
     }
+  },
+  "calculator": {
+    "title": "What would this cost per month?",
+    "subtitle": "Work out the shape of the payments. Change any figure to match terms you have been offered.",
+    "show": "Open",
+    "hide": "Close",
+    "depositPct": "Deposit",
+    "years": "Years",
+    "ratePct": "Interest rate",
+    "deposit": "Deposit now",
+    "financed": "Spread over the term",
+    "monthly": "Per month",
+    "totalPaid": "Total paid",
+    "overMonths": "over {count} months",
+    "ofWhichInterest": "of which interest:",
+    "disclaimer": "An estimate to help you plan, not an offer of finance. PropVerify does not arrange lending — most purchases here are cash or on the developer's own terms, which you can model above by setting the rate to 0."
+  },
+  "paymentSchedule": {
+    "title": "Payment schedule",
+    "subtitle": "What this plan looks like against a real unit price.",
+    "planLabel": "Plan",
+    "unitLabel": "Unit",
+    "showSchedule": "Show all {count} payments",
+    "hideSchedule": "Hide schedule",
+    "onCompletion": "On completion",
+    "inconsistent": "This plan's percentages add up to more than the full price, so a schedule cannot be worked out. The developer needs to correct it.",
+    "rows": {
+      "down": "Deposit",
+      "installment": "Instalment",
+      "onDelivery": "On delivery"
+    },
+    "cols": {
+      "payment": "Payment",
+      "due": "Due",
+      "amount": "Amount",
+      "total": "Total"
+    },
+    "disclaimer": "Dates are indicative and count from today. The real schedule starts when contracts are signed, and the delivery payment follows the project's completion date.",
+    "overrunsDelivery": "The instalments run past the delivery date, so this plan and the project timeline disagree. Ask the developer which is correct before relying on these dates."
   }
 }

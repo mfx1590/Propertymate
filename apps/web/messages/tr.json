@@ -1329,5 +1329,44 @@
       "guzelyurt": "Güzelyurt narenciye bölgesidir — sahil beldelerine göre daha sakin ve daha geniş yerleşimli, tarımsal bir batı bölgesi. Deniz manzaralı daire yerine arazi ve alan arayan alıcılara hitap eder.",
       "lefke": "Lefke, uzak batıda, arkasını dağlara yaslamış, yeşili ve sakin temposuyla bilinen küçük bir üniversite kasabasıdır. Altı bölge içinde en az gelişmiş olanı ve ana turistik sahile en uzak olanıdır."
     }
+  },
+  "calculator": {
+    "title": "Bu, ayda ne kadar tutar?",
+    "subtitle": "Ödemelerin nasıl dağılacağını hesaplayın. Size sunulan koşullara göre değerleri değiştirebilirsiniz.",
+    "show": "Aç",
+    "hide": "Kapat",
+    "depositPct": "Peşinat",
+    "years": "Yıl",
+    "ratePct": "Faiz oranı",
+    "deposit": "Şimdi ödenecek peşinat",
+    "financed": "Vadeye yayılan tutar",
+    "monthly": "Aylık",
+    "totalPaid": "Toplam ödeme",
+    "overMonths": "{count} ay boyunca",
+    "ofWhichInterest": "bunun faizi:",
+    "disclaimer": "Planlamanıza yardımcı olacak bir tahmindir; finansman teklifi değildir. PropVerify kredi aracılığı yapmaz — buradaki alımların çoğu nakit ya da geliştiricinin kendi koşullarıyla yapılır; bunu faiz oranını 0 girerek hesaplayabilirsiniz."
+  },
+  "paymentSchedule": {
+    "title": "Ödeme planı",
+    "subtitle": "Bu planın gerçek bir daire fiyatına göre görünümü.",
+    "planLabel": "Plan",
+    "unitLabel": "Daire",
+    "showSchedule": "{count} ödemenin tümünü göster",
+    "hideSchedule": "Planı gizle",
+    "onCompletion": "Teslimde",
+    "inconsistent": "Bu planın yüzdeleri toplam fiyatı aşıyor, bu yüzden bir ödeme planı çıkarılamıyor. Geliştiricinin düzeltmesi gerekiyor.",
+    "rows": {
+      "down": "Peşinat",
+      "installment": "Taksit",
+      "onDelivery": "Teslimde"
+    },
+    "cols": {
+      "payment": "Ödeme",
+      "due": "Vade",
+      "amount": "Tutar",
+      "total": "Toplam"
+    },
+    "disclaimer": "Tarihler yaklaşıktır ve bugünden itibaren sayılır. Gerçek plan sözleşme imzalandığında başlar; teslim ödemesi projenin tamamlanma tarihine bağlıdır.",
+    "overrunsDelivery": "Taksitler teslim tarihini aşıyor; bu plan ile proje takvimi birbirini tutmuyor. Bu tarihlere güvenmeden önce geliştiriciye hangisinin doğru olduğunu sorun."
   }
 }
