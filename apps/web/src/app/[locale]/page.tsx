@@ -100,7 +100,7 @@ export default async function HomePage({ params: { locale } }: { params: { local
           {REGIONS.map((r) => (
             <Link
               key={r.slug}
-              href={`/search?region=${r.slug}`}
+              href={`/region/${r.slug}`}
               className="rounded-xl border border-gray-200 p-6 font-medium transition hover:border-brand-500 hover:shadow-sm"
             >
               {r.en}

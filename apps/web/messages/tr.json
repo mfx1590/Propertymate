@@ -1288,5 +1288,46 @@
       "body": "Arama sonuçlarından en fazla dört ilan ekleyin; fiyat, m² başına fiyat, büyüklük ve tapu türü burada yan yana dizilsin.",
       "action": "Doğrulanmış ilanlara göz atın"
     }
+  },
+  "regionPage": {
+    "home": "Ana sayfa",
+    "heading": "{region} bölgesinde satılık ve kiralık mülkler",
+    "metaTitle": "{region}, Kuzey Kıbrıs'ta doğrulanmış mülkler",
+    "metaDescription": "{region} bölgesinde belge doğrulaması yapılmış {count} ilan. Her tapu ve her ilan sahibi yayından önce kontrol edilir.",
+    "noListings": "{region} bölgesinde şu an doğrulanmış ilan yok. Belge kontrolünden geçen yeni ilanlar burada görünür.",
+    "latest": "{region} bölgesindeki son ilanlar",
+    "otherRegions": "Diğer bölgeler",
+    "names": {
+      "kyrenia": "Girne",
+      "famagusta": "Gazimağusa",
+      "iskele": "İskele",
+      "nicosia": "Lefkoşa",
+      "guzelyurt": "Güzelyurt",
+      "lefke": "Lefke"
+    },
+    "stats": {
+      "verified": "Doğrulanmış ilan",
+      "medianSale": "Medyan satış fiyatı",
+      "medianRent": "Medyan kira",
+      "saleRange": "Satış fiyat aralığı",
+      "perM2": "m² başına (medyan)",
+      "perMonth": "aylık"
+    },
+    "deeds": {
+      "title": "Bu bölgedeki tapular",
+      "body": "Kuzey Kıbrıs'ta tapu türü, bir ilandaki hemen her şeyden daha önemlidir ve yurt dışından gelen alıcıların en az beklediği konudur. Buradaki her tapu, yayına girmeden önce ilanla karşılaştırılarak kontrol edilmiştir."
+    },
+    "cta": {
+      "forSale": "{count} satılık",
+      "forRent": "{count} kiralık"
+    },
+    "intro": {
+      "kyrenia": "Girne, Beşparmak Dağları ile kuzey sahili arasında, at nalı biçimli limanı ve kalesi çevresinde kurulmuştur. Adadaki uluslararası alıcıların en büyük payını çeker; sahil şeridi batıda Alsancak ve Lapta'ya, doğuda Esentepe'ye doğru uzanır.",
+      "famagusta": "Gazimağusa, surlarla çevrili ortaçağ kentini işleyen bir liman ve büyük bir üniversiteyle birleştirir; bu nedenle talep uzun vadeli konut ile istikrarlı öğrenci kirası arasında bölünür. Salamis sahili kentin kuzeyinde uzanır.",
+      "iskele": "İskele, özellikle Long Beach ve Bafra sahili boyunca yoğunlaşan, en fazla yeni ve proje aşamasındaki yapının görüldüğü bölgedir. Denize yakın modern bir daire isteyen ve inşaat takvimiyle rahat olan alıcılara uygundur.",
+      "nicosia": "Lefkoşa, sahilden uzak, iç kesimde yer alan başkent ve adanın idari ve ticari merkezidir. Talebi tatil değil istihdam ve üniversiteler belirler; bu da onu kuzeyin en istikrarlı uzun dönem kira piyasası yapar.",
+      "guzelyurt": "Güzelyurt narenciye bölgesidir — sahil beldelerine göre daha sakin ve daha geniş yerleşimli, tarımsal bir batı bölgesi. Deniz manzaralı daire yerine arazi ve alan arayan alıcılara hitap eder.",
+      "lefke": "Lefke, uzak batıda, arkasını dağlara yaslamış, yeşili ve sakin temposuyla bilinen küçük bir üniversite kasabasıdır. Altı bölge içinde en az gelişmiş olanı ve ana turistik sahile en uzak olanıdır."
+    }
   }
 }

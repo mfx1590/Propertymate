@@ -1288,5 +1288,46 @@
       "body": "Add up to four listings from the search results and they will line up here — price, price per m², size and deed type side by side.",
       "action": "Browse verified listings"
     }
+  },
+  "regionPage": {
+    "home": "Home",
+    "heading": "Property for sale and rent in {region}",
+    "metaTitle": "Verified property in {region}, North Cyprus",
+    "metaDescription": "{count} document-verified listings in {region}. Every title deed and every lister checked before publication.",
+    "noListings": "No verified listings in {region} right now. New ones appear here as soon as they clear document checks.",
+    "latest": "Latest in {region}",
+    "otherRegions": "Other regions",
+    "names": {
+      "kyrenia": "Kyrenia (Girne)",
+      "famagusta": "Famagusta (Gazimağusa)",
+      "iskele": "İskele",
+      "nicosia": "Nicosia (Lefkoşa)",
+      "guzelyurt": "Güzelyurt",
+      "lefke": "Lefke"
+    },
+    "stats": {
+      "verified": "Verified listings",
+      "medianSale": "Median sale price",
+      "medianRent": "Median rent",
+      "saleRange": "Sale price range",
+      "perM2": "per m² (median)",
+      "perMonth": "per month"
+    },
+    "deeds": {
+      "title": "Title deeds in this region",
+      "body": "In North Cyprus the type of title deed matters more than almost anything else on a listing, and it is the thing buyers from abroad least expect. Every deed here has been checked against the listing before publication."
+    },
+    "cta": {
+      "forSale": "{count} for sale",
+      "forRent": "{count} to rent"
+    },
+    "intro": {
+      "kyrenia": "Kyrenia sits between the Beşparmak mountains and the north coast, built around a horseshoe harbour and castle. It draws the largest share of international buyers on the island, with the coastal strip running west through Alsancak and Lapta and east towards Esentepe.",
+      "famagusta": "Famagusta pairs a walled medieval old town with a working port and a large university, so demand here splits between long-term homes and reliable student rental. The Salamis coast runs north of the city.",
+      "iskele": "İskele has seen the most new-build and off-plan development of any region, concentrated along Long Beach and the Bafra coast. It suits buyers who want a modern apartment near the sea and are comfortable with construction timelines.",
+      "nicosia": "Nicosia is the capital and the island's administrative and commercial centre, inland and away from the coast. Demand is driven by employment and universities rather than holidays, which makes it the steadiest long-term rental market in the north.",
+      "guzelyurt": "Güzelyurt is citrus country — an agricultural west-coast region that is quieter and more spread out than the coastal resorts. It appeals to buyers looking for land and space rather than a sea-view apartment.",
+      "lefke": "Lefke is a small university town in the far west, backed by mountains and known for its greenery and slow pace. It is the least developed of the six regions and the furthest from the main tourist coast."
+    }
   }
 }
