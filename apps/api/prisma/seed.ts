@@ -92,13 +92,17 @@ const PERMISSIONS: Record<string, string[]> = {
 };
 
 // ── regions taxonomy (Plan §1) ─────────────────────────────────────
+// Names in all four locales (§2.4). These reach the user directly — the region
+// dropdown, the landing-page title, the mobile app — so leaving ru/fa as the
+// English string, as this seed originally did, showed "Kyrenia" to a Russian
+// reader on a page whose entire purpose was to be in Russian.
 const REGIONS = [
-  { slug: 'kyrenia', en: 'Kyrenia', tr: 'Girne', lat: 35.3364, lng: 33.3182 },
-  { slug: 'famagusta', en: 'Famagusta', tr: 'Gazimağusa', lat: 35.1264, lng: 33.9391 },
-  { slug: 'iskele', en: 'İskele', tr: 'İskele', lat: 35.2857, lng: 33.8916 },
-  { slug: 'nicosia', en: 'Nicosia', tr: 'Lefkoşa', lat: 35.1856, lng: 33.3823 },
-  { slug: 'guzelyurt', en: 'Güzelyurt', tr: 'Güzelyurt', lat: 35.1983, lng: 32.9931 },
-  { slug: 'lefke', en: 'Lefke', tr: 'Lefke', lat: 35.1103, lng: 32.8481 },
+  { slug: 'kyrenia', en: 'Kyrenia', tr: 'Girne', ru: 'Кирения', fa: 'گیرنه', lat: 35.3364, lng: 33.3182 },
+  { slug: 'famagusta', en: 'Famagusta', tr: 'Gazimağusa', ru: 'Фамагуста', fa: 'فاماگوستا', lat: 35.1264, lng: 33.9391 },
+  { slug: 'iskele', en: 'İskele', tr: 'İskele', ru: 'Искеле', fa: 'ایسکله', lat: 35.2857, lng: 33.8916 },
+  { slug: 'nicosia', en: 'Nicosia', tr: 'Lefkoşa', ru: 'Никосия', fa: 'نیکوزیا', lat: 35.1856, lng: 33.3823 },
+  { slug: 'guzelyurt', en: 'Güzelyurt', tr: 'Güzelyurt', ru: 'Гюзельюрт', fa: 'گوزل‌یورت', lat: 35.1983, lng: 32.9931 },
+  { slug: 'lefke', en: 'Lefke', tr: 'Lefke', ru: 'Лефке', fa: 'لفکه', lat: 35.1103, lng: 32.8481 },
 ];
 
 // ── verification requirements (Plan §3) ────────────────────────────
@@ -217,10 +221,17 @@ async function main() {
   for (const region of REGIONS) {
     await prisma.region.upsert({
       where: { slug: region.slug },
-      update: {},
+      // Names and coordinates are corrected on re-seed. `update: {}` meant an
+      // existing database kept whatever it was first given — so fixing a
+      // translation here would never have reached a deployed environment.
+      update: {
+        nameI18n: { en: region.en, tr: region.tr, ru: region.ru, fa: region.fa },
+        lat: region.lat,
+        lng: region.lng,
+      },
       create: {
         slug: region.slug,
-        nameI18n: { en: region.en, tr: region.tr, ru: region.en, fa: region.en },
+        nameI18n: { en: region.en, tr: region.tr, ru: region.ru, fa: region.fa },
         lat: region.lat,
         lng: region.lng,
       },

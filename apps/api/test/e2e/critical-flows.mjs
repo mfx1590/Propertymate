@@ -75,6 +75,9 @@ async function retry(fn, check, tries = 8, gap = 500) {
   return fn();
 }
 
+/** Set once the offers flag has been read, so a failed run still restores it. */
+let restoreOffers = async () => {};
+
 async function main() {
   for (let i = 0; i < 30; i++) { try { await req('GET', '/health'); break; } catch { await sleep(1000); } }
 
@@ -86,6 +89,15 @@ async function main() {
   const publicFlags = await req('GET', '/settings/public');
   ok('0a offers are disabled by default', publicFlags.offersEnabled === false, `${publicFlags.offersEnabled}`);
   const offersWereEnabled = Boolean((await req('GET', '/settings/public')).offersEnabled);
+  // Registered before the flag is touched so the top-level catch below can put
+  // it back even if this suite dies half way through. Without that, a failing
+  // run leaves offers switched ON for whoever looks at the platform next.
+  restoreOffers = async () => {
+    await req('PUT', '/admin/settings/offers.enabled', {
+      token: admin,
+      body: { value: offersWereEnabled },
+    }).catch(() => undefined);
+  };
   await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: true } });
   ok(
     '0b the toggle is reflected publicly',
@@ -213,12 +225,15 @@ async function main() {
   // Put the platform back how we found it. These suites run against dev
   // databases as well as CI's throwaway one, and silently leaving a disabled
   // feature switched on is a nasty surprise for whoever looks next.
-  await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: offersWereEnabled } })
-    .catch(() => undefined);
+  await restoreOffers();
 
   console.log(results.join('\n'));
   console.log(failed ? `\n${failed} CHECK(S) FAILED` : '\nALL CRITICAL-FLOW E2E CHECKS PASSED');
   process.exit(failed ? 1 : 0);
 }
 
-main().catch((e) => { console.error('E2E ERROR:', e.message); process.exit(1); });
+main().catch(async (e) => {
+  await restoreOffers();
+  console.error('E2E ERROR:', e.message);
+  process.exit(1);
+});

@@ -78,11 +78,19 @@ with Meta in each of the four languages.
 > JS console does work, and is how the flows above were exercised. Controlled `TextInput`s likewise
 > need the native value setter plus a bubbling `input` event. Nothing about this is an app defect.
 
-> **Translation debt (found 2026-08-21):** the four locale files have full *key* parity, but that check
-> only compares key sets. By value, `ru.json` and `fa.json` are roughly half untranslated — 433 and 431
-> of 940 strings are still byte-identical to the English source, including `common.signIn`,
-> `common.verified` and `listings.board.title`. `tr.json` is effectively complete (4 identical, all brand
-> names or currency symbols). Worth a pass, plus a CI check on the untranslated ratio.
+> **Translation debt — CLEARED 2026-09-02.** `ru.json` and `fa.json` were roughly half untranslated by
+> value (440 and 438 of 1051 strings byte-identical to English) even though key parity passed, because a
+> key-set check cannot see an untranslated *value*. All 436 were translated; what remains identical is
+> only the brand name, an example email/phone, and `Push`/`WhatsApp`, which are the terms actually used
+> in those languages.
+>
+> The same debt existed in **seeded data**, which the locale files never covered: `seed.ts` wrote the
+> English region name into the `ru` and `fa` slots of `regions.name_i18n`, so a Russian reader saw
+> "Kyrenia" in the region dropdown and in the landing-page title. Fixed at the source — and the upsert's
+> `update: {}` was changed to actually write, since as it stood a corrected translation would never have
+> reached an already-seeded database.
+>
+> Still worth adding: a CI check on the untranslated ratio, so this cannot drift back silently.
 
 > **Local infra note:** the Redis host port is overridable via `REDIS_PORT` (compose defaults to
 > `6379`) for machines where another project already holds 6379.

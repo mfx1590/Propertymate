@@ -78,6 +78,9 @@ function pdf(documentType) {
   return fd;
 }
 
+/** Set once the offers flag has been read, so a failed run still restores it. */
+let restoreOffers = async () => {};
+
 async function main() {
   for (let i = 0; i < 30; i++) { try { await req('GET', '/health'); break; } catch { await sleep(1000); } }
 
@@ -85,6 +88,15 @@ async function main() {
   // Offers ship disabled (change log 2026-08-10); this suite exercises the
   // negotiation and deal machinery behind the toggle, so turn it on first.
   const offersWereEnabled = Boolean((await req('GET', '/settings/public')).offersEnabled);
+  // Registered before the flag is touched so the top-level catch below can put
+  // it back even if this suite dies half way through. Without that, a failing
+  // run leaves offers switched ON for whoever looks at the platform next.
+  restoreOffers = async () => {
+    await req('PUT', '/admin/settings/offers.enabled', {
+      token: admin,
+      body: { value: offersWereEnabled },
+    }).catch(() => undefined);
+  };
   await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: true } });
 
   const u = `${Date.now()}`.slice(-7);
@@ -218,15 +230,15 @@ async function main() {
   // Put the platform back how we found it. These suites run against dev
   // databases as well as CI's throwaway one, and silently leaving a disabled
   // feature switched on is a nasty surprise for whoever looks next.
-  await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: offersWereEnabled } })
-    .catch(() => undefined);
+  await restoreOffers();
 
   console.log(results.join('\n'));
   console.log(failed ? `\n${failed} CHECK(S) FAILED` : '\nALL CONTRACT E-SIGN E2E CHECKS PASSED');
   process.exit(failed ? 1 : 0);
 }
 
-main().catch((e) => {
+main().catch(async (e) => {
+  await restoreOffers();
   // print what did pass — an abort halfway through is far easier to diagnose
   // with the preceding checks visible than with just the failing request
   if (results.length) console.log(results.join('\n'));
