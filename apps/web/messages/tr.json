@@ -656,7 +656,10 @@
         "region": "Tüm bölgeler"
       }
     },
-    "reducedBy": "↓ %{pct} indirim"
+    "reducedBy": "↓ %{pct} indirim",
+    "addCompare": "+ Karşılaştır",
+    "inCompare": "✓ Karşılaştırılıyor",
+    "compareCta": "Karşılaştır ({count})"
   },
   "home": {
     "heroTitle": "Her ilan doğrulanmış. Her satıcı gerçek.",
@@ -1255,5 +1258,35 @@
       "action": "Tüm bildirimleri göster"
     },
     "starsLabel": "5 yıldız üzerinden {stars}"
+  },
+  "currency": {
+    "label": "Görüntüleme para birimi",
+    "approx": "yaklaşık",
+    "approxHint": "Fiyatlar GBP olarak belirlenir. Diğer para birimleri, en son kayıtlı kurumuzla çevrilen yaklaşık değerlerdir."
+  },
+  "compare": {
+    "title": "Mülkleri karşılaştır",
+    "subtitle": "Yan yana, en fazla dört tane. Her satırdaki daha iyi değer vurgulanır.",
+    "clearAll": "Tümünü temizle",
+    "remove": "Kaldır",
+    "best": "karşılaştırılanların en iyisi",
+    "yes": "Evet",
+    "no": "Hayır",
+    "rows": {
+      "price": "Fiyat",
+      "pricePerM2": "m² başına fiyat",
+      "bedrooms": "Yatak odası",
+      "bathrooms": "Banyo",
+      "areaM2": "İç alan",
+      "plotM2": "Arsa",
+      "deedType": "Tapu türü",
+      "furnished": "Eşyalı",
+      "region": "Bölge"
+    },
+    "emptyState": {
+      "title": "Karşılaştırılacak bir şey yok",
+      "body": "Arama sonuçlarından en fazla dört ilan ekleyin; fiyat, m² başına fiyat, büyüklük ve tapu türü burada yan yana dizilsin.",
+      "action": "Doğrulanmış ilanlara göz atın"
+    }
   }
 }

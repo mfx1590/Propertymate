@@ -6,9 +6,11 @@ import { useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { apiPost, getAccessToken } from '../../../lib/api';
 import { Link } from '../../../i18n/routing';
+import { CurrencySwitcher } from '../../../components/CurrencySwitcher';
+import { useMoney } from '../../../lib/currency';
+import { useCompare } from '../../../lib/compare';
 import {
   API_BASE,
-  fmtGbp,
   type RegionInfo,
   type RelaxableFilter,
   type SearchHit,
@@ -21,6 +23,8 @@ function SearchInner() {
   const t = useTranslations('search');
   const locale = useLocale();
   const params = useSearchParams();
+  const money = useMoney();
+  const compare = useCompare();
 
   const [filters, setFilters] = useState({
     q: params.get('q') ?? '',
@@ -158,7 +162,20 @@ function SearchInner() {
         </select>
       </div>
 
-      <p className="mt-4 text-sm text-gray-500">{t('results', { count: totalHits })}</p>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+        <p className="text-sm text-gray-500">{t('results', { count: totalHits })}</p>
+        <div className="flex items-center gap-3">
+          {compare.ids.length > 0 && (
+            <Link
+              href="/compare"
+              className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white"
+            >
+              {t('compareCta', { count: compare.ids.length })}
+            </Link>
+          )}
+          <CurrencySwitcher />
+        </div>
+      </div>
 
       {/* Zero results used to end here. Every route below was confirmed by the
           API to have listings behind it, so none of them lands on another
@@ -231,7 +248,7 @@ function SearchInner() {
                 id: h.id,
                 lat: h._geo!.lat,
                 lng: h._geo!.lng,
-                label: `${h.title} — ${fmtGbp(h.priceBaseGbp)}`,
+                label: `${h.title} — ${money.format(h.priceBaseGbp)}`,
                 href: `/${locale}/listing/${h.id}`,
               }))}
           />
@@ -265,7 +282,7 @@ function SearchInner() {
                     {h.areaM2 != null && `${h.areaM2} m²`}
                   </p>
                   <div className="mt-2 flex flex-wrap items-baseline gap-2">
-                    <p className="text-lg font-bold text-brand-600">{fmtGbp(h.priceBaseGbp)}</p>
+                    <p className="text-lg font-bold text-brand-600">{money.format(h.priceBaseGbp)}</p>
                     {/* §6.1: a listing that has come down is the strongest
                         signal on the card, so it sits beside the price. */}
                     {h.priceReducedPct ? (
@@ -274,6 +291,24 @@ function SearchInner() {
                       </span>
                     ) : null}
                   </div>
+                  {/* Inside the card but outside the Link: adding to a
+                      shortlist must not navigate away from the results. */}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      compare.toggle(h.id);
+                    }}
+                    disabled={compare.full && !compare.has(h.id)}
+                    className={`mt-2 w-full rounded-lg border px-3 py-1.5 text-xs font-medium transition disabled:opacity-40 ${
+                      compare.has(h.id)
+                        ? 'border-brand-500 bg-brand-50 text-brand-600'
+                        : 'border-gray-300 text-gray-600 hover:border-brand-500'
+                    }`}
+                  >
+                    {compare.has(h.id) ? t('inCompare') : t('addCompare')}
+                  </button>
                 </div>
               </Link>
             </li>

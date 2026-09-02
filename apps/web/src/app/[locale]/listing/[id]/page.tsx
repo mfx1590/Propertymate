@@ -3,9 +3,11 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { API_BASE, fmtGbp, fmtMoney, type Property } from '../../../../lib/listings';
+import { API_BASE, fmtMoney, type Property } from '../../../../lib/listings';
 import { Link } from '../../../../i18n/routing';
-import { ActionBox, DetailMap, FavoriteButton } from './parts';
+import { ActionBox, CompareButton, DetailMap, FavoriteButton } from './parts';
+import { CurrencySwitcher } from '../../../../components/CurrencySwitcher';
+import { Money } from '../../../../components/Money';
 
 interface SimilarListing {
   id: string;
@@ -144,9 +146,15 @@ export default async function ListingDetailPage({
           <p className="text-3xl font-bold text-brand-600">
             {fmtMoney(Number(p.priceAmount), p.priceCurrency)}
           </p>
-          {p.priceCurrency !== 'GBP' && (
-            <p className="text-sm text-gray-400">≈ {fmtGbp(Number(p.priceBaseGbp))}</p>
-          )}
+          {/* The quoted price above is the real one. This is the viewer's
+              currency for scale — TRNC property is sold in GBP, so a converted
+              figure must not be mistaken for what they would pay. */}
+          <p className="text-sm text-gray-400">
+            <Money gbp={Number(p.priceBaseGbp)} />
+          </p>
+          <div className="mt-2">
+            <CurrencySwitcher />
+          </div>
         </div>
       </div>
 
@@ -214,6 +222,7 @@ export default async function ListingDetailPage({
         {/* sidebar */}
         <aside className="space-y-3">
           <FavoriteButton propertyId={p.id} />
+          <CompareButton propertyId={p.id} />
           <div className="rounded-xl border border-gray-200 p-4 text-sm text-gray-500">
             <p className="font-semibold text-gray-700">{t('detail.trustTitle')}</p>
             <p className="mt-1">{t('detail.trustBody')}</p>
@@ -248,7 +257,9 @@ export default async function ListingDetailPage({
                     {s.regionName}
                     {s.bedrooms !== null && ` · ${s.bedrooms} ${t('fields.bedrooms')}`}
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-brand-600">{fmtGbp(s.priceGbp)}</p>
+                  <p className="mt-1 text-sm font-semibold text-brand-600">
+                    <Money gbp={s.priceGbp} />
+                  </p>
                 </div>
               </Link>
             ))}

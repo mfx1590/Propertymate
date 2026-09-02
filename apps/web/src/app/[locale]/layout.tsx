@@ -5,6 +5,8 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { RTL_LOCALES, type Locale } from '@propverify/shared';
 import { routing } from '../../i18n/routing';
 import { AuthProvider } from '../../lib/auth';
+import { CompareProvider } from '../../lib/compare';
+import { CurrencyProvider } from '../../lib/currency';
 import '../globals.css';
 
 export const metadata: Metadata = {
@@ -35,7 +37,11 @@ export default async function LocaleLayout({
     <html lang={locale} dir={dir}>
       <body className="min-h-screen bg-white text-gray-900 antialiased">
         <NextIntlClientProvider messages={messages}>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <CurrencyProvider>
+              <CompareProvider>{children}</CompareProvider>
+            </CurrencyProvider>
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>

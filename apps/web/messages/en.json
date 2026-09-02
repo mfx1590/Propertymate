@@ -656,7 +656,10 @@
         "region": "Any region"
       }
     },
-    "reducedBy": "↓ {pct}% reduced"
+    "reducedBy": "↓ {pct}% reduced",
+    "addCompare": "+ Compare",
+    "inCompare": "✓ Comparing",
+    "compareCta": "Compare ({count})"
   },
   "home": {
     "heroTitle": "Every listing verified. Every seller real.",
@@ -1255,5 +1258,35 @@
       "action": "Show all reports"
     },
     "starsLabel": "{stars} out of 5 stars"
+  },
+  "currency": {
+    "label": "Display currency",
+    "approx": "approx.",
+    "approxHint": "Prices are set in GBP. Other currencies are indicative, converted at our latest stored rate."
+  },
+  "compare": {
+    "title": "Compare properties",
+    "subtitle": "Side by side, up to four. The better value in each row is highlighted.",
+    "clearAll": "Clear all",
+    "remove": "Remove",
+    "best": "best of the compared",
+    "yes": "Yes",
+    "no": "No",
+    "rows": {
+      "price": "Price",
+      "pricePerM2": "Price per m²",
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms",
+      "areaM2": "Internal area",
+      "plotM2": "Plot",
+      "deedType": "Deed type",
+      "furnished": "Furnished",
+      "region": "Region"
+    },
+    "emptyState": {
+      "title": "Nothing to compare yet",
+      "body": "Add up to four listings from the search results and they will line up here — price, price per m², size and deed type side by side.",
+      "action": "Browse verified listings"
+    }
   }
 }

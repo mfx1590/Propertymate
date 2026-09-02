@@ -35,6 +35,29 @@ export class SettingsService {
   }
 
   /**
+   * FX rates for *display only* (Plan §6.1 "price range in user currency,
+   * converted", §12 "multi-currency display").
+   *
+   * Everything is stored and transacted in GBP; these let a browser show an
+   * indicative equivalent. Rates are quoted per 1 GBP, so converting is a
+   * multiply. `fetchedAt` is returned so the client can say how fresh the
+   * number is rather than implying it is a live quote — the seed is static
+   * until a refresh job exists.
+   */
+  async fxRates() {
+    const rows = await this.prisma.fxRate.findMany({
+      where: { base: 'GBP' },
+      select: { quote: true, rate: true, fetchedAt: true },
+      orderBy: { quote: 'asc' },
+    });
+    return {
+      base: 'GBP',
+      fetchedAt: rows[0]?.fetchedAt ?? null,
+      rates: Object.fromEntries(rows.map((r) => [r.quote, Number(r.rate)])),
+    };
+  }
+
+  /**
    * Offers are switched OFF by default (change log 2026-08-10). Everything
    * behind them — negotiation, and the offer-accept that opens a property deal
    * room — is intact and comes back the moment this is flipped, rather than

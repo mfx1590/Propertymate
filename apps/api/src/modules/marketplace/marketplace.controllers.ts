@@ -15,6 +15,13 @@ export class PublicSettingsController {
   publicSettings() {
     return this.settings.publicSettings();
   }
+
+  /** Display-only conversion rates for the currency switcher (§6.1). */
+  @Public()
+  @Get('fx-rates')
+  fxRates() {
+    return this.settings.fxRates();
+  }
 }
 
 @RequirePermissions('user.manage')

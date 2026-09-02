@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useCompare } from '../../../../lib/compare';
 import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { apiDelete, apiGet, apiPost, getAccessToken } from '../../../../lib/api';
@@ -166,6 +167,30 @@ export function FavoriteButton({ propertyId }: { propertyId: string }) {
       }`}
     >
       {favored ? `♥ ${t('detail.saved')}` : `♡ ${t('detail.save')}`}
+    </button>
+  );
+}
+
+/**
+ * Add this listing to the compare shortlist (§6.1). Sits beside Favourite:
+ * favouriting is "keep this for later" and is account-bound, comparing is
+ * "weigh this against three others right now" and is per-browser.
+ */
+export function CompareButton({ propertyId }: { propertyId: string }) {
+  const t = useTranslations('search');
+  const { has, toggle, full } = useCompare();
+  const active = has(propertyId);
+
+  return (
+    <button
+      type="button"
+      onClick={() => toggle(propertyId)}
+      disabled={full && !active}
+      className={`rounded-lg border px-4 py-2 text-sm font-medium transition disabled:opacity-40 ${
+        active ? 'border-brand-500 bg-brand-50 text-brand-600' : 'border-gray-300 text-gray-600'
+      }`}
+    >
+      {active ? t('inCompare') : t('addCompare')}
     </button>
   );
 }
