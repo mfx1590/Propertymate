@@ -16,6 +16,10 @@ const ROLES = [
   { key: 'agency', name: 'Agency' },
   { key: 'agency_member', name: 'Agency Member' },
   { key: 'developer', name: 'Developer' },
+  // First lateral role activated (§10.2 Phase 3). Adding it needed a seed row, a
+  // profile extension and a permission list — and no change to any feature code,
+  // which is the §2.2 claim being cashed in.
+  { key: 'lawyer', name: 'Lawyer' },
   { key: 'admin', name: 'Admin' },
 ];
 
@@ -84,6 +88,18 @@ const PERMISSIONS: Record<string, string[]> = {
     'rating.create', 'dispute.open', 'review.report',
     'analytics.own.view',
   ],
+  // A lawyer holds no listings and fronts no property. They read and work the
+  // deals they are engaged on, and quote on the ones they are asked about —
+  // `legal.quote` is the only new permission the whole marketplace needed.
+  // Requesting a quote deliberately reuses `deal.participate`, which every party
+  // to a deal already holds, rather than inventing a permission per counterparty.
+  lawyer: [
+    'legal.quote',
+    'search.saved.manage', 'favorite.manage',
+    'chat.participate',
+    'deal.participate', 'deal.stage.complete', 'deal.document.upload',
+    'dispute.open', 'review.report',
+  ],
   admin: [
     'verification.review', 'user.manage', 'listing.moderate',
     'dispute.resolve', 'review.moderate', 'analytics.view', 'audit.view', 'cms.manage',
@@ -142,6 +158,11 @@ const REQUIREMENTS: ReqSeed[] = [
   { roleKey: 'developer', context: 'profile', documentType: 'company_registration', isRequired: true, title: 'Company registration', sortOrder: 1 },
   { roleKey: 'developer', context: 'profile', documentType: 'tax_number', isRequired: true, title: 'Tax number certificate', sortOrder: 2 },
   { roleKey: 'developer', context: 'profile', documentType: 'portfolio', isRequired: false, title: 'Company portfolio', sortOrder: 3 },
+  // Lawyer profile — §2.2 predicted this as "one seed row"; it is three, because
+  // a bar licence alone does not prove the holder is the person uploading it.
+  { roleKey: 'lawyer', context: 'profile', documentType: 'government_id', isRequired: true, title: 'Government ID', sortOrder: 1 },
+  { roleKey: 'lawyer', context: 'profile', documentType: 'bar_license', isRequired: true, title: 'Bar licence / practising certificate', help: 'Must show your name and that it is current', sortOrder: 2 },
+  { roleKey: 'lawyer', context: 'profile', documentType: 'selfie_with_id', isRequired: true, title: 'Selfie holding your ID', help: 'Face and ID text must both be clearly visible', sortOrder: 3 },
   // Developer per-project
   { roleKey: 'developer', context: 'project', documentType: 'construction_permit', isRequired: true, title: 'Construction permit', sortOrder: 1 },
   { roleKey: 'developer', context: 'project', documentType: 'project_plans', isRequired: true, title: 'Project plans', sortOrder: 2 },

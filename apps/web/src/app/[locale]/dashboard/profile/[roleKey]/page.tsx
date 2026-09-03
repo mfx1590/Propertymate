@@ -5,8 +5,17 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { apiGet, apiPut } from '../../../../../lib/api';
 
+interface Field {
+  name: string;
+  textarea?: boolean;
+  /** A fixed set of values — rendered as a select, sent as the raw key. */
+  options?: readonly string[];
+  /** An array on the API side; edited here as a comma-separated line. */
+  list?: boolean;
+}
+
 /** Editable fields per role — mirrors the API's per-role whitelist. */
-const FIELDS: Record<string, { name: string; textarea?: boolean }[]> = {
+const FIELDS: Record<string, Field[]> = {
   solo_agent: [{ name: 'licenseNo' }, { name: 'bio', textarea: true }],
   agency: [
     { name: 'companyName' },
@@ -20,6 +29,18 @@ const FIELDS: Record<string, { name: string; textarea?: boolean }[]> = {
     { name: 'regNo' },
     { name: 'taxNo' },
     { name: 'about', textarea: true },
+  ],
+  // The two list fields are what the public directory filters on, so they are
+  // not optional extras — a lawyer who fills in neither is findable by everyone
+  // and specific to no one.
+  lawyer: [
+    { name: 'firmName' },
+    { name: 'barNo' },
+    { name: 'bio', textarea: true },
+    { name: 'regions', list: true },
+    { name: 'languages', list: true },
+    { name: 'feeModel', options: ['fixed', 'hourly', 'percentage'] },
+    { name: 'feeNote' },
   ],
 };
 
@@ -37,7 +58,12 @@ export default function ProfileEditPage() {
       .then((profile) => {
         const initial: Record<string, string> = {};
         for (const f of FIELDS[roleKey] ?? []) {
-          initial[f.name] = typeof profile[f.name] === 'string' ? (profile[f.name] as string) : '';
+          const raw = profile[f.name];
+          initial[f.name] = f.list
+            ? (Array.isArray(raw) ? (raw as string[]).join(', ') : '')
+            : typeof raw === 'string'
+              ? raw
+              : '';
         }
         setValues(initial);
         setState('ready');
@@ -52,7 +78,17 @@ export default function ProfileEditPage() {
     setState('saving');
     setError(null);
     try {
-      await apiPut(`/users/me/profile/${roleKey}`, values);
+      // List fields go back as arrays. Splitting on save rather than on every
+      // keystroke lets someone type "kyrenia, " without the empty tail becoming
+      // a region nothing matches.
+      const payload: Record<string, unknown> = {};
+      for (const f of fields) {
+        const raw = values[f.name] ?? '';
+        payload[f.name] = f.list
+          ? raw.split(',').map((s) => s.trim()).filter(Boolean)
+          : raw;
+      }
+      await apiPut(`/users/me/profile/${roleKey}`, payload);
       setState('saved');
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -65,6 +101,8 @@ export default function ProfileEditPage() {
   }
   if (state === 'loading') return <p className="text-gray-400">…</p>;
 
+  const inputCls = 'mt-1 w-full rounded-lg border border-gray-300 px-4 py-3';
+
   return (
     <div className="max-w-xl">
       <h1 className="text-2xl font-bold">
@@ -76,18 +114,30 @@ export default function ProfileEditPage() {
             <span className="text-sm font-medium text-gray-700">{t(`profile.fields.${f.name}`)}</span>
             {f.textarea ? (
               <textarea
-                className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3"
+                className={inputCls}
                 rows={4}
                 value={values[f.name] ?? ''}
                 onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}
               />
+            ) : f.options ? (
+              <select
+                className={inputCls}
+                value={values[f.name] ?? ''}
+                onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}
+              >
+                <option value="">{t('profile.noChoice')}</option>
+                {f.options.map((o) => (
+                  <option key={o} value={o}>{t(`profile.feeModels.${o}`)}</option>
+                ))}
+              </select>
             ) : (
               <input
-                className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3"
+                className={inputCls}
                 value={values[f.name] ?? ''}
                 onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}
               />
             )}
+            {f.list && <span className="mt-1 block text-xs text-gray-400">{t('profile.listHint')}</span>}
           </label>
         ))}
         <button

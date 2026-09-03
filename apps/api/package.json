@@ -31,7 +31,8 @@
     "test:e2e:alerts": "node test/e2e/discovery-alert-flows.mjs",
     "test:e2e:regions": "node test/e2e/region-page-flows.mjs",
     "test:e2e:mandate": "node test/e2e/agent-mandate-flows.mjs",
-    "test:e2e:map": "node test/e2e/map-search-flows.mjs"
+    "test:e2e:map": "node test/e2e/map-search-flows.mjs",
+    "test:e2e:legal": "node test/e2e/legal-marketplace-flows.mjs"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

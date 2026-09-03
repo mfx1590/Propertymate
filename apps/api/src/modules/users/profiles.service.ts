@@ -15,6 +15,7 @@ import {
   UpdateAgencyProfileDto,
   UpdateAgentProfileDto,
   UpdateDeveloperProfileDto,
+  UpdateLawyerProfileDto,
 } from './dto/profiles.dto';
 
 /**
@@ -145,6 +146,22 @@ export class ProfilesService {
             regNo: dto.regNo,
             taxNo: dto.taxNo,
             about: dto.about,
+          },
+        });
+        break;
+      }
+      case 'lawyer': {
+        const dto = await this.validateDto(UpdateLawyerProfileDto, body);
+        after = await this.prisma.lawyerProfile.update({
+          where: { userId },
+          data: {
+            firmName: dto.firmName,
+            barNo: dto.barNo,
+            bio: dto.bio,
+            regions: dto.regions,
+            languages: dto.languages,
+            feeModel: dto.feeModel,
+            feeNote: dto.feeNote,
           },
         });
         break;
@@ -284,6 +301,8 @@ export class ProfilesService {
         return this.prisma.developerProfile.findUnique({ where: { userId } });
       case 'owner':
         return this.prisma.ownerProfile.findUnique({ where: { userId } });
+      case 'lawyer':
+        return this.prisma.lawyerProfile.findUnique({ where: { userId } });
       default:
         return undefined;
     }
@@ -302,6 +321,17 @@ export class ProfilesService {
         break;
       case 'developer':
         await this.prisma.developerProfile.create({ data: { userId, companyName: '' } });
+        break;
+      case 'lawyer':
+        await this.prisma.lawyerProfile.create({ data: { userId } });
+        // The §2.2 service-provider abstraction, populated for the first time.
+        // Created on application rather than on approval so an unverified lawyer
+        // still has the row — the directory filters on the ROLE's verification
+        // status, and a provider record that only appeared on approval would
+        // make "why am I not listed yet" unanswerable from the data.
+        await this.prisma.serviceProvider.create({
+          data: { userId, serviceType: 'lawyer' },
+        });
         break;
     }
   }

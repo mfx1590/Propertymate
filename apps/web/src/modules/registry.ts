@@ -84,6 +84,19 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
       { labelKey: 'profile', href: '/dashboard/profile/developer' },
     ],
   },
+  // The Phase-3 lateral role this registry was designed for. Its menu is short
+  // on purpose: a lawyer holds no listings and fronts no property, so the
+  // listing/leads/analytics entries every other professional role carries would
+  // all lead to empty screens.
+  lawyer: {
+    roleKey: 'lawyer',
+    labelKey: 'lawyer',
+    requiresVerification: true,
+    menu: [
+      { labelKey: 'legalRequests', href: '/dashboard/legal' },
+      { labelKey: 'profile', href: '/dashboard/profile/lawyer' },
+    ],
+  },
   admin: {
     roleKey: 'admin',
     labelKey: 'admin',

@@ -33,7 +33,8 @@
       "owner": "Mal sahibi — Mülkümü satmak veya kiraya vermek istiyorum",
       "solo_agent": "Bağımsız danışman — Lisanslı olarak bağımsız çalışıyorum",
       "agency": "Emlak ofisi — Danışmanlardan oluşan bir ofis işletiyorum",
-      "developer": "Müteahhit — İnşaat projeleri pazarlıyorum"
+      "developer": "Müteahhit — İnşaat projeleri pazarlıyorum",
+      "lawyer": "Avukat"
     }
   },
   "dashboard": {
@@ -62,7 +63,8 @@
       "notificationSettings": "Bildirim ayarları",
       "referrals": "Davet et, kazan",
       "myReviews": "Değerlendirmelerim",
-      "reviewReports": "Değerlendirme bildirimleri"
+      "reviewReports": "Değerlendirme bildirimleri",
+      "legalRequests": "Teklif talepleri"
     },
     "roles": {
       "customer": "Müşteri",
@@ -71,7 +73,8 @@
       "agency": "Emlak ofisi",
       "developer": "Müteahhit",
       "admin": "Yönetici",
-      "agency_member": "Acente Üyesi"
+      "agency_member": "Acente Üyesi",
+      "lawyer": "Avukat"
     },
     "status": {
       "verified": "Doğrulandı",
@@ -104,7 +107,20 @@
         "regNo": "Sicil numarası",
         "taxNo": "Vergi numarası",
         "address": "Adres",
-        "about": "Hakkında"
+        "about": "Hakkında",
+        "firmName": "Büro adı",
+        "barNo": "Baro ruhsat numarası",
+        "regions": "Hizmet verdiğiniz bölgeler",
+        "languages": "Çalıştığınız diller",
+        "feeModel": "Ücretlendirme biçiminiz",
+        "feeNote": "Yaklaşık ücret"
+      },
+      "noChoice": "Belirtilmedi",
+      "listHint": "Virgülle ayırın.",
+      "feeModels": {
+        "fixed": "Sabit ücret",
+        "hourly": "Saatlik",
+        "percentage": "Bedelin yüzdesi"
       }
     },
     "comingSoon": {
@@ -1395,5 +1411,92 @@
     },
     "disclaimer": "Tarihler yaklaşıktır ve bugünden itibaren sayılır. Gerçek plan sözleşme imzalandığında başlar; teslim ödemesi projenin tamamlanma tarihine bağlıdır.",
     "overrunsDelivery": "Taksitler teslim tarihini aşıyor; bu plan ile proje takvimi birbirini tutmuyor. Bu tarihlere güvenmeden önce geliştiriciye hangisinin doğru olduğunu sorun."
+  },
+  "legal": {
+    "allRegions": "Tüm bölgeler",
+    "languages": {
+      "en": "İngilizce",
+      "tr": "Türkçe",
+      "ru": "Rusça",
+      "fa": "Farsça"
+    },
+    "feeModels": {
+      "fixed": "Sabit ücret",
+      "hourly": "Saatlik",
+      "percentage": "Bedelin yüzdesi"
+    },
+    "kind": {
+      "purchase": "Satın alma",
+      "rental": "Kiralama"
+    },
+    "stages": {
+      "legal_check": "Hukuki kontrol",
+      "contract_signing": "Sözleşme imzalama",
+      "permit_process": "Satın alma izni"
+    },
+    "status": {
+      "requested": "Teklif bekleniyor",
+      "quoted": "Teklif verildi",
+      "accepted": "Vekâlet verildi",
+      "declined": "Geri çevrildi",
+      "withdrawn": "Geri çekildi"
+    },
+    "directory": {
+      "title": "Doğrulanmış avukatlar",
+      "metaTitle": "Kuzey Kıbrıs’ta doğrulanmış avukatlar",
+      "metaDescription": "Ruhsatı ve kimliği kontrol edilmiş, Kuzey Kıbrıs’taki bir satın alma işlemini yürütmeye hazır avukatlar.",
+      "blurb": "Buradaki her avukatın ruhsatı ve kimliği listelenmeden önce kontrol edildi. Avukatı işlem odasından tutarsınız; böylece işin kapsamı ve ücreti kayda geçer.",
+      "anyRegion": "Tüm bölgeler",
+      "anyLanguage": "Tüm diller",
+      "filter": "Filtrele",
+      "verified": "Doğrulanmış",
+      "engagements": "{count, plural, other {PropVerify’da # işlem}}",
+      "emptyTitle": "Bu kriterlere uyan avukat yok",
+      "emptyBody": "Filtreleri temizlemeyi deneyin. Bürolar doğrulamayı tamamladıkça liste büyüyor.",
+      "disclaimer": "PropVerify bir avukatın kimliğini ve mesleği icra yetkisini doğrular. Çalışmasını denetlemez, ücretini belirlemez ve ücretten pay almaz."
+    },
+    "profile": {
+      "regions": "Hizmet verilen bölgeler",
+      "languages": "Diller",
+      "feeModel": "Ücretlendirme biçimi",
+      "feeNote": "Yaklaşık ücret",
+      "howToEngage": "Bu avukatla nasıl çalışılır",
+      "howToEngageBody": "Bir satın alma işlemi hukuki kontrol aşamasına geldiğinde işlem odası size teklif talebi sunar. Aynı anda birkaç avukattan isteyip gelen teklifleri karşılaştırın."
+    },
+    "panel": {
+      "title": "Hukuki destek",
+      "blurb": "Doğrulanmış avukatlardan bu satın alma için teklif isteyin. Her iki taraf kendi avukatını tutar; bir avukat iki tarafı birden temsil edemez.",
+      "ask": "Teklif iste",
+      "askMore": "Bir avukat daha ekle",
+      "notAtThisStage": "Avukat bu işlemin hukuki aşamalarında devreye girer, “{stage}” aşamasında değil.",
+      "acting": "Bu işlemde sizi {name} temsil ediyor",
+      "agreedFee": "Anlaşılan ücret: {amount}",
+      "accept": "Kabul et",
+      "withdraw": "Geri çek",
+      "closedCount": "{count, plural, other {kapanmış # talep}}",
+      "pickTitle": "Kimler teklif versin?",
+      "scopePlaceholder": "Neye ihtiyacınız var? Örneğin tapu araştırması ve satın alma izni.",
+      "sendRequests": "{count, plural, =0 {Talepleri gönder} other {# avukattan iste}}",
+      "cancel": "Vazgeç",
+      "noneYet": "Henüz doğrulanmış avukat yok."
+    },
+    "inbox": {
+      "title": "Teklif talepleri",
+      "waiting": "{count, plural, other {# talep sizi bekliyor}}",
+      "allAnswered": "Sizi bekleyen bir şey yok.",
+      "emptyTitle": "Henüz talep yok",
+      "emptyBody": "Alıcılar sizi genel listede bulur ve işlem odasından talep gönderir. Bölge ve dil bilgilerinizi doldurmak bulunmanızı kolaylaştırır.",
+      "openRoom": "İşlem odasını aç",
+      "quote": "Teklif ver",
+      "requote": "Teklifi değiştir",
+      "decline": "Geri çevir",
+      "scope": "İstenen",
+      "amount": "Ücret",
+      "currency": "Para birimi",
+      "note": "Not",
+      "notePlaceholder": "Ücretin neleri kapsadığı.",
+      "send": "Teklifi gönder",
+      "feeNote": "Ücret sizinle müvekkiliniz arasındadır. PropVerify bunu kaydeder, pay almaz."
+    }
   }
 }

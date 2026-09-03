@@ -182,6 +182,14 @@ enum StageStatus {
   skipped
 }
 
+enum LegalEngagementStatus {
+  requested
+  quoted
+  declined
+  accepted
+  withdrawn
+}
+
 enum DealPartyRole {
   buyer
   seller
@@ -245,7 +253,10 @@ model User {
   agencyProfile      AgencyProfile?
   developerProfile   DeveloperProfile?
   ownerProfile       OwnerProfile?
+  lawyerProfile      LawyerProfile?
   serviceProviders   ServiceProvider[]
+  legalEngagementsAsLawyer    LegalEngagement[] @relation("LegalEngagementLawyer")
+  legalEngagementsAsRequester LegalEngagement[] @relation("LegalEngagementRequester")
   documents          Document[]
   refreshTokens      RefreshToken[]
   otpCodes           OtpCode[]
@@ -408,6 +419,65 @@ model OwnerProfile {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("owner_profiles")
+}
+
+/// The first lateral role to be activated (Plan §10.2 Phase 3, §2.2 profile extension).
+/// Deliberately thin: it holds what a client picks a lawyer ON, and nothing that
+/// only an unbuilt feature would write. Notably absent is a ranking score — the
+/// §6.5 formula is built from listing-side inputs (deal count, response time on
+/// property threads) that say nothing about legal work.
+model LawyerProfile {
+  userId    String   @id @map("user_id")
+  firmName  String?  @map("firm_name")
+  barNo     String?  @map("bar_no")
+  bio       String?
+  regions   String[] @default([])
+  /// Locale keys the lawyer works in. The buyers who most need one are the ones
+  /// least likely to read a TRNC contract, so this is a filter, not decoration.
+  languages String[] @default([])
+  /// How the lawyer charges — indicative only; the binding number is per quote.
+  feeModel  String?  @map("fee_model")
+  feeNote   String?  @map("fee_note")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("lawyer_profiles")
+}
+
+/// A quote request from one side of a deal to one lawyer, and what became of it
+/// (Plan §10.2 "quote/accept flow").
+///
+/// Scoped to the REQUESTER, not the deal: buyer and seller each engage their own
+/// lawyer, and accepting one must never hand the other side's lawyer access to
+/// the room. The partial unique index below enforces one accepted engagement per
+/// requester per deal, which is what stops a second acceptance quietly adding a
+/// second lawyer to the same side.
+model LegalEngagement {
+  id                String                @id @default(cuid())
+  dealId            String                @map("deal_id")
+  lawyerUserId      String                @map("lawyer_user_id")
+  requestedByUserId String                @map("requested_by_user_id")
+  /// The pipeline stage the request was made at — recorded because the stage is
+  /// what authorised it (§2.2 injection points), so a later config change must
+  /// not rewrite the history of why this was allowed.
+  stageKey          String                @map("stage_key")
+  status            LegalEngagementStatus @default(requested)
+  scope             String?
+  quoteAmount       Decimal?              @map("quote_amount") @db.Decimal(14, 2)
+  quoteCurrency     String?               @map("quote_currency")
+  quoteNote         String?               @map("quote_note")
+  quotedAt          DateTime?             @map("quoted_at")
+  respondedAt       DateTime?             @map("responded_at")
+  createdAt         DateTime              @default(now()) @map("created_at")
+
+  deal        Deal @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  lawyer      User @relation("LegalEngagementLawyer", fields: [lawyerUserId], references: [id])
+  requestedBy User @relation("LegalEngagementRequester", fields: [requestedByUserId], references: [id])
+
+  @@unique([dealId, lawyerUserId, requestedByUserId])
+  @@index([lawyerUserId, status])
+  @@index([dealId])
+  @@map("legal_engagements")
 }
 
 /// Lateral roles (lawyer, furniture, movers…) — empty at launch, the super-app seam (Plan §2.2).
@@ -872,6 +942,7 @@ model Deal {
   disputes      Dispute[]
   conversations Conversation[]
   contracts     Contract[]
+  legalEngagements LegalEngagement[]
 
   @@map("deals")
 }

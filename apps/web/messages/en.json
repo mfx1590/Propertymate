@@ -33,7 +33,8 @@
       "owner": "Owner — I want to sell or rent out my property",
       "solo_agent": "Solo Agent — I work independently with a license",
       "agency": "Agency — I run an office with agents",
-      "developer": "Developer — I market construction projects"
+      "developer": "Developer — I market construction projects",
+      "lawyer": "Lawyer"
     }
   },
   "dashboard": {
@@ -62,7 +63,8 @@
       "notificationSettings": "Notification settings",
       "referrals": "Invite & earn",
       "myReviews": "My reviews",
-      "reviewReports": "Review reports"
+      "reviewReports": "Review reports",
+      "legalRequests": "Quote requests"
     },
     "roles": {
       "customer": "Customer",
@@ -71,7 +73,8 @@
       "agency": "Agency",
       "developer": "Developer",
       "admin": "Admin",
-      "agency_member": "Agency Member"
+      "agency_member": "Agency Member",
+      "lawyer": "Lawyer"
     },
     "status": {
       "verified": "Verified",
@@ -104,7 +107,20 @@
         "regNo": "Registration number",
         "taxNo": "Tax number",
         "address": "Address",
-        "about": "About"
+        "about": "About",
+        "firmName": "Firm name",
+        "barNo": "Bar licence number",
+        "regions": "Regions you serve",
+        "languages": "Languages you work in",
+        "feeModel": "How you charge",
+        "feeNote": "Indicative fee"
+      },
+      "noChoice": "Not stated",
+      "listHint": "Separate with commas.",
+      "feeModels": {
+        "fixed": "Fixed fee",
+        "hourly": "Hourly",
+        "percentage": "Percentage of price"
       }
     },
     "comingSoon": {
@@ -1395,5 +1411,92 @@
     },
     "disclaimer": "Dates are indicative and count from today. The real schedule starts when contracts are signed, and the delivery payment follows the project's completion date.",
     "overrunsDelivery": "The instalments run past the delivery date, so this plan and the project timeline disagree. Ask the developer which is correct before relying on these dates."
+  },
+  "legal": {
+    "allRegions": "All regions",
+    "languages": {
+      "en": "English",
+      "tr": "Turkish",
+      "ru": "Russian",
+      "fa": "Persian"
+    },
+    "feeModels": {
+      "fixed": "Fixed fee",
+      "hourly": "Hourly",
+      "percentage": "Percentage of price"
+    },
+    "kind": {
+      "purchase": "Purchase",
+      "rental": "Rental"
+    },
+    "stages": {
+      "legal_check": "Legal check",
+      "contract_signing": "Contract signing",
+      "permit_process": "Purchase permit"
+    },
+    "status": {
+      "requested": "Awaiting quote",
+      "quoted": "Quoted",
+      "accepted": "Engaged",
+      "declined": "Declined",
+      "withdrawn": "Withdrawn"
+    },
+    "directory": {
+      "title": "Verified lawyers",
+      "metaTitle": "Verified lawyers in Northern Cyprus",
+      "metaDescription": "Lawyers whose practising certificate and identity have been checked, ready to act on a purchase in Northern Cyprus.",
+      "blurb": "Every lawyer here has had their practising certificate and identity checked before being listed. You engage one from inside a deal, so the scope and the fee are on the record.",
+      "anyRegion": "All regions",
+      "anyLanguage": "Any language",
+      "filter": "Filter",
+      "verified": "Verified",
+      "engagements": "{count, plural, one {# deal on PropVerify} other {# deals on PropVerify}}",
+      "emptyTitle": "No lawyers match this yet",
+      "emptyBody": "Try clearing the filters. The directory grows as practices complete verification.",
+      "disclaimer": "PropVerify checks that a lawyer is who they say they are and licensed to practise. It does not supervise their work, set their fees, or take a share of them."
+    },
+    "profile": {
+      "regions": "Regions served",
+      "languages": "Languages",
+      "feeModel": "How they charge",
+      "feeNote": "Indicative fee",
+      "howToEngage": "How to engage this lawyer",
+      "howToEngageBody": "Once a purchase reaches the legal-check stage, the deal room offers you a quote request. Ask several at once and compare what comes back."
+    },
+    "panel": {
+      "title": "Legal support",
+      "blurb": "Ask verified lawyers to quote on this purchase. Both sides engage their own — one lawyer cannot act for both.",
+      "ask": "Ask for quotes",
+      "askMore": "Ask another",
+      "notAtThisStage": "A lawyer attaches at the legal stages of this deal, not at “{stage}”.",
+      "acting": "{name} is acting for you on this deal",
+      "agreedFee": "Agreed fee: {amount}",
+      "accept": "Accept",
+      "withdraw": "Withdraw",
+      "closedCount": "{count, plural, one {# closed request} other {# closed requests}}",
+      "pickTitle": "Who should quote?",
+      "scopePlaceholder": "What do you need done? e.g. title search and purchase permit.",
+      "sendRequests": "{count, plural, =0 {Send requests} one {Ask # lawyer} other {Ask # lawyers}}",
+      "cancel": "Cancel",
+      "noneYet": "No verified lawyers are available yet."
+    },
+    "inbox": {
+      "title": "Quote requests",
+      "waiting": "{count, plural, one {# request is waiting on you} other {# requests are waiting on you}}",
+      "allAnswered": "Nothing is waiting on you.",
+      "emptyTitle": "No requests yet",
+      "emptyBody": "Buyers find you through the public directory and ask from inside their deal. Filling in your regions and languages makes you easier to find.",
+      "openRoom": "Open deal room",
+      "quote": "Quote",
+      "requote": "Change quote",
+      "decline": "Decline",
+      "scope": "Asked for",
+      "amount": "Fee",
+      "currency": "Currency",
+      "note": "Note",
+      "notePlaceholder": "What the fee covers.",
+      "send": "Send quote",
+      "feeNote": "The fee is between you and your client. PropVerify records it and takes no share."
+    }
   }
 }

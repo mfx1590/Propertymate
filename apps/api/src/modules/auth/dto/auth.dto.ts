@@ -5,7 +5,7 @@ import { LOCALES } from '@propverify/shared';
  * Account type is chosen once, at registration (change log 2026-07-10).
  * customer is the baseline everyone gets; admin is never self-selectable.
  */
-export const ACCOUNT_TYPES = ['customer', 'owner', 'solo_agent', 'agency', 'developer'] as const;
+export const ACCOUNT_TYPES = ['customer', 'owner', 'solo_agent', 'agency', 'developer', 'lawyer'] as const;
 export type AccountType = (typeof ACCOUNT_TYPES)[number];
 
 export class RequestOtpDto {

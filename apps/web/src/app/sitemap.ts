@@ -24,7 +24,7 @@ function withAlternates(path: string) {
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticPaths = ['', '/search', '/compare'];
+  const staticPaths = ['', '/search', '/compare', '/lawyers'];
 
   const entries: MetadataRoute.Sitemap = [];
 

@@ -520,6 +520,30 @@ export class DealsService {
    * Which pipeline drives this deal. A project-unit deal is still `kind=purchase`
    * but runs the off-plan template, so the template is chosen by key, not kind.
    */
+  /**
+   * The stage a deal is sitting on right now, with its config.
+   *
+   * Public because §2.2 declares service-provider injection points ON the stage,
+   * and the modules that inject into them (legal first, the other lateral
+   * services after it) have to read that config rather than re-deriving which
+   * pipeline template a deal runs — two answers to "which template" is how the
+   * off-plan refactor nearly went wrong.
+   */
+  async currentStageDef(dealId: string) {
+    const deal = await this.prisma.deal.findUnique({
+      where: { id: dealId },
+      select: { id: true, kind: true, projectUnitId: true, currentStageKey: true, status: true },
+    });
+    if (!deal) throw new NotFoundException('Deal not found');
+    const { stages } = await this.pipelineFor(deal);
+    return {
+      deal,
+      stageKey: deal.currentStageKey,
+      def: stages.find((s) => s.key === deal.currentStageKey) ?? null,
+      stages,
+    };
+  }
+
   private async pipelineFor(deal: { kind: string; projectUnitId: string | null }) {
     const templateKey = deal.projectUnitId ? 'project_purchase' : deal.kind;
     const template = await this.prisma.pipelineTemplate.findUnique({ where: { key: templateKey } });

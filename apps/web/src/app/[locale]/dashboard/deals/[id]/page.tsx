@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { apiGet, apiPost, apiUpload } from '../../../../../lib/api';
 import { ContractPanel } from './contract-panel';
+import { LegalPanel } from './legal-panel';
 import { Link } from '../../../../../i18n/routing';
 import { fmtGbp, fmtMoney } from '../../../../../lib/listings';
 
@@ -13,6 +14,8 @@ interface StageDef {
   titleI18n: Record<string, string>;
   requiredDocuments: string[];
   completesBy: string;
+  /** §2.2 injection points — which service types may attach at this stage. */
+  injectableServiceTypes?: string[];
   skippable?: boolean;
 }
 interface DealStage {
@@ -206,6 +209,26 @@ export default function DealRoomPage() {
           unsigned one blocks the stage above */}
       {deal.kind === 'rental' && (
         <ContractPanel dealId={id} onChange={() => void load()} onBlockedChange={setContractBlocked} />
+      )}
+
+      {/* §10.2: engaging a lawyer. Shown to the principals and their agents —
+          an engaged lawyer reads the room but never brings in another. The
+          panel itself explains when the current stage does not allow one. */}
+      {deal.status === 'active' && deal.myPartyRole && deal.myPartyRole !== 'lawyer' && (
+        <LegalPanel
+          dealId={id}
+          currentStageLabel={
+            deal.stageDefs.find((s) => s.key === deal.currentStageKey)?.titleI18n?.[locale] ??
+            deal.stageDefs.find((s) => s.key === deal.currentStageKey)?.titleI18n?.en ??
+            deal.currentStageKey
+          }
+          injectableHere={
+            deal.stageDefs
+              .find((s) => s.key === deal.currentStageKey)
+              ?.injectableServiceTypes?.includes('lawyer') ?? false
+          }
+          onChange={() => void load()}
+        />
       )}
 
       {/* ratings (post-completion) */}

@@ -342,6 +342,120 @@ export const NOTIFICATION_TEMPLATES: Record<string, TemplateDef> = {
       body: '«{title}» ‏{pct}٪ کاهش یافت — از £{oldPrice} به £{newPrice}.',
     },
   ),
+  // ── §10.2 lawyer marketplace ──────────────────────────────────────
+  // Every placeholder here is locale-agnostic on purpose: a name, a property
+  // title, a number, a currency code. The step-20 bug was an English party
+  // label baked into a payload that is rendered per-recipient afterwards, so
+  // the stage name and the "acting for the buyer" side are deliberately NOT
+  // interpolated — both live in the deal room, already translated.
+  'legal.quote_requested': T(
+    {
+      title: 'New quote request',
+      body: 'You have been asked to quote for the legal work on “{title}”.',
+    },
+    {
+      title: 'Yeni teklif talebi',
+      body: '“{title}” için hukuki iş bedelini bildirmeniz istendi.',
+    },
+    {
+      title: 'Новый запрос на смету',
+      body: 'Вас просят оценить юридическую работу по «{title}».',
+    },
+    {
+      title: 'درخواست تازهٔ برآورد هزینه',
+      body: 'از شما خواسته شده برای کار حقوقی «{title}» هزینه اعلام کنید.',
+    },
+  ),
+  'legal.quote_received': T(
+    {
+      title: 'A lawyer has quoted',
+      body: '{lawyer} quoted {amount} {currency} for the legal work on “{title}”.',
+    },
+    {
+      title: 'Bir avukat teklif verdi',
+      body: '{lawyer}, “{title}” için hukuki iş bedelini {amount} {currency} olarak bildirdi.',
+    },
+    {
+      title: 'Юрист прислал смету',
+      body: '{lawyer} оценил юридическую работу по «{title}» в {amount} {currency}.',
+    },
+    {
+      title: 'یک وکیل هزینه اعلام کرد',
+      body: '{lawyer} هزینهٔ کار حقوقی «{title}» را {amount} {currency} اعلام کرد.',
+    },
+  ),
+  'legal.quote_declined': T(
+    {
+      title: 'A lawyer declined',
+      body: '{lawyer} is not taking on the legal work for “{title}”. Your other requests are unaffected.',
+    },
+    {
+      title: 'Bir avukat talebi geri çevirdi',
+      body: '{lawyer}, “{title}” için hukuki işi üstlenmiyor. Diğer talepleriniz etkilenmedi.',
+    },
+    {
+      title: 'Юрист отказался',
+      body: '{lawyer} не берётся за юридическую работу по «{title}». Остальные ваши запросы в силе.',
+    },
+    {
+      title: 'یک وکیل درخواست را نپذیرفت',
+      body: '{lawyer} کار حقوقی «{title}» را نمی‌پذیرد. درخواست‌های دیگر شما به قوت خود باقی است.',
+    },
+  ),
+  'legal.engagement_accepted': T(
+    {
+      title: 'Your quote was accepted',
+      body: 'You are now acting on “{title}” and have access to the deal room.',
+    },
+    {
+      title: 'Teklifiniz kabul edildi',
+      body: 'Artık “{title}” işini yürütüyorsunuz ve işlem odasına erişiminiz var.',
+    },
+    {
+      title: 'Вашу смету приняли',
+      body: 'Вы ведёте сделку по «{title}» и получили доступ к комнате сделки.',
+    },
+    {
+      title: 'برآورد شما پذیرفته شد',
+      body: 'اکنون کار «{title}» را بر عهده دارید و به اتاق معامله دسترسی دارید.',
+    },
+  ),
+  'legal.request_withdrawn': T(
+    {
+      title: 'A quote request was withdrawn',
+      body: 'The request to quote on “{title}” has been withdrawn.',
+    },
+    {
+      title: 'Bir teklif talebi geri çekildi',
+      body: '“{title}” için fiyat teklifi talebi geri çekildi.',
+    },
+    {
+      title: 'Запрос на смету отозван',
+      body: 'Запрос на оценку работы по «{title}» отозван.',
+    },
+    {
+      title: 'یک درخواست برآورد پس گرفته شد',
+      body: 'درخواست اعلام هزینه برای «{title}» پس گرفته شد.',
+    },
+  ),
+  'legal.lawyer_joined': T(
+    {
+      title: 'A lawyer joined the deal',
+      body: '{lawyer} has joined the deal room for “{title}”.',
+    },
+    {
+      title: 'İşleme bir avukat katıldı',
+      body: '{lawyer}, “{title}” işlem odasına katıldı.',
+    },
+    {
+      title: 'К сделке подключился юрист',
+      body: '{lawyer} присоединился к комнате сделки по «{title}».',
+    },
+    {
+      title: 'یک وکیل به معامله پیوست',
+      body: '{lawyer} به اتاق معاملهٔ «{title}» پیوست.',
+    },
+  ),
 };
 
 /** `{placeholder}` interpolation against the notification payload. */

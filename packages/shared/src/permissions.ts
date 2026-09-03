@@ -37,6 +37,10 @@ export const PERMISSION_KEYS = [
   'review.report',
   // agency team
   'agency.agents.manage',
+  // §10.2 lawyer marketplace: quoting on a request is the lawyer side of the
+  // flow. Requesting one is deliberately NOT a permission — it reuses
+  // `deal.participate`, which every party to a deal already holds.
+  'legal.quote',
   // analytics — a pro sees their OWN performance; `analytics.view` is the
   // platform-wide admin view (§6.7, §13.1)
   'analytics.own.view',

@@ -28,6 +28,7 @@ export const NOTIFICATION_CATEGORIES = [
   'project',
   'moderation',
   'discovery',
+  'legal',
 ] as const;
 
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
@@ -63,6 +64,13 @@ export const DEFAULT_CHANNELS: Record<NotificationCategory, NotificationChannel[
   // actually brings someone back days later; WhatsApp is deliberately absent
   // — a marketing-shaped nudge there is how a business number gets reported.
   discovery: ['in_app', 'push', 'email'],
+  // §10.2 lawyer marketplace. A quote request and its answer sit on the
+  // critical path of a purchase — a lawyer who misses one loses the work and a
+  // buyer who misses one stalls at `legal_check` — so this reaches outside the
+  // app like the other money-adjacent categories. WhatsApp is left out: the
+  // templates would need Meta approval in four languages before the first
+  // engagement exists to justify it.
+  legal: ['in_app', 'push', 'email'],
 };
 
 /** in_app is always delivered; the preferences API refuses to switch it off. */

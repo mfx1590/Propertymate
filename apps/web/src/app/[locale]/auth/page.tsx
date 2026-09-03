@@ -41,7 +41,7 @@ export default function AuthPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const ACCOUNT_TYPES = ['customer', 'owner', 'solo_agent', 'agency', 'developer'] as const;
+  const ACCOUNT_TYPES = ['customer', 'owner', 'solo_agent', 'agency', 'developer', 'lawyer'] as const;
 
   const accountTypeSelect = (
     <label className="block">

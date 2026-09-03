@@ -14,6 +14,10 @@ export const ROLE_KEYS = [
   // individually selectable in the find-my-agent directory — the agency is.
   'agency_member',
   'developer',
+  // The first lateral role actually switched on (Phase 3, §10.2). A lawyer holds
+  // no listings and fronts no property — they join a deal by invitation at a
+  // stage that declares `lawyer` injectable, and nowhere else.
+  'lawyer',
   'admin',
 ] as const;
 
@@ -28,7 +32,10 @@ export const ADMIN_SUB_ROLES = [
 
 export type AdminSubRole = (typeof ADMIN_SUB_ROLES)[number];
 
-/** Lateral roles attach to deals as service providers (Plan §2.2). Empty at launch. */
+/**
+ * Lateral roles attach to deals as service providers (Plan §2.2).
+ * `lawyer` is live as of Phase 3; the rest remain seams.
+ */
 export const SERVICE_TYPES = [
   'lawyer',
   'furniture',
