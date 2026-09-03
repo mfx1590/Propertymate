@@ -12,7 +12,9 @@
  *      This is the assertion the whole feature exists for
  *   6. a removed comment can carry a warning, and reaching the configured
  *      limit closes the account and revokes its sessions
- *   7. the ban is durable: the same verified phone cannot sign in again
+ *   7. the ban is durable: the same verified phone cannot sign in again, and
+ *      the banned account's identity papers cannot be used to verify a new one
+ *   8. reinstating the account clears those papers again
  *
  * Creates every account, listing, deal and rating it asserts on. Offers and the
  * warning threshold are platform settings, so both are restored in a `finally`
@@ -93,6 +95,8 @@ async function main() {
   const offersWereEnabled = Boolean((await req('GET', '/settings/public')).offersEnabled);
   const settingsBefore = await req('GET', '/admin/settings', { token: admin });
   const warnLimitBefore = settingsBefore.find((s) => s.key === 'moderation.warnings_before_ban')?.value ?? null;
+  /** Accounts this run bans, reinstated in `finally` — see the note there. */
+  const bannedHere = [];
 
   try {
     await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: true } });
@@ -356,6 +360,7 @@ async function main() {
     });
     ok('6d the second strike reaches the configured limit', strike2.warningCount === 2, `${strike2.warningCount}`);
     ok('6e reaching the limit bans the account', strike2.banned === true);
+    bannedHere.push(buyerId);
 
     const banned = await req('GET', `/admin/users?q=${encodeURIComponent(buyerPhone)}`, { token: admin });
     ok('6f the account status is banned', banned[0]?.status === 'banned', `${banned[0]?.status}`);
@@ -375,7 +380,72 @@ async function main() {
 
     const reviewsSurvive = await req('GET', `/users/${agentId}/reviews`);
     ok('7b banning the author does not erase their reviews', reviewsSurvive.count === 2, `${reviewsSurvive.count}`);
+
+    // ── 7c. the banned account's identity papers ──────────────────
+    // The agent has approved identity documents; ban them and check the same
+    // files cannot be used to verify a fresh account.
+    await req('POST', `/admin/users/${agentId}/status`, {
+      token: admin,
+      body: { status: 'banned', reason: 'e2e identity-durability check' },
+    });
+    bannedHere.push(agentId);
+
+    const freshPhone = `+9053${u}7`;
+    const fresh = await otp(freshPhone, 'solo_agent');
+    // Byte-identical uploads — which is exactly what hash matching can catch.
+    for (const dt of ['government_id', 'real_estate_license', 'selfie_with_id']) {
+      await req('POST', '/users/me/profile/solo_agent/documents', { token: fresh, form: jpeg(dt) });
+    }
+    const freshQueue = await req('GET', '/admin/verification/queue?entityType=profile', { token: admin });
+    const freshItem = freshQueue.find((q) => q.summary?.lister === freshPhone || q.summary?.phone === freshPhone);
+    const freshDetail = await req('GET', `/admin/verification/${freshItem.id}`, { token: admin });
+
+    ok(
+      '7c the queue flags the banned identity',
+      freshDetail.profile.bannedIdentityMatch === true,
+      JSON.stringify(freshDetail.profile.fraudSignals ?? []).slice(0, 140),
+    );
+    ok(
+      '7d the signal names the banned account',
+      (freshDetail.profile.fraudSignals ?? []).some((f) => f.includes('BANNED')),
+      JSON.stringify(freshDetail.profile.fraudSignals ?? []).slice(0, 140),
+    );
+
+    const blocked = await expectFail('POST', `/admin/verification/${freshItem.id}/decision`, {
+      token: admin,
+      body: {
+        documentDecisions: freshDetail.profile.documents.map((d) => ({ documentId: d.id, status: 'approved' })),
+      },
+    });
+    ok('7e approving that profile is refused', blocked === 400, `status ${blocked}`);
+
+    // ── 8. reinstatement clears the list ──────────────────────────
+    await req('POST', `/admin/users/${agentId}/status`, {
+      token: admin,
+      body: { status: 'active', reason: 'e2e reinstatement' },
+    });
+    const afterUnban = await req('GET', `/admin/verification/${freshItem.id}`, { token: admin });
+    ok('8a lifting the ban clears the identity flag', afterUnban.profile.bannedIdentityMatch === false, `${afterUnban.profile.bannedIdentityMatch}`);
+
+    const nowAllowed = await req('POST', `/admin/verification/${freshItem.id}/decision`, {
+      token: admin,
+      body: {
+        documentDecisions: afterUnban.profile.documents.map((d) => ({ documentId: d.id, status: 'approved' })),
+      },
+    });
+    ok('8b and the profile can then be approved', !!nowAllowed, JSON.stringify(nowAllowed).slice(0, 90));
   } finally {
+    // Reinstate anyone this suite banned. Every e2e fixture uploads the SAME
+    // 1x1 JPEG, so all identity documents share one hash — a banned identity
+    // left behind here would refuse profile approvals in every suite that runs
+    // after it. Same lesson as the offers toggle: undo on the failure path too.
+    for (const id of bannedHere) {
+      await req('POST', `/admin/users/${id}/status`, {
+        token: admin,
+        body: { status: 'active', reason: 'e2e cleanup' },
+      }).catch(() => undefined);
+    }
+
     // Restore both settings whatever happened above — a suite that throws must
     // not leave offers switched on or the ban threshold at 2.
     await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: offersWereEnabled } })

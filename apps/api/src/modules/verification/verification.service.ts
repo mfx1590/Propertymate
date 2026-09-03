@@ -173,7 +173,24 @@ export class VerificationService {
       if (reuse > 0) shaHits.push(`${doc.documentType}: same file used by ${reuse} other account(s)`);
     }
 
-    return { userRole, documents, requirements, fraudSignals: shaHits };
+    // §13.2 durable ban: the same identity papers turning up on a new account.
+    // A separate, louder signal than generic file reuse — reuse can be innocent
+    // (a shared utility bill), this cannot.
+    const bannedMatches = await this.prisma.bannedIdentity.findMany({
+      where: { sha256: { in: documents.map((d) => d.sha256) } },
+      select: { sha256: true, documentType: true, bannedUserId: true },
+    });
+    const bannedIdentitySignals = bannedMatches.map(
+      (m) => `${m.documentType}: this document belongs to a BANNED account (${m.bannedUserId})`,
+    );
+
+    return {
+      userRole,
+      documents,
+      requirements,
+      fraudSignals: [...bannedIdentitySignals, ...shaHits],
+      bannedIdentityMatch: bannedMatches.length > 0,
+    };
   }
 
   private async documentsWithUrls(entityType: string, entityId: string) {
@@ -277,6 +294,31 @@ export class VerificationService {
     if (!item) throw new NotFoundException('Queue item not found');
     if (item.status === 'approved' || item.status === 'rejected') {
       throw new BadRequestException('Item already decided');
+    }
+
+    // §13.2: approving a profile whose identity papers belong to a banned
+    // account would undo the ban silently. Refused rather than merely flagged,
+    // because the flag has already been shown once by this point and an
+    // approval here is the exact action the ban exists to prevent. Lifting the
+    // original ban clears the list and unblocks this.
+    const approving = documentDecisions.some((d) => d.status === 'approved');
+    if (approving && item.entityType === 'profile') {
+      const docIds = documentDecisions.map((d) => d.documentId);
+      const hashes = await this.prisma.document.findMany({
+        where: { id: { in: docIds } },
+        select: { sha256: true },
+      });
+      const blocked = await this.prisma.bannedIdentity.findMany({
+        where: { sha256: { in: hashes.map((h) => h.sha256) } },
+        select: { documentType: true, bannedUserId: true },
+      });
+      if (blocked.length > 0) {
+        throw new BadRequestException(
+          `BANNED_IDENTITY: ${blocked
+            .map((b) => b.documentType)
+            .join(', ')} belongs to a banned account. Lift that ban first if this is a mistake.`,
+        );
+      }
     }
 
     // apply per-document decisions

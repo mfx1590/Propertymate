@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { UserStatus } from '@prisma/client';
+import { ModerationService } from '../moderation/moderation.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
 
@@ -18,6 +19,7 @@ export class UsersAdminService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
+    private readonly moderation: ModerationService,
   ) {}
 
   async list(query: { q?: string; status?: string; role?: string; limit?: number }) {
@@ -99,13 +101,30 @@ export class UsersAdminService {
       await this.prisma.refreshToken.deleteMany({ where: { userId } });
     }
 
+    // §13.2: a ban is meant to be durable because identities are verified, so
+    // the papers go on the list here too — not only when the review queue bans
+    // someone automatically. Reinstating clears them, or a reversed ban would
+    // keep locking the person out through a door nobody remembers closing.
+    let identitiesRecorded = 0;
+    let identitiesCleared = 0;
+    if (status === 'banned') {
+      identitiesRecorded = await this.moderation.recordBannedIdentities(userId, reason);
+    } else if (user.status === 'banned') {
+      identitiesCleared = await this.moderation.clearBannedIdentities(userId);
+    }
+
     await this.audit.log({
       actorId: adminId,
       action: `user.${status}`,
       entityType: 'user',
       entityId: userId,
       before: { status: user.status },
-      after: { status: updated.status, reason: reason?.trim() || null },
+      after: {
+        status: updated.status,
+        reason: reason?.trim() || null,
+        identitiesRecorded,
+        identitiesCleared,
+      },
       ip,
     });
     return updated;

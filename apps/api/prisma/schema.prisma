@@ -268,6 +268,7 @@ model User {
   ratingsReceived    Rating[]                  @relation("RatingRatee")
   reviewReportsMade  ReviewReport[]            @relation("ReviewReportReporter")
   warnings           UserWarning[]             @relation("UserWarningTarget")
+  bannedIdentities   BannedIdentity[]          @relation("BannedIdentityUser")
   notifications      Notification[]
   propertiesCreated  Property[]                @relation("PropertyCreator")
   propertiesOwned    Property[]                @relation("PropertyOwner")
@@ -992,6 +993,30 @@ model ReviewReport {
   @@unique([ratingId, reportedByUserId])
   @@index([status])
   @@map("review_reports")
+}
+
+/// Identity documents belonging to a banned account (Plan §13.2 "because
+/// identities are verified, the ban is durable").
+///
+/// Matching is by file hash, which catches re-uploading the *same* file and
+/// nothing more — a re-photographed passport hashes differently. The durable
+/// part of the ban is therefore the human verification step, where this is
+/// surfaced to the reviewing admin, not an automatic block at signup. Recorded
+/// on ban and removed on reinstatement, so a reversed ban does not lock someone
+/// out permanently.
+model BannedIdentity {
+  id           String   @id @default(cuid())
+  bannedUserId String   @map("banned_user_id")
+  /// SHA-256 of the identity document as uploaded.
+  sha256       String   @unique
+  documentType String   @map("document_type")
+  reason       String?
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  bannedUser User @relation("BannedIdentityUser", fields: [bannedUserId], references: [id], onDelete: Cascade)
+
+  @@index([bannedUserId])
+  @@map("banned_identities")
 }
 
 /// A strike against a reviewer whose comment was removed (Plan §13.2).

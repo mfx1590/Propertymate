@@ -5,6 +5,13 @@ import { AuditService } from '../../common/audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { SettingsService } from '../marketplace/settings.service';
 
+/**
+ * Document types that identify a person rather than a property or a company.
+ * Only these make a ban durable — a shared utility bill says nothing about who
+ * is holding the account.
+ */
+const IDENTITY_DOCUMENT_TYPES = ['government_id', 'owner_id', 'selfie_with_id', 'signatory_id'];
+
 /** Default from Plan §13.2 ("after 2–3 warnings, configurable"). */
 const DEFAULT_WARNINGS_BEFORE_BAN = 3;
 const WARNINGS_SETTING = 'moderation.warnings_before_ban';
@@ -363,19 +370,82 @@ export class ModerationService {
       // `status` is only checked when a session is created, so without this the
       // banned account keeps working until its access token expires.
       await this.prisma.refreshToken.deleteMany({ where: { userId } });
+      const identities = await this.recordBannedIdentities(userId, trimmed);
       await this.audit.log({
         actorId: adminId,
         action: 'user.banned',
         entityType: 'user',
         entityId: userId,
         before: { status: already?.status ?? null },
-        after: { status: 'banned', warningCount, limit, reason: trimmed },
+        after: { status: 'banned', warningCount, limit, reason: trimmed, identitiesRecorded: identities },
         ip,
       });
     }
     // Sent last: in-app still lands, and it is the final thing they see.
     await this.notify(userId, 'moderation.banned', { count: warningCount });
     return { warningCount, banned: true };
+  }
+
+  /**
+   * Snapshots a banned account's identity documents so the same papers cannot
+   * quietly be used to open a new one (§13.2).
+   *
+   * Hash matching only catches the *same file* being re-uploaded — someone who
+   * re-photographs their passport gets a different hash. That is why this feeds
+   * the verification queue rather than blocking signup: the durable part of the
+   * ban is the admin who looks at the document, and this makes sure they are
+   * told. Claiming more than that would be dishonest about what a hash proves.
+   */
+  async recordBannedIdentities(userId: string, reason?: string): Promise<number> {
+    const docs = await this.prisma.document.findMany({
+      where: {
+        ownerUserId: userId,
+        documentType: { in: IDENTITY_DOCUMENT_TYPES },
+        deletedAt: null,
+      },
+      select: { sha256: true, documentType: true },
+    });
+
+    let recorded = 0;
+    for (const doc of docs) {
+      // The unique index does the deduping; a document already on the list
+      // (same person banned twice, or a shared file) must not abort the rest.
+      try {
+        await this.prisma.bannedIdentity.create({
+          data: {
+            bannedUserId: userId,
+            sha256: doc.sha256,
+            documentType: doc.documentType,
+            reason: reason?.trim() || null,
+          },
+        });
+        recorded++;
+      } catch {
+        /* already recorded */
+      }
+    }
+    return recorded;
+  }
+
+  /**
+   * Reinstating an account clears its identity entries. A ban that is lifted
+   * but leaves the papers blacklisted would lock the person out through a door
+   * nobody remembers locking.
+   */
+  async clearBannedIdentities(userId: string): Promise<number> {
+    const { count } = await this.prisma.bannedIdentity.deleteMany({
+      where: { bannedUserId: userId },
+    });
+    return count;
+  }
+
+  /** Identity documents on this list, for the verification queue (§4, §13.2). */
+  async bannedIdentityMatches(sha256List: string[]) {
+    if (sha256List.length === 0) return [];
+    return this.prisma.bannedIdentity.findMany({
+      where: { sha256: { in: sha256List } },
+      select: { sha256: true, documentType: true, bannedUserId: true, createdAt: true },
+    });
   }
 
   /** Warnings on an account, for the admin user-detail view. */
