@@ -256,12 +256,51 @@
   },
   "adminSubs": {
     "title": "Abonelikler",
-    "subtitle": "Ödemeler açılana kadar (Faz 3) yönetici tarafından verilir.",
+    "subtitle": "Hâlâ yönetici tarafından tanımlanıyor — ama artık her tanımlamada ne tahsil edildiği, ya da edilmediği kayda geçiyor.",
     "identifier": "Kullanıcı e-postası veya telefonu",
     "months": "Ay",
     "grant": "Ver",
-    "granted": "Abonelik verildi ✓",
-    "revoke": "İptal et"
+    "revoke": "İptal et",
+    "grantTitle": "Abonelik tanımla",
+    "listTitle": "Abonelikler",
+    "grantedPaid": "Tanımlandı, ödeme kaydedildi ✓",
+    "grantedWaived": "Ücretsiz tanımlandı — muaf olarak kaydedildi ✓",
+    "pricing": {
+      "title": "Plan fiyatları",
+      "hint": "Fiyatı olmayan plan “henüz fiyatlanmadı” demektir, sessizce ücretsiz değil. Kademeler ve fiyatlar §13.3 kararıdır — kararlaştırınca buradan girin.",
+      "notPriced": "Henüz fiyatlanmadı",
+      "edit": "Düzenle",
+      "save": "Kaydet",
+      "clear": "Fiyatı kaldır",
+      "cancel": "Vazgeç",
+      "amount": "Tutar",
+      "intervals": {
+        "month": "ay",
+        "year": "yıl"
+      }
+    },
+    "payment": {
+      "toggle": "Bu tanımlama için ödeme alındı",
+      "amount": "Tutar",
+      "reference": "Banka / makbuz referansı",
+      "note": "Not",
+      "waivedHint": "Ödeme yok: bu tanımlama ücretsiz (muaf) olarak kaydedilecek."
+    },
+    "ledger": {
+      "title": "Para kaydı",
+      "hint": "Yalnızca ekleme yapılır. Hatalı kayıt düzeltilmez, ters kayıtla iptal edilir; böylece her düzeltme görünür kalır.",
+      "collected": "tahsil edildi",
+      "foregone": "ücretsiz verildi",
+      "worth": "değeri {amount}",
+      "empty": "Henüz ödeme hareketi yok. Bundan sonra her tanımlama bir kayıt yazar.",
+      "reverse": "Ters kayıt",
+      "reversalNote": "Yönetici konsolundan ters kayıt alındı",
+      "status": {
+        "recorded": "Ödendi",
+        "waived": "Muaf",
+        "reversal": "Ters kayıt"
+      }
+    }
   },
   "admin": {
     "queue": {

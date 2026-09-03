@@ -5,6 +5,7 @@ import { RequirePermissions } from '../../common/decorators/require-permissions.
 import { AssignmentsService } from './assignments.service';
 import { SettingsService } from './settings.service';
 import { SubscriptionsService } from './subscriptions.service';
+import { GrantSubscriptionDto } from './dto/grant.dto';
 
 @Controller('settings')
 export class PublicSettingsController {
@@ -85,10 +86,10 @@ export class SubscriptionsController {
   @Post('admin/subscriptions/grant')
   grant(
     @CurrentUser() admin: AuthUser,
-    @Body() body: { identifier: string; planKey: string; months?: number },
+    @Body() body: GrantSubscriptionDto,
     @Ip() ip: string,
   ) {
-    return this.subs.grant(admin.sub, body.identifier, body.planKey, body.months, ip);
+    return this.subs.grant(admin.sub, body.identifier, body.planKey, body.months, ip, body.payment);
   }
 
   @RequirePermissions('user.manage')

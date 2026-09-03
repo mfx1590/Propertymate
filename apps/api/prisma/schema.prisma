@@ -114,6 +114,20 @@ enum AssignmentStatus {
   cancelled
 }
 
+enum PaymentKind {
+  subscription
+}
+
+enum PaymentEntryStatus {
+  /// Money changed hands. For the manual provider, offline and evidenced by
+  /// `providerRef` or `note`.
+  recorded
+  /// Deliberately given away — a comped or launch account.
+  waived
+  /// A correcting entry that cancels an earlier one.
+  reversal
+}
+
 enum SubscriptionStatus {
   active
   cancelled
@@ -269,6 +283,7 @@ model User {
   referralsMade      Referral[]                @relation("ReferralReferrer")
   referralReceived   Referral?                 @relation("ReferralReferee")
   featuredCredits    FeaturedCredit[]
+  paymentEntries     PaymentLedgerEntry[]
   conversationsIn    ConversationParticipant[]
   messagesSent       Message[]
   viewingsAsCustomer Viewing[]                 @relation("ViewingCustomer")
@@ -1363,12 +1378,72 @@ model Plan {
   active   Boolean @default(true)
   metadata Json?
 
+  /// What the plan costs. Nullable and seeded NULL on purpose: §13.3 leaves the
+  /// tiers and prices explicitly TBD, and inventing a number here would put a
+  /// price the business never chose in front of a customer. Until an admin sets
+  /// one, the plan is "not priced yet" everywhere and a grant records nothing
+  /// collected.
+  priceAmount Decimal? @map("price_amount") @db.Decimal(14, 2)
+  currency    String?
+  /// `month` | `year` — the billing period, not a duration in days.
+  interval    String?
+
   subscriptions Subscription[]
 
   @@map("plans")
 }
 
 /// Admin-granted until Phase 3 payments (§13.3 decision).
+/// Append-only money record (Plan §9, Phase 3 payments).
+///
+/// One row per payment event. Nothing here is ever updated or deleted: a
+/// correction is a new `reversal` row pointing at the original, so a disputed
+/// charge stays reconstructable — a column that was overwritten cannot be.
+///
+/// `listAmount` and `amount` are separate because they answer different
+/// questions: what the plan cost at the time, and what was actually collected.
+/// A comped account is `amount = 0` with the list price still recorded, so
+/// "who is paying and who did we give it to" is answerable, which it is not
+/// today.
+model PaymentLedgerEntry {
+  id             String              @id @default(cuid())
+  userId         String              @map("user_id")
+  /// Single-valued today. It exists so a success fee or an escrow movement can
+  /// join this table later without a backfill, not because anything branches
+  /// on it yet.
+  kind           PaymentKind         @default(subscription)
+  subscriptionId String?             @map("subscription_id")
+  /// Snapshot, not a relation: a plan can be renamed, repriced or deactivated,
+  /// and a historical payment record must not move when it is.
+  planKey        String              @map("plan_key")
+  /// The plan's price at the moment this was recorded. 0 when unpriced.
+  listAmount     Decimal             @map("list_amount") @db.Decimal(14, 2)
+  /// What actually changed hands. 0 for a waived grant; negative on a reversal.
+  amount         Decimal             @db.Decimal(14, 2)
+  currency       String
+  periodStart    DateTime            @map("period_start")
+  periodEnd      DateTime?           @map("period_end")
+  /// `manual` is the only implementation today — see PaymentsService.
+  provider       String              @default("manual")
+  /// The provider's own reference, or an offline bank reference an admin typed.
+  providerRef    String?             @map("provider_ref")
+  status         PaymentEntryStatus
+  note           String?
+  /// When the money moved, which is not always when it was recorded.
+  occurredAt     DateTime            @map("occurred_at")
+  recordedByAdminId String?          @map("recorded_by_admin_id")
+  /// Set only on a reversal, and unique so one entry cannot be reversed twice.
+  reversesEntryId String?            @unique @map("reverses_entry_id")
+  createdAt      DateTime            @default(now()) @map("created_at")
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([subscriptionId])
+  @@map("payment_ledger_entries")
+}
+
 model Subscription {
   id               String             @id @default(cuid())
   userId           String             @map("user_id")
@@ -1379,7 +1454,8 @@ model Subscription {
   grantedByAdminId String?            @map("granted_by_admin_id")
   createdAt        DateTime           @default(now()) @map("created_at")
 
-  plan Plan @relation(fields: [planId], references: [id])
+  plan          Plan                 @relation(fields: [planId], references: [id])
+  ledgerEntries PaymentLedgerEntry[]
 
   @@index([userId, status])
   @@map("subscriptions")

@@ -1,13 +1,21 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
+import { PaymentsService } from '../payments/payments.service';
+import type { RecordPaymentDto } from '../payments/dto/payments.dto';
 
-/** Admin-granted until Phase 3 payments (§13.3 decision). */
+/**
+ * Still admin-granted (§13.3 decision, 2026-07-12) — there is no checkout,
+ * because there is no payment provider. What changed in Phase 3 is that every
+ * grant now writes a money record, so a comped account and a paying one are
+ * finally distinguishable.
+ */
 @Injectable()
 export class SubscriptionsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
+    private readonly payments: PaymentsService,
   ) {}
 
   /**
@@ -45,7 +53,14 @@ export class SubscriptionsService {
     });
   }
 
-  async grant(adminId: string, identifier: string, planKey: string, months?: number, ip?: string) {
+  async grant(
+    adminId: string,
+    identifier: string,
+    planKey: string,
+    months?: number,
+    ip?: string,
+    payment?: RecordPaymentDto,
+  ) {
     const user = await this.prisma.user.findFirst({
       where: { OR: [{ email: identifier }, { phone: identifier }] },
     });
@@ -53,12 +68,13 @@ export class SubscriptionsService {
     const plan = await this.prisma.plan.findUnique({ where: { key: planKey } });
     if (!plan || !plan.active) throw new BadRequestException(`Unknown or inactive plan ${planKey}`);
 
+    const endsAt = months ? new Date(Date.now() + months * 30 * 86_400_000) : null;
     const sub = await this.prisma.subscription.create({
       data: {
         userId: user.id,
         planId: plan.id,
         grantedByAdminId: adminId,
-        endsAt: months ? new Date(Date.now() + months * 30 * 86_400_000) : null,
+        endsAt,
       },
     });
     await this.audit.log({
@@ -69,7 +85,27 @@ export class SubscriptionsService {
       after: { userId: user.id, planKey, months },
       ip,
     });
-    return sub;
+
+    // Every grant gets a ledger row, including the free ones — a waived grant
+    // is a fact worth recording, and it is the half the audit log never held.
+    // The plan's price is frozen into the row here: repricing the plan next
+    // month must not rewrite what this period was worth.
+    const entry = await this.payments.recordForSubscription({
+      adminId,
+      userId: user.id,
+      subscriptionId: sub.id,
+      planKey: plan.key,
+      listAmount: plan.priceAmount ? Number(plan.priceAmount) : 0,
+      // An unpriced plan still needs a currency on the row for the totals to
+      // group; GBP is the platform's base everywhere else (§6.1).
+      currency: plan.currency ?? 'GBP',
+      periodStart: sub.startsAt,
+      periodEnd: endsAt,
+      payment,
+      ip,
+    });
+
+    return { ...sub, payment: entry };
   }
 
   async revoke(adminId: string, subscriptionId: string, ip?: string) {
@@ -95,7 +131,25 @@ export class SubscriptionsService {
     });
   }
 
-  listPlans() {
-    return this.prisma.plan.findMany({ where: { active: true }, orderBy: [{ roleKey: 'asc' }, { tier: 'asc' }] });
+  /**
+   * Public plan list. Prices are included and are `null` until an admin sets
+   * one — `priced: false` says so outright, rather than leaving a client to
+   * infer "free" from a missing number.
+   */
+  async listPlans() {
+    const plans = await this.prisma.plan.findMany({
+      where: { active: true },
+      orderBy: [{ roleKey: 'asc' }, { tier: 'asc' }],
+    });
+    return plans.map((p) => ({
+      key: p.key,
+      name: p.name,
+      roleKey: p.roleKey,
+      tier: p.tier,
+      priceAmount: p.priceAmount === null ? null : Number(p.priceAmount),
+      currency: p.currency,
+      interval: p.interval,
+      priced: p.priceAmount !== null,
+    }));
   }
 }

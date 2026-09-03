@@ -256,12 +256,51 @@
   },
   "adminSubs": {
     "title": "Subscriptions",
-    "subtitle": "Admin-granted until payments launch (Phase 3).",
+    "subtitle": "Still admin-granted — but every grant now records what was collected, or that nothing was.",
     "identifier": "User email or phone",
     "months": "Months",
     "grant": "Grant",
-    "granted": "Subscription granted ✓",
-    "revoke": "Revoke"
+    "revoke": "Revoke",
+    "grantTitle": "Grant a subscription",
+    "listTitle": "Subscriptions",
+    "grantedPaid": "Granted, payment recorded ✓",
+    "grantedWaived": "Granted as comped — recorded as waived ✓",
+    "pricing": {
+      "title": "Plan prices",
+      "hint": "A plan without a price is “not priced yet”, never silently free. Tiers and prices are §13.3 decisions — set them here when made.",
+      "notPriced": "Not priced yet",
+      "edit": "Edit",
+      "save": "Save",
+      "clear": "Clear price",
+      "cancel": "Cancel",
+      "amount": "Amount",
+      "intervals": {
+        "month": "month",
+        "year": "year"
+      }
+    },
+    "payment": {
+      "toggle": "Payment was received for this grant",
+      "amount": "Amount",
+      "reference": "Bank / receipt reference",
+      "note": "Note",
+      "waivedHint": "No payment: this will be recorded as a comped (waived) grant."
+    },
+    "ledger": {
+      "title": "Money record",
+      "hint": "Append-only. A wrong entry is reversed, never edited, so every correction stays visible.",
+      "collected": "collected",
+      "foregone": "comped",
+      "worth": "worth {amount}",
+      "empty": "No payment events yet. Every grant from now on writes one.",
+      "reverse": "Reverse",
+      "reversalNote": "Reversed from the admin console",
+      "status": {
+        "recorded": "Paid",
+        "waived": "Comped",
+        "reversal": "Reversal"
+      }
+    }
   },
   "admin": {
     "queue": {
