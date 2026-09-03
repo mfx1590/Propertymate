@@ -79,7 +79,7 @@ jobs:
       - name: Run critical-flow e2e suite
         run: npm run test:e2e -w apps/api
 
-      # Each suite spends OTP requests (3 / 2 / 4 / 5 / 1 / 4 / 1 / 3 / 3 / 3 / 1 / 2 / 5 / 2 / 1 / 4 / 2 / 5 / 2) against the 5-per-60s
+      # Each suite spends OTP requests (3 / 2 / 4 / 5 / 1 / 4 / 1 / 3 / 3 / 3 / 1 / 2 / 5 / 2 / 1 / 4 / 2 / 5 / 2 / 1) against the 5-per-60s
       # limit on /auth/otp/request (§2.4), so every pair needs the window to
       # drain first. The suites also back off on a 429 themselves, so a slow
       # runner that overruns the gap retries instead of failing the build.
@@ -190,6 +190,12 @@ jobs:
 
       - name: Run payment-ledger e2e suite
         run: npm run test:e2e:payments -w apps/api
+
+      - name: Let the OTP rate-limit window drain
+        run: sleep 60
+
+      - name: Run market-insights e2e suite
+        run: npm run test:e2e:insights -w apps/api
 
       - name: API logs on failure
         if: failure()

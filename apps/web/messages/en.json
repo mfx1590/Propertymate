@@ -1537,5 +1537,70 @@
       "send": "Send quote",
       "feeNote": "The fee is between you and your client. PropVerify records it and takes no share."
     }
+  },
+  "marketInsights": {
+    "metaTitle": "North Cyprus property market insights",
+    "metaDescription": "Monthly asking-price medians, new listings and price reductions per region, from verified listings on PropVerify.",
+    "title": "{region} market insights",
+    "blurb": "What verified listings are asking, month by month. Every figure comes from this platform’s own catalogue and traffic — a real dataset, honestly labelled.",
+    "show": "Show",
+    "valuationCta": "What is mine worth?",
+    "tiles": {
+      "saleMedian": "Median asking price (sale)",
+      "rentMedian": "Median asking rent",
+      "perM2": "{amount} per m²",
+      "perMonth": "per month",
+      "live": "Live listings",
+      "liveSplit": "{sale} for sale · {rent} for rent",
+      "thisMonth": "New this month",
+      "drops": "{count, plural, one {# price cut, median −{pct}%} other {# price cuts, median −{pct}%}}",
+      "noDrops": "No price cuts yet this month"
+    },
+    "history": {
+      "title": "Month by month",
+      "building": "History builds one month at a time — this page grows a row on the 1st of every month.",
+      "month": "Month",
+      "saleMedian": "Sale median",
+      "perM2": "£/m²",
+      "rentMedian": "Rent median",
+      "newListings": "New",
+      "priceDrops": "Cuts",
+      "views": "Views"
+    },
+    "empty": {
+      "title": "No data for this region yet",
+      "body": "The first monthly snapshot has not been taken here. Check back soon."
+    },
+    "disclaimer": "These are asking prices and activity on PropVerify — not sold prices, and not the whole North Cyprus market. Medians are used throughout so a single outlier cannot move the figures."
+  },
+  "valuation": {
+    "title": "What is your property worth?",
+    "blurb": "A range from what similar verified listings are asking right now — free, instant, and honest about what it is.",
+    "form": {
+      "kind": "Sale or rent",
+      "kinds": {
+        "resale": "Sale value",
+        "rental": "Monthly rent"
+      },
+      "region": "Region",
+      "area": "Living area (m²)",
+      "bedrooms": "Bedrooms",
+      "optional": "optional",
+      "estimate": "Estimate"
+    },
+    "few": {
+      "title": "Not enough similar listings to say",
+      "body": "Only {count} comparable listings are live — fewer than the {min} an honest estimate needs. Try leaving bedrooms blank, or check back as the catalogue grows."
+    },
+    "result": {
+      "label": "Based on {count} comparable listings",
+      "perMonth": "/ month",
+      "range": "Typical range:",
+      "perM2": "Median asking price: {amount} per m²",
+      "honest": "This is the middle of current asking prices for similar listings on PropVerify — not a professional valuation, and not a prediction of a sale price."
+    },
+    "sellHint": "Curious how the market is moving?",
+    "insightsLink": "See the monthly market insights",
+    "disclaimer": "An estimate from asking prices can be wrong in either direction. For a figure you can act on, have the property valued professionally."
   }
 }

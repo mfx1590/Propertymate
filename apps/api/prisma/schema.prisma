@@ -586,8 +586,44 @@ model Region {
   children   Region[]   @relation("RegionTree")
   properties Property[]
   projects   Project[]
+  marketSnapshots MarketSnapshot[]
 
   @@map("regions")
+}
+
+/// One region-month of market history (Plan §6.1 "monthly market-insights
+/// pages", §10.2 Phase 3).
+///
+/// Stock metrics (counts, medians) describe the catalogue as of `computedAt`;
+/// flow metrics (new listings, price drops, views) are scoped to the calendar
+/// month. Rows are upserted by (region, month), so re-running a sweep refines
+/// the current month rather than duplicating it, and the scheduled run on the
+/// 1st finalises the month just ended.
+///
+/// Everything here is derived from THIS platform's asking prices and traffic —
+/// the page that renders it says so, and nothing in this table should ever be
+/// presented as "the TRNC market".
+model MarketSnapshot {
+  id            String   @id @default(cuid())
+  regionId      String   @map("region_id")
+  /// First instant of the calendar month, UTC.
+  month         DateTime
+  saleCount     Int      @map("sale_count")
+  rentCount     Int      @map("rent_count")
+  saleMedianGbp Int?     @map("sale_median_gbp")
+  rentMedianGbp Int?     @map("rent_median_gbp")
+  salePerM2Gbp  Int?     @map("sale_per_m2_gbp")
+  newListings   Int      @map("new_listings")
+  priceDrops    Int      @map("price_drops")
+  /// Median of the month's reductions, as a positive percentage.
+  medianDropPct Decimal? @map("median_drop_pct") @db.Decimal(6, 2)
+  views         Int
+  computedAt    DateTime @map("computed_at")
+
+  region Region @relation(fields: [regionId], references: [id], onDelete: Cascade)
+
+  @@unique([regionId, month])
+  @@map("market_snapshots")
 }
 
 model Property {

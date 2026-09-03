@@ -33,6 +33,7 @@ import { DisputesModule } from './modules/disputes/disputes.module';
 import { ModerationModule } from './modules/moderation/moderation.module';
 import { LegalModule } from './modules/legal/legal.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { InsightsModule } from './modules/insights/insights.module';
 import { JobsModule } from './jobs/jobs.module';
 
 @Module({
@@ -69,6 +70,7 @@ import { JobsModule } from './jobs/jobs.module';
     ModerationModule,
     LegalModule,
     PaymentsModule,
+    InsightsModule,
     JobsModule,
   ],
   providers: [

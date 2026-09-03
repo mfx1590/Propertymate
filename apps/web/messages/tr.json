@@ -1537,5 +1537,70 @@
       "send": "Teklifi gönder",
       "feeNote": "Ücret sizinle müvekkiliniz arasındadır. PropVerify bunu kaydeder, pay almaz."
     }
+  },
+  "marketInsights": {
+    "metaTitle": "Kuzey Kıbrıs emlak piyasası verileri",
+    "metaDescription": "PropVerify’daki doğrulanmış ilanlardan bölge bölge aylık medyan fiyatlar, yeni ilanlar ve fiyat indirimleri.",
+    "title": "{region} piyasa verileri",
+    "blurb": "Doğrulanmış ilanlar ay ay ne istiyor. Her rakam bu platformun kendi kataloğundan ve trafiğinden gelir — gerçek bir veri kümesi, dürüstçe etiketlenmiş.",
+    "show": "Göster",
+    "valuationCta": "Benimki ne eder?",
+    "tiles": {
+      "saleMedian": "Medyan satış fiyatı (istenen)",
+      "rentMedian": "Medyan kira (istenen)",
+      "perM2": "m² başına {amount}",
+      "perMonth": "aylık",
+      "live": "Yayındaki ilanlar",
+      "liveSplit": "{sale} satılık · {rent} kiralık",
+      "thisMonth": "Bu ay yeni",
+      "drops": "{count, plural, other {# fiyat indirimi, medyan −%{pct}}}",
+      "noDrops": "Bu ay henüz fiyat indirimi yok"
+    },
+    "history": {
+      "title": "Ay ay",
+      "building": "Geçmiş ay ay birikir — bu sayfa her ayın 1’inde bir satır kazanır.",
+      "month": "Ay",
+      "saleMedian": "Satış medyanı",
+      "perM2": "£/m²",
+      "rentMedian": "Kira medyanı",
+      "newListings": "Yeni",
+      "priceDrops": "İndirim",
+      "views": "Görüntülenme"
+    },
+    "empty": {
+      "title": "Bu bölge için henüz veri yok",
+      "body": "İlk aylık kesit burada henüz alınmadı. Yakında tekrar bakın."
+    },
+    "disclaimer": "Bunlar PropVerify’daki istenen fiyatlar ve hareketliliktir — satış fiyatı değildir ve tüm Kuzey Kıbrıs piyasası değildir. Tek bir uç değer rakamları oynatamasın diye her yerde medyan kullanılır."
+  },
+  "valuation": {
+    "title": "Mülkünüz ne eder?",
+    "blurb": "Benzer doğrulanmış ilanların şu an istediklerinden bir aralık — ücretsiz, anında ve ne olduğu konusunda dürüst.",
+    "form": {
+      "kind": "Satış mı kira mı",
+      "kinds": {
+        "resale": "Satış değeri",
+        "rental": "Aylık kira"
+      },
+      "region": "Bölge",
+      "area": "Yaşam alanı (m²)",
+      "bedrooms": "Yatak odası",
+      "optional": "isteğe bağlı",
+      "estimate": "Tahmin et"
+    },
+    "few": {
+      "title": "Söyleyecek kadar benzer ilan yok",
+      "body": "Yalnızca {count} karşılaştırılabilir ilan yayında — dürüst bir tahmin için gereken {min} sayısının altında. Yatak odasını boş bırakmayı deneyin ya da katalog büyüdükçe tekrar bakın."
+    },
+    "result": {
+      "label": "{count} karşılaştırılabilir ilana dayanıyor",
+      "perMonth": "/ ay",
+      "range": "Tipik aralık:",
+      "perM2": "Medyan istenen fiyat: m² başına {amount}",
+      "honest": "Bu, PropVerify’daki benzer ilanların güncel istenen fiyatlarının ortasıdır — profesyonel bir değerleme değildir, satış fiyatı öngörüsü de değildir."
+    },
+    "sellHint": "Piyasa nasıl hareket ediyor merak mı ettiniz?",
+    "insightsLink": "Aylık piyasa verilerine bakın",
+    "disclaimer": "İstenen fiyatlardan yapılan tahmin iki yönde de yanılabilir. Üzerine işlem yapacağınız bir rakam için mülkü profesyonelce değerletin."
   }
 }

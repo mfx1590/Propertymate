@@ -7,6 +7,7 @@ import { VerificationModule } from '../modules/verification/verification.module'
 import { MarketplaceModule } from '../modules/marketplace/marketplace.module';
 import { DealsModule } from '../modules/deals/deals.module';
 import { SearchModule } from '../modules/search/search.module';
+import { InsightsModule } from '../modules/insights/insights.module';
 import { MaintenanceProcessor } from './maintenance.processor';
 import { NotificationQueueProducer, NotificationsProcessor } from './notifications.processor';
 import { MAINTENANCE_QUEUE, NOTIFICATIONS_QUEUE } from './jobs.constants';
@@ -23,6 +24,9 @@ const SCHEDULE: { name: string; pattern: string }[] = [
   // an alert never points at a listing that is about to disappear (§6.1)
   { name: 'saved-search-alerts', pattern: '0 7 * * *' },
   { name: 'price-drop-alerts', pattern: '15 7 * * *' },
+  // Monthly, not daily: on the 1st at 04:45 it finalises the month just ended
+  // (§6.1 market insights). The admin trigger covers "I want numbers today".
+  { name: 'market-snapshot', pattern: '45 4 1 * *' },
 ];
 
 @Injectable()
@@ -66,6 +70,7 @@ class MaintenanceScheduler implements OnModuleInit {
     MarketplaceModule,
     DealsModule,
     SearchModule,
+    InsightsModule,
   ],
   providers: [
     MaintenanceProcessor,

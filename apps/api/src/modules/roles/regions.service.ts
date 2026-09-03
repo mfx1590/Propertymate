@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { cleanSorted, median, perM2Values, publicPriceGbp } from '../../common/market-stats';
 
 /** Statuses a member of the public can see (matches PropertiesService.getPublic). */
 const PUBLIC_STATUSES = ['live'] as const;
@@ -84,11 +85,6 @@ export class RegionsService {
       listPriceGbp: unknown;
     }[],
   ) {
-    // §13.5: a mediated resale's public price is the list price, not the
-    // owner's ask. Stats must describe what a buyer would actually pay.
-    const priceOf = (r: { priceBaseGbp: unknown; listPriceGbp: unknown }) =>
-      Number(r.listPriceGbp ?? r.priceBaseGbp);
-
     const sale = rows.filter((r) => r.kind === 'resale');
     const rent = rows.filter((r) => r.kind === 'rental');
 
@@ -101,40 +97,27 @@ export class RegionsService {
       forRent: rent.length,
       // Sale and rent prices are different quantities entirely; averaging them
       // together would produce a number that describes nothing.
-      sale: this.priceBand(sale.map(priceOf), sale),
-      rent: this.priceBand(rent.map(priceOf), rent),
+      sale: this.priceBand(sale),
+      rent: this.priceBand(rent),
       deedTypes,
     };
   }
 
-  private priceBand(
-    prices: number[],
-    rows: { areaM2: number | null; priceBaseGbp: unknown; listPriceGbp: unknown }[],
-  ) {
-    const valid = prices.filter((n) => Number.isFinite(n) && n > 0).sort((a, b) => a - b);
+  // The §13.5 price rule and the median arithmetic live in common/market-stats
+  // now, shared with the insights module (step 25) — a second copy of "which
+  // price is public" would eventually drift and leak an agent's margin.
+  private priceBand(rows: { areaM2: number | null; priceBaseGbp: unknown; listPriceGbp: unknown }[]) {
+    const valid = cleanSorted(rows.map(publicPriceGbp));
     if (valid.length === 0) {
       return { count: 0, medianGbp: null, minGbp: null, maxGbp: null, medianPerM2: null };
     }
-
-    // Median, not mean: one £3m villa in a region of £150k flats would drag an
-    // average somewhere no actual listing sits.
-    const median = (xs: number[]) => {
-      const mid = Math.floor(xs.length / 2);
-      return xs.length % 2 ? xs[mid] : Math.round((xs[mid - 1] + xs[mid]) / 2);
-    };
-
-    const perM2 = rows
-      .filter((r) => r.areaM2 && r.areaM2 > 0)
-      .map((r) => Number(r.listPriceGbp ?? r.priceBaseGbp) / (r.areaM2 as number))
-      .filter((n) => Number.isFinite(n) && n > 0)
-      .sort((a, b) => a - b);
-
+    const perM2 = perM2Values(rows);
     return {
       count: valid.length,
-      medianGbp: median(valid),
+      medianGbp: Math.round(median(valid) as number),
       minGbp: valid[0],
       maxGbp: valid[valid.length - 1],
-      medianPerM2: perM2.length ? Math.round(median(perM2)) : null,
+      medianPerM2: perM2.length ? Math.round(median(perM2) as number) : null,
     };
   }
 }
