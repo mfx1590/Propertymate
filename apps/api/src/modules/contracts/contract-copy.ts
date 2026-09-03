@@ -10,6 +10,10 @@
  * letters in the wrong order — worse than English in a document someone signs.
  * `NOT_IN_YOUR_LANGUAGE` says so in the document itself rather than leaving a
  * reader to wonder. See the note in pdf.service.ts.
+ *
+ * Dropped as scope on 2026-09-03 (Plan §0 Change Log), so this is the settled
+ * behaviour rather than a gap awaiting a shaping pass — which is why the notice
+ * below no longer says a Farsi version is coming.
  */
 export type ContractLocale = 'en' | 'tr' | 'ru';
 
@@ -31,7 +35,7 @@ export function contractLocale(userLocale: string | null | undefined): ContractL
  * language in English is the most that can actually reach the page.
  */
 export const NOT_IN_YOUR_LANGUAGE: Record<string, string> = {
-  fa: 'NOTE: This document is issued in English. A Farsi version is not yet available — please obtain a certified translation before signing if you need one.',
+  fa: 'NOTE: This document is issued in English. A Farsi version of this contract is not available — please obtain a certified translation before signing if you need one.',
 };
 
 interface Clause {
