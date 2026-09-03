@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { apiGet, apiPost, apiUpload } from '../../../../../lib/api';
 import { ContractPanel } from './contract-panel';
 import { LegalPanel } from './legal-panel';
+import { DisputePanel } from './dispute-panel';
 import { Link } from '../../../../../i18n/routing';
 import { fmtGbp, fmtMoney } from '../../../../../lib/listings';
 
@@ -228,6 +229,15 @@ export default function DealRoomPage() {
               ?.injectableServiceTypes?.includes('lawyer') ?? false
           }
           onChange={() => void load()}
+        />
+      )}
+
+      {/* §6.7: the exceptional exit — quiet, but findable (step 26). */}
+      {deal.myPartyRole && (
+        <DisputePanel
+          dealId={id}
+          parties={deal.parties}
+          partyLabel={(role) => t(`completesBy.${role}`)}
         />
       )}
 

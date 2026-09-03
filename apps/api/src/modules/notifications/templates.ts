@@ -456,6 +456,120 @@ export const NOTIFICATION_TEMPLATES: Record<string, TemplateDef> = {
       body: '{lawyer} به اتاق معاملهٔ «{title}» پیوست.',
     },
   ),
+  // ── §6.7 dispute workflow (step 26) ───────────────────────────────
+  // Same locale discipline as the legal templates: placeholders are a deal
+  // title and nothing else. The outcome is carried by WHICH template fires,
+  // never by an English word in the payload — and both parties receive the
+  // same neutral sentence, because the notification's job is to say what was
+  // decided, not to congratulate anyone.
+  'dispute.opened': T(
+    {
+      title: 'A dispute names you',
+      body: 'The other side of “{title}” has opened a dispute. You can read it and give your side in your disputes page.',
+    },
+    {
+      title: 'Hakkınızda bir ihtilaf açıldı',
+      body: '“{title}” işleminin karşı tarafı bir ihtilaf açtı. İhtilaflar sayfanızdan okuyup kendi tarafınızı anlatabilirsiniz.',
+    },
+    {
+      title: 'Против вас открыт спор',
+      body: 'Другая сторона сделки по «{title}» открыла спор. Прочитать его и изложить свою позицию можно на странице споров.',
+    },
+    {
+      title: 'اختلافی علیه شما ثبت شد',
+      body: 'طرف دیگر معاملهٔ «{title}» اختلافی ثبت کرده است. می‌توانید در صفحهٔ اختلاف‌ها آن را بخوانید و روایت خود را بنویسید.',
+    },
+  ),
+  'dispute.statement_added': T(
+    {
+      title: 'New statement on your dispute',
+      body: 'A new statement was added to the dispute on “{title}”.',
+    },
+    {
+      title: 'İhtilafınıza yeni bir beyan eklendi',
+      body: '“{title}” üzerindeki ihtilafa yeni bir beyan eklendi.',
+    },
+    {
+      title: 'Новое заявление по вашему спору',
+      body: 'К спору по «{title}» добавлено новое заявление.',
+    },
+    {
+      title: 'اظهارنامهٔ تازه در اختلاف شما',
+      body: 'به اختلاف مربوط به «{title}» اظهارنامهٔ تازه‌ای افزوده شد.',
+    },
+  ),
+  'dispute.investigating': T(
+    {
+      title: 'Your deal is paused for review',
+      body: 'An admin is investigating the dispute on “{title}”. The deal cannot advance until the case is decided.',
+    },
+    {
+      title: 'İşleminiz inceleme için durduruldu',
+      body: 'Bir yönetici “{title}” üzerindeki ihtilafı inceliyor. Karar verilene kadar işlem ilerleyemez.',
+    },
+    {
+      title: 'Ваша сделка приостановлена для проверки',
+      body: 'Администратор разбирает спор по «{title}». Сделка не продвинется, пока дело не решено.',
+    },
+    {
+      title: 'معاملهٔ شما برای بررسی متوقف شد',
+      body: 'مدیر در حال بررسی اختلاف مربوط به «{title}» است. تا تصمیم‌گیری، معامله پیش نمی‌رود.',
+    },
+  ),
+  'dispute.withdrawn': T(
+    {
+      title: 'A dispute was withdrawn',
+      body: 'The dispute on “{title}” has been withdrawn by the person who opened it.',
+    },
+    {
+      title: 'Bir ihtilaf geri çekildi',
+      body: '“{title}” üzerindeki ihtilaf, açan kişi tarafından geri çekildi.',
+    },
+    {
+      title: 'Спор отозван',
+      body: 'Спор по «{title}» отозван тем, кто его открыл.',
+    },
+    {
+      title: 'اختلاف پس گرفته شد',
+      body: 'اختلاف مربوط به «{title}» توسط ثبت‌کننده‌اش پس گرفته شد.',
+    },
+  ),
+  'dispute.upheld': T(
+    {
+      title: 'Dispute decided: upheld',
+      body: 'The dispute on “{title}” was reviewed and upheld. The resolution note is in your disputes page.',
+    },
+    {
+      title: 'İhtilaf karara bağlandı: kabul edildi',
+      body: '“{title}” üzerindeki ihtilaf incelendi ve kabul edildi. Karar notu ihtilaflar sayfanızda.',
+    },
+    {
+      title: 'Спор решён: удовлетворён',
+      body: 'Спор по «{title}» рассмотрен и удовлетворён. Пояснение к решению — на странице споров.',
+    },
+    {
+      title: 'اختلاف تعیین تکلیف شد: تأیید شد',
+      body: 'اختلاف مربوط به «{title}» بررسی و تأیید شد. یادداشت تصمیم در صفحهٔ اختلاف‌های شماست.',
+    },
+  ),
+  'dispute.dismissed': T(
+    {
+      title: 'Dispute decided: dismissed',
+      body: 'The dispute on “{title}” was reviewed and dismissed. The resolution note is in your disputes page.',
+    },
+    {
+      title: 'İhtilaf karara bağlandı: reddedildi',
+      body: '“{title}” üzerindeki ihtilaf incelendi ve reddedildi. Karar notu ihtilaflar sayfanızda.',
+    },
+    {
+      title: 'Спор решён: отклонён',
+      body: 'Спор по «{title}» рассмотрен и отклонён. Пояснение к решению — на странице споров.',
+    },
+    {
+      title: 'اختلاف تعیین تکلیف شد: رد شد',
+      body: 'اختلاف مربوط به «{title}» بررسی و رد شد. یادداشت تصمیم در صفحهٔ اختلاف‌های شماست.',
+    },
+  ),
 };
 
 /** `{placeholder}` interpolation against the notification payload. */

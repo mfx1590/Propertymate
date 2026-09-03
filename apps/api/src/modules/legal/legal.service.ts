@@ -574,22 +574,11 @@ export class LegalService {
     return t.en || Object.values(t)[0] || 'this property';
   }
 
-  /** The name a notification calls the deal. Off-plan deals name the project. */
-  private async dealTitle(dealId: string): Promise<string> {
-    const deal = await this.prisma.deal.findUnique({
-      where: { id: dealId },
-      select: {
-        property: { select: { titleI18n: true } },
-        projectUnit: {
-          select: { unitNo: true, project: { select: { nameI18n: true } } },
-        },
-      },
-    });
-    if (deal?.property) return this.titleOf(deal.property.titleI18n);
-    if (deal?.projectUnit) {
-      return `${this.titleOf(deal.projectUnit.project.nameI18n)} — ${deal.projectUnit.unitNo}`;
-    }
-    return 'this property';
+  /** Delegated to DealsService (step 26) — one implementation of "what is this
+   *  deal called", after the off-plan half of a private copy was forgotten
+   *  once already. */
+  private dealTitle(dealId: string): Promise<string> {
+    return this.deals.dealTitle(dealId);
   }
 
   private async lawyerName(userId: string): Promise<string> {

@@ -64,7 +64,8 @@
       "referrals": "Davet et, kazan",
       "myReviews": "Değerlendirmelerim",
       "reviewReports": "Değerlendirme bildirimleri",
-      "legalRequests": "Teklif talepleri"
+      "legalRequests": "Teklif talepleri",
+      "myDisputes": "İhtilaflarım"
     },
     "roles": {
       "customer": "Müşteri",
@@ -1236,6 +1237,15 @@
       "resolved_upheld": "Haklı bulundu",
       "resolved_dismissed": "Reddedildi",
       "withdrawn": "Geri çekildi"
+    },
+    "statements": {
+      "title": "Beyanlar",
+      "none": "Henüz iki taraf da bir şey söylemedi.",
+      "byAdmin": "Platform",
+      "byOpener": "Açan taraf",
+      "byRespondent": "Muhatap",
+      "placeholder": "Soru sorun ya da not düşün — iki taraf da görecek.",
+      "send": "Gönder"
     }
   },
   "nextSteps": {
@@ -1602,5 +1612,45 @@
     "sellHint": "Piyasa nasıl hareket ediyor merak mı ettiniz?",
     "insightsLink": "Aylık piyasa verilerine bakın",
     "disclaimer": "İstenen fiyatlardan yapılan tahmin iki yönde de yanılabilir. Üzerine işlem yapacağınız bir rakam için mülkü profesyonelce değerletin."
+  },
+  "disputes": {
+    "title": "İhtilaflarım",
+    "subtitle": "Açtığınız ve hakkınızda açılan dosyalar. Buradaki beyanlar, kararı verecek yönetici için kayda geçer.",
+    "emptyTitle": "İhtilaf yok — güzel",
+    "emptyBody": "Bir işlemde bir şeyler ters giderse, dosyayı o işlemin odasından açarsınız. Kanıtları platform toplar; siz yalnızca sorunu anlatırsınız.",
+    "status": {
+      "open": "Açık",
+      "investigating": "İnceleniyor",
+      "resolved_upheld": "Kabul edildi",
+      "resolved_dismissed": "Reddedildi",
+      "withdrawn": "Geri çekildi"
+    },
+    "roleOpener": "Bunu siz açtınız",
+    "roleRespondent": "Hakkınızda açıldı",
+    "statementCount": "{count, plural, =0 {beyan yok} other {# beyan}}",
+    "close": "Kapat",
+    "reasonLabel": "Şikâyet",
+    "investigatingNote": "Bir yönetici inceliyor. Dosya karara bağlanana kadar işlem duraklatıldı ve dosya artık geri çekilemez.",
+    "resolutionLabel": "Karar",
+    "statements": {
+      "title": "Beyanlar",
+      "none": "Henüz bir şey söylenmedi. Bu dosya sizi ilgilendiriyorsa, kendi tarafınızı burada anlatırsınız.",
+      "you": "Siz",
+      "otherSide": "Karşı taraf",
+      "admin": "Platform",
+      "placeholder": "Olayın sizin tarafınız, kayda geçsin.",
+      "send": "Beyan gönder",
+      "closed": "Bu dosya karara bağlandı — beyanlar kapandı."
+    },
+    "withdraw": "İhtilafı geri çek",
+    "reportProblem": "Bu işlemde bir sorun mu var? İhtilaf açın",
+    "formTitle": "İhtilaf aç",
+    "formHint": "Neyin ters gittiğini anlatın. İşlem zaman çizelgesini, belgeleri ve yazışmayı platform kendisi ekler — kanıt toplamanız gerekmez.",
+    "formAgainst": "Kim hakkında?",
+    "formReason": "Ne oldu? En az bir cümle.",
+    "formSubmit": "İhtilafı aç",
+    "formCancel": "Vazgeç",
+    "opened": "İhtilafınız açıldı. Karşı tarafa bildirildi; bir yönetici dosyayı ele alacak.",
+    "openedLink": "İhtilaflarım sayfasından takip edin"
   }
 }

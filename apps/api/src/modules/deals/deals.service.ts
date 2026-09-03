@@ -377,6 +377,22 @@ export class DealsService {
     if (!deal) throw new NotFoundException('Deal not found');
     if (deal.status !== 'active') throw new BadRequestException('Deal is not active');
 
+    // §6.7 full workflow: a deal pauses while an admin is actively
+    // investigating a dispute on it — completing a disputed sale would decide
+    // the case by fait accompli. Deliberately keyed on `investigating`, NOT
+    // `open`: an open dispute is one click, and freezing on it would hand
+    // every party a veto over the other's deal. The admin escalates, the
+    // admin's decision unfreezes. Queried directly, the contracts-gate
+    // precedent — disputes already depends on deals.
+    const investigating = await this.prisma.dispute.count({
+      where: { dealId, status: 'investigating' },
+    });
+    if (investigating > 0) {
+      throw new BadRequestException(
+        'This deal is paused while a dispute on it is investigated. It resumes when the case is decided.',
+      );
+    }
+
     const { templateKey, stages } = await this.pipelineFor(deal);
     const curIdx = stages.findIndex((s) => s.key === deal.currentStageKey);
     if (curIdx < 0) throw new BadRequestException('Current stage not found in template');
@@ -542,6 +558,31 @@ export class DealsService {
       def: stages.find((s) => s.key === deal.currentStageKey) ?? null,
       stages,
     };
+  }
+
+  /**
+   * The human name a notification calls a deal — property title, or project +
+   * unit for off-plan. Public because legal (step 23) and disputes (step 26)
+   * both need it, and the off-plan half was already forgotten once (the
+   * lawyer-inbox "this property" defect).
+   */
+  async dealTitle(dealId: string): Promise<string> {
+    const deal = await this.prisma.deal.findUnique({
+      where: { id: dealId },
+      select: {
+        property: { select: { titleI18n: true } },
+        projectUnit: { select: { unitNo: true, project: { select: { nameI18n: true } } } },
+      },
+    });
+    const nameOf = (i18n: unknown) => {
+      const t = (i18n ?? {}) as Record<string, string>;
+      return t.en || Object.values(t)[0] || 'this property';
+    };
+    if (deal?.property) return nameOf(deal.property.titleI18n);
+    if (deal?.projectUnit) {
+      return `${nameOf(deal.projectUnit.project.nameI18n)} — ${deal.projectUnit.unitNo}`;
+    }
+    return 'this property';
   }
 
   private async pipelineFor(deal: { kind: string; projectUnitId: string | null }) {

@@ -123,6 +123,7 @@ export const COMMON_MENU: MenuItem[] = [
   { labelKey: 'viewings', href: '/dashboard/viewings' },
   { labelKey: 'offers', href: '/dashboard/offers' },
   { labelKey: 'deals', href: '/dashboard/deals' },
+  { labelKey: 'myDisputes', href: '/dashboard/disputes' },
   { labelKey: 'referrals', href: '/dashboard/referrals' },
   { labelKey: 'notificationSettings', href: '/dashboard/settings/notifications' },
 ];

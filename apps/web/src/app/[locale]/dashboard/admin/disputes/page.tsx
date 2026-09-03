@@ -16,6 +16,7 @@ interface DisputeRow {
 }
 
 interface Bundle extends DisputeRow {
+  statements: { id: string; authorUserId: string; byAdmin: boolean; body: string; createdAt: string }[];
   deal: {
     id: string; kind: string; status: string; currentStageKey: string;
     title: string | null; priceAgreed: number | null; currency: string | null;
@@ -69,6 +70,23 @@ export default function AdminDisputesPage() {
       setNote('');
     } catch (e) {
       setError(e instanceof ApiError ? e.message : String(e));
+    }
+  };
+
+  const [statement, setStatement] = useState('');
+
+  const postStatement = async () => {
+    if (!open || !statement.trim()) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await apiPost(`/admin/disputes/${open.id}/statements`, { body: statement });
+      setStatement('');
+      await openBundle(open.id);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : String(e));
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -159,6 +177,46 @@ export default function AdminDisputesPage() {
                   maximumFractionDigits: 0,
                 }).format(open.deal.priceAgreed)}
             </p>
+          )}
+
+          {/* The parties' own words, beside the platform-assembled evidence
+              (step 26). An admin question posted here reaches both sides. */}
+          <h3 className="mt-4 text-sm font-semibold">{t('statements.title')}</h3>
+          {open.statements.length === 0 ? (
+            <p className="mt-1 text-xs text-gray-400">{t('statements.none')}</p>
+          ) : (
+            <ul className="mt-1 space-y-1 text-xs">
+              {open.statements.map((st) => (
+                <li key={st.id} className={`rounded px-2 py-1 ${st.byAdmin ? 'bg-brand-50' : 'bg-gray-50'}`}>
+                  <span className="text-gray-400">
+                    {st.byAdmin
+                      ? t('statements.byAdmin')
+                      : st.authorUserId === open.openedByUser?.id
+                        ? t('statements.byOpener')
+                        : t('statements.byRespondent')}{' '}
+                    · {new Date(st.createdAt).toLocaleString(locale)}
+                  </span>
+                  <p>{st.body}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+          {isOpen && (
+            <div className="mt-2 flex gap-2">
+              <input
+                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm"
+                placeholder={t('statements.placeholder')}
+                value={statement}
+                onChange={(e) => setStatement(e.target.value)}
+              />
+              <button
+                disabled={busy || !statement.trim()}
+                onClick={() => void postStatement()}
+                className="rounded-lg border border-brand-600 px-4 py-2 text-sm font-medium text-brand-600 disabled:opacity-50"
+              >
+                {t('statements.send')}
+              </button>
+            </div>
           )}
 
           <h3 className="mt-4 text-sm font-semibold">{t('timeline')}</h3>

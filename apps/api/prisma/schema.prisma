@@ -1170,9 +1170,33 @@ model Dispute {
   resolvedByAdminId String?       @map("resolved_by_admin_id")
   createdAt         DateTime      @default(now()) @map("created_at")
 
-  deal Deal @relation(fields: [dealId], references: [id])
+  deal       Deal               @relation(fields: [dealId], references: [id])
+  statements DisputeStatement[]
 
   @@map("disputes")
+}
+
+/// A party's or admin's word on a case (Plan §6.7, Phase 3 "full workflow").
+///
+/// Step 9 deliberately assembled evidence from what the platform already held
+/// so nobody had to ask either side for their version. That stands — but a
+/// respondent still needs a way to BE HEARD, and an admin a way to ask a
+/// question on the record. Statements are append-only and visible to both
+/// parties and the admin: a case has no privileged side-channel.
+model DisputeStatement {
+  id           String   @id @default(cuid())
+  disputeId    String   @map("dispute_id")
+  authorUserId String   @map("author_user_id")
+  /// True when written by an admin acting as the platform, so the parties can
+  /// tell a question from the referee apart from the other side's argument.
+  byAdmin      Boolean  @default(false) @map("by_admin")
+  body         String
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  dispute Dispute @relation(fields: [disputeId], references: [id], onDelete: Cascade)
+
+  @@index([disputeId, createdAt])
+  @@map("dispute_statements")
 }
 
 // ─────────────────────── notifications / audit / misc ───────────────────────

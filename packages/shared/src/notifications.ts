@@ -29,6 +29,7 @@ export const NOTIFICATION_CATEGORIES = [
   'moderation',
   'discovery',
   'legal',
+  'dispute',
 ] as const;
 
 export type NotificationCategory = (typeof NOTIFICATION_CATEGORIES)[number];
@@ -71,6 +72,10 @@ export const DEFAULT_CHANNELS: Record<NotificationCategory, NotificationChannel[
   // templates would need Meta approval in four languages before the first
   // engagement exists to justify it.
   legal: ['in_app', 'push', 'email'],
+  // A dispute opened against you, a paused deal, a decision — nothing in this
+  // category is optional reading, and the person least likely to be in the app
+  // is the one being complained about. Email is the channel that reaches them.
+  dispute: ['in_app', 'push', 'email'],
 };
 
 /** in_app is always delivered; the preferences API refuses to switch it off. */
