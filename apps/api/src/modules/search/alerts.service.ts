@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { SettingsService } from '../marketplace/settings.service';
 import { SearchService, type SearchParams } from './search.service';
+import { parsePolygonParam } from './geo';
 
 /** Ignore rounding-level movements; a 0.2% "drop" is not news (§6.1). */
 const DEFAULT_MIN_DROP_PCT = 1;
@@ -118,6 +119,12 @@ export class AlertsService {
       minBeds: num(q.minBeds),
       deedType: str(q.deedType),
       furnished: typeof q.furnished === 'boolean' ? q.furnished : undefined,
+      // A search saved with an area drawn must alert on that area only —
+      // otherwise the first alert sends the user back to a map showing pins
+      // they explicitly excluded. `parsePolygonParam` throws on a malformed
+      // string; the caller already treats one bad saved query as skippable
+      // rather than fatal to the whole sweep.
+      polygon: parsePolygonParam(str(q.polygon)),
     };
   }
 

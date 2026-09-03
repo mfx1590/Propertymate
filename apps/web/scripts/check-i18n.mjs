@@ -32,6 +32,7 @@ const ALLOWED_IDENTICAL = {
   'notificationSettings.channel.push': 'used as-is in ru; fa is translated',
   'notificationSettings.channel.whatsapp': 'brand name',
   'paymentSchedule.planLabel': 'tr: "Plan" is the Turkish word too',
+  'listings.detail.nearby.km': 'tr: "km" is the unit in Turkish too',
   // The English name for these regions is already the Turkish name.
   'regionPage.names.iskele': 'Turkish place name',
   'regionPage.names.guzelyurt': 'Turkish place name',

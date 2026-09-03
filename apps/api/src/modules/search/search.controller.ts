@@ -5,6 +5,7 @@ import { RequirePermissions } from '../../common/decorators/require-permissions.
 import { AlertsService } from './alerts.service';
 import { RecommendationsService } from './recommendations.service';
 import { SearchService } from './search.service';
+import { parsePolygonParam } from './geo';
 
 @Controller('search')
 export class SearchController {
@@ -55,6 +56,9 @@ export class SearchController {
     @Query('furnished') furnished?: string,
     @Query('sort') sort?: 'newest' | 'price_asc' | 'price_desc',
     @Query('page') page?: string,
+    // `lat,lng;lat,lng;…` — a drawn area (§6.1), kept in the query string so a
+    // map search stays shareable and bookmarkable like every other filter.
+    @Query('polygon') polygon?: string,
   ) {
     return this.search.search({
       q,
@@ -67,6 +71,7 @@ export class SearchController {
       furnished: furnished === undefined ? undefined : furnished === 'true',
       sort,
       page: page ? Number(page) : undefined,
+      polygon: parsePolygonParam(polygon),
     });
   }
 }

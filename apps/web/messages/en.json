@@ -404,7 +404,15 @@
       "trustTitle": "Verified by PropVerify",
       "trustBody": "Title deed, owner identity and documents were checked by our verification team before this listing went live.",
       "alsoViewed": "Viewers of this also viewed",
-      "similarListings": "Similar listings"
+      "similarListings": "Similar listings",
+      "nearby": {
+        "title": "What's nearby",
+        "university": "Nearest university",
+        "beach": "Nearest beach",
+        "hospital": "Nearest hospital",
+        "km": "{km} km",
+        "disclaimer": "Straight-line distance to an approximate landmark position."
+      }
     },
     "actions": {
       "inquire": "Message",
@@ -653,13 +661,32 @@
         "minBeds": "Any bedrooms",
         "minPrice": "No minimum price",
         "q": "Ignore the search words",
-        "region": "Any region"
+        "region": "Any region",
+        "polygon": "Search the whole map"
       }
     },
     "reducedBy": "↓ {pct}% reduced",
     "addCompare": "+ Compare",
     "inCompare": "✓ Comparing",
-    "compareCta": "Compare ({count})"
+    "compareCta": "Compare ({count})",
+    "map": {
+      "draw": "Draw area",
+      "redraw": "Redraw area",
+      "drawHint": "Click the map to trace an area — at least three points.",
+      "finishHint": "Click the first point, or Finish, to close the area.",
+      "finish": "Finish",
+      "undoPoint": "Undo point",
+      "clearArea": "Clear area",
+      "areaActive": "Drawn area · {count, plural, one {# point} other {# points}}",
+      "countCapped": "(showing the first 1,000)",
+      "poiLabel": "Show:",
+      "poi": {
+        "university": "Universities",
+        "beach": "Beaches",
+        "hospital": "Hospitals"
+      },
+      "poiDisclaimer": "Landmark positions are approximate and for orientation only."
+    }
   },
   "home": {
     "heroTitle": "Every listing verified. Every seller real.",

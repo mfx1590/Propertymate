@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { API_BASE, fmtMoney, type Property } from '../../../../lib/listings';
+import { API_BASE, fmtMoney, type NearestPoi, type Property } from '../../../../lib/listings';
 import { Link } from '../../../../i18n/routing';
 import { ActionBox, CompareButton, DetailMap, FavoriteButton } from './parts';
 import { CurrencySwitcher } from '../../../../components/CurrencySwitcher';
@@ -39,6 +39,27 @@ const fetchListing = cache(async (id: string): Promise<Property | null> => {
   if (!res.ok) return null;
   return res.json();
 });
+
+/**
+ * §6.1 POI layers, answering on the listing page the question the map layer
+ * answers on the search page: how far is the beach, the campus, the hospital.
+ *
+ * Fetched here rather than in a client component so a crawler — and a reader
+ * with no JavaScript — gets the answer in the HTML. A failure returns nothing
+ * and the section is skipped; a property page must not 500 over a nicety.
+ */
+async function fetchNearby(lat: number, lng: number): Promise<NearestPoi[]> {
+  try {
+    const res = await fetch(`${API_BASE}/pois/near?lat=${lat}&lng=${lng}`, {
+      // Static catalogue against a fixed point — nothing here changes hourly.
+      next: { revalidate: 86_400 },
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
 
 /** "Viewers of this also viewed" (§8), with a comparable-listings fallback. */
 async function fetchSimilar(id: string): Promise<{ source: string; items: SimilarListing[] }> {
@@ -76,6 +97,7 @@ export default async function ListingDetailPage({
   const p = await fetchListing(id);
   if (!p) notFound();
   const similar = await fetchSimilar(id);
+  const nearby = p.lat && p.lng ? await fetchNearby(p.lat, p.lng) : [];
 
   const title = p.titleI18n?.en ?? '';
   const description = p.descriptionI18n?.en ?? '';
@@ -218,6 +240,28 @@ export default async function ListingDetailPage({
               <div className="mt-2">
                 <DetailMap lat={p.lat} lng={p.lng} label={title} />
               </div>
+              {nearby.length > 0 && (
+                <div className="mt-4 rounded-xl border border-gray-200 p-4">
+                  <h3 className="text-sm font-semibold">{t('detail.nearby.title')}</h3>
+                  <ul className="mt-3 grid gap-3 sm:grid-cols-3">
+                    {nearby.map((n) => (
+                      <li key={n.id}>
+                        <p className="text-xs uppercase tracking-wide text-gray-400">
+                          {t(`detail.nearby.${n.category}`)}
+                        </p>
+                        <p className="mt-0.5 text-sm font-medium">{n.name}</p>
+                        <p className="text-sm text-brand-600">
+                          {t('detail.nearby.km', { km: n.distanceKm })}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                  {/* Says what the number is before anyone plans a commute
+                      around it — these are straight lines on approximate pins,
+                      and in the north's terrain that is not a drive time. */}
+                  <p className="mt-3 text-xs text-gray-400">{t('detail.nearby.disclaimer')}</p>
+                </div>
+              )}
             </>
           )}
         </div>

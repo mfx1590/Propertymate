@@ -404,7 +404,15 @@
       "trustTitle": "PropVerify tarafından doğrulandı",
       "trustBody": "Koçan, mal sahibi kimliği ve belgeler bu ilan yayına girmeden önce doğrulama ekibimizce kontrol edildi.",
       "alsoViewed": "Bunu görüntüleyenler şunlara da baktı",
-      "similarListings": "Benzer ilanlar"
+      "similarListings": "Benzer ilanlar",
+      "nearby": {
+        "title": "Yakında neler var",
+        "university": "En yakın üniversite",
+        "beach": "En yakın plaj",
+        "hospital": "En yakın hastane",
+        "km": "{km} km",
+        "disclaimer": "Yaklaşık konuma kuş uçuşu mesafe."
+      }
     },
     "actions": {
       "inquire": "Mesaj",
@@ -653,13 +661,32 @@
         "minBeds": "Oda sayısı fark etmez",
         "minPrice": "Alt fiyat sınırı yok",
         "q": "Arama kelimelerini yok say",
-        "region": "Tüm bölgeler"
+        "region": "Tüm bölgeler",
+        "polygon": "Haritanın tamamında ara"
       }
     },
     "reducedBy": "↓ %{pct} indirim",
     "addCompare": "+ Karşılaştır",
     "inCompare": "✓ Karşılaştırılıyor",
-    "compareCta": "Karşılaştır ({count})"
+    "compareCta": "Karşılaştır ({count})",
+    "map": {
+      "draw": "Alan çiz",
+      "redraw": "Alanı yeniden çiz",
+      "drawHint": "Bir alan çizmek için haritaya tıklayın — en az üç nokta.",
+      "finishHint": "Alanı kapatmak için ilk noktaya ya da Bitir’e tıklayın.",
+      "finish": "Bitir",
+      "undoPoint": "Noktayı geri al",
+      "clearArea": "Alanı temizle",
+      "areaActive": "Çizilen alan · {count, plural, other {# nokta}}",
+      "countCapped": "(ilk 1.000 gösteriliyor)",
+      "poiLabel": "Göster:",
+      "poi": {
+        "university": "Üniversiteler",
+        "beach": "Plajlar",
+        "hospital": "Hastaneler"
+      },
+      "poiDisclaimer": "Simge yapıların konumu yaklaşıktır, yalnızca yön bulmak içindir."
+    }
   },
   "home": {
     "heroTitle": "Her ilan doğrulanmış. Her satıcı gerçek.",

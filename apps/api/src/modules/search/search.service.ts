@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { OnEvent } from '@nestjs/event-emitter';
 import { MeiliSearch, Index } from 'meilisearch';
 import { PrismaService } from '../../prisma/prisma.service';
+import { boundingBox, pointInPolygon, type GeoPoint } from './geo';
 
 export interface ListingDocument {
   id: string;
@@ -48,6 +49,8 @@ export interface SearchParams {
   furnished?: boolean;
   /** Epoch ms. Only listings indexed after this — used by saved-search alerts. */
   createdAfterTs?: number;
+  /** §6.1 map-first UI: an area the user drew, as clicked vertices. */
+  polygon?: GeoPoint[];
 }
 
 /**
@@ -64,6 +67,9 @@ const RELAXABLE = [
   'minBeds',
   'deedType',
   'furnished',
+  // A hand-drawn area is the easiest filter to over-tighten and the hardest to
+  // see you have over-tightened, so "search the whole map" has to be offerable.
+  'polygon',
 ] as const satisfies readonly (keyof SearchParams)[];
 
 export interface NearbyRegion {
@@ -120,6 +126,21 @@ const RANKING_RULES = [
 
 const FRESH_DAYS = 30;
 const AGING_DAYS = 90;
+
+const PAGE_SIZE = 24;
+
+/**
+ * Ceiling on the documents an area search narrows by hand. Matches
+ * Meilisearch's default `maxTotalHits`, so raising it alone would change
+ * nothing — the index setting has to move with it.
+ */
+const MAX_POLYGON_SCAN = 1000;
+
+const SORT_MAP = {
+  newest: ['createdAtTs:desc'],
+  price_asc: ['priceBaseGbp:asc'],
+  price_desc: ['priceBaseGbp:desc'],
+} as const;
 
 /**
  * Only `live` listings exist in the index (Plan §4 step 6). Sync is
@@ -219,7 +240,76 @@ export class SearchService implements OnModuleInit {
     if (params.createdAfterTs !== undefined) {
       filters.push(`createdAtTs > ${params.createdAfterTs}`);
     }
+    // Meilisearch 1.11 has no polygon filter (`_geoPolygon` arrives later), so
+    // the bounding box is the coarse pass and `pointInPolygon` is the exact
+    // one. The box is not merely an optimisation: it is also what excludes
+    // listings with no coordinates at all, which can never be inside an area.
+    if (params.polygon) {
+      const { topRight, bottomLeft } = boundingBox(params.polygon);
+      filters.push(
+        `_geoBoundingBox([${topRight.lat}, ${topRight.lng}], [${bottomLeft.lat}, ${bottomLeft.lng}])`,
+      );
+    }
     return filters;
+  }
+
+  /**
+   * One query path for every caller, so a polygon cannot be honoured on the
+   * search page and quietly ignored by an alert sweep.
+   *
+   * Without a polygon this is Meilisearch's own pagination. With one, the box
+   * is fetched in a single page and narrowed here, because the engine cannot
+   * do the narrowing and paging *after* an exact test is the only way the page
+   * numbers and the count agree with what the map shows.
+   */
+  private async execute(
+    params: SearchParams,
+    opts: { sort?: SearchSort; page?: number } = {},
+  ) {
+    const filters = this.buildFilters(params);
+    const filter = filters.length ? filters.join(' AND ') : undefined;
+    const sort = opts.sort ? [...SORT_MAP[opts.sort]] : undefined;
+    const page = Math.max(1, opts.page ?? 1);
+
+    if (!params.polygon) {
+      const result = await this.index.search(params.q ?? '', {
+        filter,
+        sort,
+        hitsPerPage: PAGE_SIZE,
+        page,
+      });
+      return {
+        hits: result.hits,
+        totalHits: result.totalHits ?? 0,
+        page: result.page ?? page,
+        totalPages: result.totalPages ?? 1,
+        scanLimited: false,
+      };
+    }
+
+    const scan = await this.index.search(params.q ?? '', {
+      filter,
+      sort,
+      hitsPerPage: MAX_POLYGON_SCAN,
+      page: 1,
+    });
+    const inBox = scan.hits;
+    const inside = inBox.filter((hit) => {
+      const geo = (hit as { _geo?: GeoPoint })._geo;
+      return geo ? pointInPolygon(geo, params.polygon!) : false;
+    });
+
+    const totalPages = Math.max(1, Math.ceil(inside.length / PAGE_SIZE));
+    return {
+      hits: inside.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+      totalHits: inside.length,
+      page,
+      totalPages,
+      // The box held more than one scan could take, so the count below is a
+      // floor rather than a total. Said out loud instead of silently rounded
+      // off, because a wrong "1,000 listings" is worse than an honest "1,000+".
+      scanLimited: (scan.totalHits ?? 0) > MAX_POLYGON_SCAN,
+    };
   }
 
   /**
@@ -231,37 +321,18 @@ export class SearchService implements OnModuleInit {
    * round trips per saved search, every night, to build advice nobody reads.
    */
   async countMatching(params: SearchParams): Promise<number> {
-    const filters = this.buildFilters(params);
-    const result = await this.index.search(params.q ?? '', {
-      filter: filters.length ? filters.join(' AND ') : undefined,
-      hitsPerPage: 1,
-      page: 1,
-    });
-    return result.totalHits;
+    return this.countFor(params);
   }
 
   async search(params: SearchParams & { sort?: SearchSort; page?: number }) {
-    const filters = this.buildFilters(params);
-
-    const sortMap = {
-      newest: ['createdAtTs:desc'],
-      price_asc: ['priceBaseGbp:asc'],
-      price_desc: ['priceBaseGbp:desc'],
-    } as const;
-
-    const page = Math.max(1, params.page ?? 1);
-    const result = await this.index.search(params.q ?? '', {
-      filter: filters.length ? filters.join(' AND ') : undefined,
-      sort: params.sort ? [...sortMap[params.sort]] : undefined,
-      hitsPerPage: 24,
-      page,
-    });
+    const result = await this.execute(params, { sort: params.sort, page: params.page });
 
     return {
       hits: result.hits,
       totalHits: result.totalHits,
       page: result.page,
       totalPages: result.totalPages,
+      scanLimited: result.scanLimited,
       // A zero-result page is a dead end unless it can say what to drop, so the
       // recovery routes are computed here rather than guessed at in the client:
       // every suggestion returned is one we have just confirmed has results.
@@ -270,8 +341,12 @@ export class SearchService implements OnModuleInit {
     };
   }
 
-  /** `totalHits` for a set of filters, fetching as few documents as possible. */
+  /**
+   * `totalHits` for a set of filters. Cheap (one hit fetched) unless a polygon
+   * is in play, where the exact test has to see every candidate in the box.
+   */
   private async countFor(params: SearchParams): Promise<number> {
+    if (params.polygon) return (await this.execute(params)).totalHits;
     const filters = this.buildFilters(params);
     const res = await this.index.search(params.q ?? '', {
       filter: filters.length ? filters.join(' AND ') : undefined,
@@ -298,7 +373,11 @@ export class SearchService implements OnModuleInit {
     const [totalLive, relaxCounts, regions] = await Promise.all([
       this.countFor({}),
       Promise.all(active.map((key) => this.countFor({ ...params, [key]: undefined }))),
-      params.region ? this.nearbyRegions(params) : Promise.resolve([]),
+      // Not offered while an area is drawn. The facet count behind these comes
+      // from the bounding box, not the polygon, so it would overstate — and
+      // "try Nicosia instead" is incoherent advice to someone who has just
+      // traced the coastline they want. Dropping the area is offered instead.
+      params.region && !params.polygon ? this.nearbyRegions(params) : Promise.resolve([]),
     ]);
 
     return {

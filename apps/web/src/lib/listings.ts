@@ -61,10 +61,58 @@ export interface SearchHit {
  * listed here can be offered to the user as a real next step.
  */
 export const RELAXABLE_FILTERS = [
-  'q', 'kind', 'region', 'minPrice', 'maxPrice', 'minBeds', 'deedType', 'furnished',
+  'q', 'kind', 'region', 'minPrice', 'maxPrice', 'minBeds', 'deedType', 'furnished', 'polygon',
 ] as const;
 
 export type RelaxableFilter = (typeof RELAXABLE_FILTERS)[number];
+
+export const POI_CATEGORIES = ['university', 'beach', 'hospital'] as const;
+export type PoiCategory = (typeof POI_CATEGORIES)[number];
+
+/** One vertex of a drawn search area, in click order. */
+export interface LatLng {
+  lat: number;
+  lng: number;
+}
+
+/**
+ * The wire format the API parses: `lat,lng;lat,lng;…`. Kept in one place so
+ * the search URL, the saved-search payload and the alert sweep can never
+ * disagree about what a drawn area looks like.
+ */
+export const encodePolygon = (points: LatLng[]) =>
+  points.map((p) => `${p.lat.toFixed(6)},${p.lng.toFixed(6)}`).join(';');
+
+export function decodePolygon(raw: string | null | undefined): LatLng[] {
+  if (!raw) return [];
+  const points = raw
+    .split(';')
+    .map((pair) => pair.split(','))
+    .filter((parts) => parts.length === 2)
+    .map(([lat, lng]) => ({ lat: Number(lat), lng: Number(lng) }))
+    .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lng));
+  // Fewer than three vertices is not an area; the API rejects it, so never
+  // send one — a half-typed URL should show every listing, not an error page.
+  return points.length >= 3 ? points : [];
+}
+
+/** GeoJSON as served by `GET /pois` — note the `[lng, lat]` coordinate order. */
+export interface PoiFeature {
+  type: 'Feature';
+  id: string;
+  geometry: { type: 'Point'; coordinates: [number, number] };
+  properties: { category: PoiCategory; name: string; nameTr?: string };
+}
+
+export interface NearestPoi {
+  category: PoiCategory;
+  id: string;
+  name: string;
+  nameTr?: string;
+  lat: number;
+  lng: number;
+  distanceKm: number;
+}
 
 export interface SearchSuggestions {
   relax: { filter: RelaxableFilter; totalHits: number }[];

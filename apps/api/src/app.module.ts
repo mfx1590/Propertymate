@@ -18,6 +18,7 @@ import { OrganizationsModule } from './modules/organizations/organizations.modul
 import { ProjectsModule } from './modules/projects/projects.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { SearchModule } from './modules/search/search.module';
+import { PoisModule } from './modules/pois/pois.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { VerificationModule } from './modules/verification/verification.module';
@@ -51,6 +52,7 @@ import { JobsModule } from './jobs/jobs.module';
     OrganizationsModule,
     DocumentsModule,
     SearchModule,
+    PoisModule,
     AdminModule,
     NotificationsModule,
     VerificationModule,

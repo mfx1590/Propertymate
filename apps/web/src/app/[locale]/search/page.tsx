@@ -11,6 +11,12 @@ import { useMoney } from '../../../lib/currency';
 import { useCompare } from '../../../lib/compare';
 import {
   API_BASE,
+  POI_CATEGORIES,
+  decodePolygon,
+  encodePolygon,
+  type LatLng,
+  type PoiCategory,
+  type PoiFeature,
   type RegionInfo,
   type RelaxableFilter,
   type SearchHit,
@@ -40,11 +46,29 @@ function SearchInner() {
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [totalHits, setTotalHits] = useState(0);
   const [suggestions, setSuggestions] = useState<SearchSuggestions | null>(null);
-  const [view, setView] = useState<'list' | 'map'>('list');
+  const [view, setView] = useState<'list' | 'map'>(params.get('polygon') ? 'map' : 'list');
   const [savedMsg, setSavedMsg] = useState(false);
+  const [scanLimited, setScanLimited] = useState(false);
+
+  // §6.1 map-first UI. The drawn area is a filter like any other — it applies
+  // to the list view too, which is why the chip below sits with the result
+  // count rather than inside the map.
+  const [polygon, setPolygon] = useState<LatLng[]>(() => decodePolygon(params.get('polygon')));
+  const [drawing, setDrawing] = useState(false);
+  const [poiCats, setPoiCats] = useState<PoiCategory[]>([]);
+  const [pois, setPois] = useState<PoiFeature[]>([]);
 
   useEffect(() => {
     void fetch(`${API_BASE}/regions`).then((r) => r.json()).then(setRegions);
+  }, []);
+
+  // The catalogue is small and static, so it is fetched once and filtered in
+  // the browser — toggling a layer should not cost a round trip.
+  useEffect(() => {
+    void fetch(`${API_BASE}/pois`)
+      .then((r) => r.json())
+      .then((data) => setPois(data.features ?? []))
+      .catch(() => setPois([]));
   }, []);
 
   const runSearch = useCallback(async () => {
@@ -57,12 +81,16 @@ function SearchInner() {
     if (filters.minBeds) qs.set('minBeds', filters.minBeds);
     if (filters.deedType) qs.set('deedType', filters.deedType);
     qs.set('sort', filters.sort);
+    // Under three vertices there is no area yet, so a half-drawn shape must
+    // not narrow the results — the user has not finished saying what they mean.
+    if (polygon.length >= 3) qs.set('polygon', encodePolygon(polygon));
     const res = await fetch(`${API_BASE}/search/listings?${qs}`);
     const data = await res.json();
     setHits(data.hits ?? []);
     setTotalHits(data.totalHits ?? 0);
     setSuggestions(data.suggestions ?? null);
-  }, [filters]);
+    setScanLimited(!!data.scanLimited);
+  }, [filters, polygon]);
 
   /**
    * Drop one criterion and re-run — the `filters` effect picks the change up.
@@ -70,9 +98,19 @@ function SearchInner() {
    * it is filtered out of the suggestions rather than cleared here.
    */
   type ClearableFilter = Exclude<RelaxableFilter, 'furnished'>;
-  const clearFilter = (key: ClearableFilter) => setFilters((f) => ({ ...f, [key]: '' }));
+  const clearFilter = (key: ClearableFilter) => {
+    // The drawn area is not a form field, so it is cleared rather than blanked.
+    if (key === 'polygon') {
+      setPolygon([]);
+      setDrawing(false);
+      return;
+    }
+    setFilters((f) => ({ ...f, [key]: '' }));
+  };
 
-  const clearAllFilters = () =>
+  const clearAllFilters = () => {
+    setPolygon([]);
+    setDrawing(false);
     setFilters((f) => ({
       ...f,
       q: '',
@@ -83,6 +121,7 @@ function SearchInner() {
       minBeds: '',
       deedType: '',
     }));
+  };
 
   useEffect(() => {
     void runSearch();
@@ -91,7 +130,9 @@ function SearchInner() {
   const saveSearch = async () => {
     await apiPost('/users/me/saved-searches', {
       name: [filters.region, filters.kind].filter(Boolean).join(' ') || 'All listings',
-      query: filters,
+      // The area goes into the saved query too, or the first alert would send
+      // the user back to a map full of the pins they drew around.
+      query: polygon.length >= 3 ? { ...filters, polygon: encodePolygon(polygon) } : filters,
     });
     setSavedMsg(true);
     setTimeout(() => setSavedMsg(false), 2500);
@@ -101,6 +142,21 @@ function SearchInner() {
 
   const relaxable = (suggestions?.relax ?? []).filter(
     (r): r is { filter: ClearableFilter; totalHits: number } => r.filter !== 'furnished',
+  );
+
+  const visiblePois = pois.filter((p) => poiCats.includes(p.properties.category));
+
+  /**
+   * Popup text. The local name is shown alongside the English one where they
+   * differ, because that is the name on the road sign the buyer is looking for.
+   */
+  const poiLabel = useCallback(
+    (poi: PoiFeature) => {
+      const { name, nameTr, category } = poi.properties;
+      const local = nameTr && nameTr !== name ? `<br/><span style="color:#6b7280">${nameTr}</span>` : '';
+      return `<strong>${name}</strong>${local}<br/><span style="color:#6b7280">${t(`map.poi.${category}`)}</span>`;
+    },
+    [t],
   );
 
   return (
@@ -163,7 +219,30 @@ function SearchInner() {
       </div>
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-gray-500">{t('results', { count: totalHits })}</p>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-sm text-gray-500">
+            {t('results', { count: totalHits })}
+            {/* An area search narrows in one pass, so a full box is a floor,
+                not a total. Saying "1,000+" beats a confident wrong number. */}
+            {scanLimited && <span className="text-gray-400"> {t('map.countCapped')}</span>}
+          </p>
+          {/* Visible in the list view as well: the area is still filtering
+              there, and an invisible filter is how a user concludes the site
+              is broken. */}
+          {polygon.length >= 3 && (
+            <span className="inline-flex items-center gap-2 rounded-full border border-brand-500 bg-brand-50 px-3 py-1 text-xs font-medium text-brand-600">
+              {t('map.areaActive', { count: polygon.length })}
+              <button
+                type="button"
+                onClick={() => clearFilter('polygon')}
+                aria-label={t('map.clearArea')}
+                className="text-brand-600/70 transition hover:text-brand-900"
+              >
+                ✕
+              </button>
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-3">
           {compare.ids.length > 0 && (
             <Link
@@ -239,9 +318,82 @@ function SearchInner() {
 
       {view === 'map' ? (
         <div className="mt-4">
+          <div className="flex flex-wrap items-center gap-2 rounded-t-xl border border-b-0 border-gray-200 bg-gray-50 px-3 py-2">
+            {!drawing ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setDrawing(true);
+                  setPolygon([]);
+                }}
+                className="rounded-lg border border-brand-600 px-3 py-1.5 text-xs font-medium text-brand-600 transition hover:bg-brand-50"
+              >
+                {polygon.length >= 3 ? t('map.redraw') : t('map.draw')}
+              </button>
+            ) : (
+              <>
+                {/* Says what to do, because a bare crosshair cursor does not. */}
+                <span className="text-xs text-gray-500">
+                  {polygon.length < 3 ? t('map.drawHint') : t('map.finishHint')}
+                </span>
+                <button
+                  type="button"
+                  disabled={polygon.length < 3}
+                  onClick={() => setDrawing(false)}
+                  className="rounded-lg bg-brand-600 px-3 py-1.5 text-xs font-medium text-white transition disabled:opacity-40"
+                >
+                  {t('map.finish')}
+                </button>
+                <button
+                  type="button"
+                  disabled={polygon.length === 0}
+                  onClick={() => setPolygon((pts) => pts.slice(0, -1))}
+                  className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 transition disabled:opacity-40"
+                >
+                  {t('map.undoPoint')}
+                </button>
+              </>
+            )}
+            {(polygon.length > 0 || drawing) && (
+              <button
+                type="button"
+                onClick={() => clearFilter('polygon')}
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:border-gray-400"
+              >
+                {t('map.clearArea')}
+              </button>
+            )}
+
+            <span className="ml-auto flex flex-wrap items-center gap-1.5">
+              <span className="text-xs text-gray-400">{t('map.poiLabel')}</span>
+              {POI_CATEGORIES.map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  aria-pressed={poiCats.includes(c)}
+                  onClick={() =>
+                    setPoiCats((cs) => (cs.includes(c) ? cs.filter((x) => x !== c) : [...cs, c]))
+                  }
+                  className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                    poiCats.includes(c)
+                      ? 'border-brand-500 bg-brand-50 text-brand-600'
+                      : 'border-gray-300 text-gray-600 hover:border-brand-500'
+                  }`}
+                >
+                  {t(`map.poi.${c}`)}
+                </button>
+              ))}
+            </span>
+          </div>
           <MapView
-            className="h-[32rem] w-full rounded-xl border border-gray-200"
+            className="h-[32rem] w-full rounded-b-xl border border-gray-200"
             center={{ lat: 35.25, lng: 33.4 }}
+            polygon={polygon}
+            drawing={drawing}
+            onPolygonChange={setPolygon}
+            onFinishDraw={() => setDrawing(false)}
+            pois={visiblePois}
+            poiLabel={poiLabel}
             markers={hits
               .filter((h) => h._geo)
               .map((h) => ({
@@ -252,6 +404,7 @@ function SearchInner() {
                 href: `/${locale}/listing/${h.id}`,
               }))}
           />
+          <p className="mt-2 text-xs text-gray-400">{t('map.poiDisclaimer')}</p>
         </div>
       ) : (
         <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
