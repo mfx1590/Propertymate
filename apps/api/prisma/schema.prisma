@@ -1103,6 +1103,11 @@ enum CreditStatus {
 enum ContractKind {
   rental_tenancy
   agent_mandate
+  /// Resale purchase (§7 purchase pipeline, `contract_signing`).
+  purchase_sale
+  /// Off-plan purchase of a project unit — same stage, materially different
+  /// document: stage payments, a delivery date and snagging on handover.
+  offplan_sale
 }
 
 enum ContractStatus {

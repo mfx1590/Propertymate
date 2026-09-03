@@ -52,6 +52,14 @@ export interface ContractCopy {
   depositMonths: (n: number) => string;
   tenancyClauses: (v: { rent: string; depositMonths: number }) => Clause[];
   mandateClauses: (v: { termMonths: number; ask: string }) => Clause[];
+  saleClauses: (v: { price: string; deedType: string }) => Clause[];
+  offplanClauses: (v: { price: string; deedType: string; delivery: string }) => Clause[];
+  saleTitle: string;
+  offplanTitle: string;
+  saleIntro: string;
+  offplanIntro: string;
+  /** Deed types are legal categories, so they are named, not translated away. */
+  deedTypes: Record<string, string>;
 }
 
 const EN: ContractCopy = {
@@ -86,6 +94,14 @@ const EN: ContractCopy = {
     'Appointed agent': 'Appointed agent',
     'Landlord agent': 'Landlord agent',
     'Tenant agent': 'Tenant agent',
+    Price: 'Price',
+    Deed: 'Title deed',
+    Delivery: 'Delivery',
+    'On completion': 'On completion',
+    Buyer: 'Buyer',
+    Seller: 'Seller',
+    'Seller agent': 'Seller agent',
+    'Buyer agent': 'Buyer agent',
   },
   months: (n) => `${n} months`,
   depositMonths: (n) => `${n} month(s) rent`,
@@ -109,6 +125,76 @@ const EN: ContractCopy = {
     {
       heading: 'Termination and renewal',
       body: 'Either party may give notice in accordance with the term agreed above. The platform will remind both parties before the term ends so that renewal or exit can be arranged in good time.',
+    },
+    {
+      heading: 'Governing law',
+      body: 'This agreement is governed by the law of the Turkish Republic of Northern Cyprus. It records the commercial terms agreed between the parties and does not replace independent legal advice.',
+    },
+  ],
+  saleTitle: 'Sale and Purchase Agreement',
+  offplanTitle: 'Off-Plan Sale and Purchase Agreement',
+  saleIntro:
+    'This agreement records the sale of the property described below by the seller to the buyer, at ' +
+    'the price and on the terms stated. It is executed by electronic signature: each party types their ' +
+    'full name, and the platform records the name, the time and the originating IP address.',
+  offplanIntro:
+    'This agreement records the sale of a property still under construction, described below, by the ' +
+    'developer to the buyer at the price and on the terms stated, for delivery on the date given. It is ' +
+    'executed by electronic signature: each party types their full name, and the platform records the ' +
+    'name, the time and the originating IP address.',
+  deedTypes: {
+    turkish: 'Turkish title (pre-1974)',
+    exchange: 'Exchange title (Eşdeğer)',
+    allocation: 'Allocation title (Tahsis)',
+    foreign: 'Foreign title',
+    na: 'Not stated',
+  },
+  saleClauses: ({ price, deedType }) => [
+    {
+      heading: 'Price and payment',
+      body: `The agreed price is ${price}. The buyer pays a deposit on signature and the balance on completion, in the manner recorded in the deal room. Every payment should be receipted there so both parties keep the same record.`,
+    },
+    {
+      heading: 'Title and deed type',
+      body: `The property is sold with ${deedType}. The seller confirms the title is theirs to sell and is free of undisclosed charges. The deed type materially affects what a buyer receives, and independent legal advice on it is strongly recommended before completion.`,
+    },
+    {
+      heading: 'Purchase permit',
+      body: 'Buyers who are not citizens require a purchase permit before title can be transferred. The buyer is responsible for applying; the seller shall provide the documents the application needs. Completion is conditional on the permit where one is required.',
+    },
+    {
+      heading: 'Transfer and completion',
+      body: 'On completion the balance is paid, the property is handed over, and the parties attend the Land Registry to transfer the title. A platform representative attends the handover. Possession passes on completion, not on signature.',
+    },
+    {
+      heading: 'Withdrawal and default',
+      body: 'If the buyer withdraws without a contractual reason, the deposit may be forfeited. If the seller withdraws, the deposit is returned. Neither is a penalty for a failure of the permit or the title search, where the deposit is returned in full.',
+    },
+    {
+      heading: 'Governing law',
+      body: 'This agreement is governed by the law of the Turkish Republic of Northern Cyprus. It records the commercial terms agreed between the parties and does not replace independent legal advice.',
+    },
+  ],
+  offplanClauses: ({ price, deedType, delivery }) => [
+    {
+      heading: 'Price and payment schedule',
+      body: `The agreed price is ${price}, payable to the schedule recorded in the deal room: a deposit on signature, stage payments during construction, and the balance on delivery. Each payment should be receipted in the deal room.`,
+    },
+    {
+      heading: 'Delivery',
+      body: `The developer shall deliver the unit by ${delivery}. Where delivery is delayed, the developer shall notify the buyer and give a revised date. Payments tied to delivery fall due on actual delivery, not on the original date.`,
+    },
+    {
+      heading: 'Title and deed type',
+      body: `Title is to be transferred with ${deedType} once the unit is complete and the permit, where required, is granted. Until transfer the buyer's interest should be protected by registering the contract, and independent legal advice on this is strongly recommended.`,
+    },
+    {
+      heading: 'Specification and snagging',
+      body: 'The unit shall be delivered to the specification recorded in the deal room. On handover the parties complete a snagging list together; the developer shall remedy the listed items within a reasonable period.',
+    },
+    {
+      heading: 'Purchase permit',
+      body: 'Buyers who are not citizens require a purchase permit before title can be transferred. The buyer is responsible for applying; the developer shall provide the documents the application needs.',
     },
     {
       heading: 'Governing law',
@@ -175,6 +261,14 @@ const TR: ContractCopy = {
     'Appointed agent': 'Yetkili emlakçı',
     'Landlord agent': 'Mal sahibi emlakçısı',
     'Tenant agent': 'Kiracı emlakçısı',
+    Price: 'Bedel',
+    Deed: 'Tapu',
+    Delivery: 'Teslim',
+    'On completion': 'Tamamlamada',
+    Buyer: 'Alıcı',
+    Seller: 'Satıcı',
+    'Seller agent': 'Satıcı emlakçısı',
+    'Buyer agent': 'Alıcı emlakçısı',
   },
   months: (n) => `${n} ay`,
   depositMonths: (n) => `${n} aylık kira`,
@@ -198,6 +292,76 @@ const TR: ContractCopy = {
     {
       heading: 'Sona erme ve yenileme',
       body: 'Taraflardan her biri, yukarıda kararlaştırılan süreye uygun olarak bildirimde bulunabilir. Platform, yenileme veya çıkışın zamanında düzenlenebilmesi için süre bitmeden her iki tarafı hatırlatacaktır.',
+    },
+    {
+      heading: 'Uygulanacak hukuk',
+      body: 'Bu sözleşme Kuzey Kıbrıs Türk Cumhuriyeti hukukuna tabidir. Taraflar arasında kararlaştırılan ticari koşulları kaydeder ve bağımsız hukuki danışmanlığın yerine geçmez.',
+    },
+  ],
+  saleTitle: 'Satış Sözleşmesi',
+  offplanTitle: 'Proje Aşamasında Satış Sözleşmesi',
+  saleIntro:
+    'Bu sözleşme, aşağıda tanımlanan mülkün satıcı tarafından alıcıya, belirtilen bedel ve koşullarla ' +
+    'satışını kayıt altına alır. Elektronik imza ile imzalanır: her taraf tam adını yazar; platform adı, ' +
+    'zamanı ve bağlantının geldiği IP adresini kaydeder.',
+  offplanIntro:
+    'Bu sözleşme, aşağıda tanımlanan ve hâlâ inşa hâlinde olan bir mülkün, geliştirici tarafından ' +
+    'alıcıya belirtilen bedel ve koşullarla, verilen teslim tarihinde teslim edilmek üzere satışını ' +
+    'kayıt altına alır. Elektronik imza ile imzalanır: her taraf tam adını yazar; platform adı, zamanı ' +
+    've bağlantının geldiği IP adresini kaydeder.',
+  deedTypes: {
+    turkish: 'Türk koçanı (1974 öncesi)',
+    exchange: 'Eşdeğer koçan',
+    allocation: 'Tahsis koçanı',
+    foreign: 'Yabancı koçan',
+    na: 'Belirtilmemiş',
+  },
+  saleClauses: ({ price, deedType }) => [
+    {
+      heading: 'Bedel ve ödeme',
+      body: `Kararlaştırılan bedel ${price} tutarındadır. Alıcı, imza sırasında bir depozito, tamamlanmada ise bakiyeyi işlem odasında kayıtlı şekilde öder. Her ödeme, iki tarafın da aynı kaydı tutabilmesi için orada makbuzlandırılmalıdır.`,
+    },
+    {
+      heading: 'Tapu ve koçan türü',
+      body: `Mülk ${deedType} ile satılmaktadır. Satıcı, tapunun satmaya yetkili olduğu kendi mülkiyetinde bulunduğunu ve açıklanmamış takyidat bulunmadığını beyan eder. Koçan türü alıcının elde ettiği hakkı esaslı biçimde etkiler; tamamlamadan önce bu konuda bağımsız hukuki danışmanlık alınması önemle tavsiye edilir.`,
+    },
+    {
+      heading: 'Satın alma izni',
+      body: 'Vatandaş olmayan alıcıların, tapu devri öncesinde satın alma izni alması gerekir. Başvuru alıcının sorumluluğundadır; satıcı, başvurunun gerektirdiği belgeleri sağlar. İzin gereken hâllerde tamamlama bu izne bağlıdır.',
+    },
+    {
+      heading: 'Devir ve tamamlama',
+      body: 'Tamamlamada bakiye ödenir, mülk teslim edilir ve taraflar tapu devri için Tapu Dairesine giderler. Teslimde bir platform temsilcisi hazır bulunur. Zilyetlik imzada değil, tamamlamada geçer.',
+    },
+    {
+      heading: 'Cayma ve temerrüt',
+      body: 'Alıcı sözleşmeye dayalı bir sebep olmaksızın cayarsa depozito irat kaydedilebilir. Satıcı cayarsa depozito iade edilir. İznin veya tapu araştırmasının olumsuz sonuçlanması bunlardan sayılmaz; bu hâllerde depozito tam olarak iade edilir.',
+    },
+    {
+      heading: 'Uygulanacak hukuk',
+      body: 'Bu sözleşme Kuzey Kıbrıs Türk Cumhuriyeti hukukuna tabidir. Taraflar arasında kararlaştırılan ticari koşulları kaydeder ve bağımsız hukuki danışmanlığın yerine geçmez.',
+    },
+  ],
+  offplanClauses: ({ price, deedType, delivery }) => [
+    {
+      heading: 'Bedel ve ödeme planı',
+      body: `Kararlaştırılan bedel ${price} tutarında olup işlem odasında kayıtlı plana göre ödenir: imzada depozito, inşaat boyunca ara ödemeler ve teslimde bakiye. Her ödeme işlem odasında makbuzlandırılmalıdır.`,
+    },
+    {
+      heading: 'Teslim',
+      body: `Geliştirici, birimi ${delivery} tarihine kadar teslim eder. Teslimin gecikmesi hâlinde geliştirici alıcıya bildirimde bulunur ve revize bir tarih verir. Teslime bağlı ödemeler, ilk tarihte değil, fiilî teslimde muaccel olur.`,
+    },
+    {
+      heading: 'Tapu ve koçan türü',
+      body: `Tapu, birim tamamlandığında ve gerekli olduğu hâllerde izin verildiğinde ${deedType} ile devredilecektir. Devre kadar alıcının hakkı sözleşmenin tapuya şerhi ile korunmalıdır; bu konuda bağımsız hukuki danışmanlık alınması önemle tavsiye edilir.`,
+    },
+    {
+      heading: 'Teknik şartname ve eksik listesi',
+      body: 'Birim, işlem odasında kayıtlı teknik şartnameye uygun olarak teslim edilir. Teslimde taraflar birlikte bir eksik listesi düzenler; geliştirici listedeki işleri makul bir süre içinde giderir.',
+    },
+    {
+      heading: 'Satın alma izni',
+      body: 'Vatandaş olmayan alıcıların, tapu devri öncesinde satın alma izni alması gerekir. Başvuru alıcının sorumluluğundadır; geliştirici, başvurunun gerektirdiği belgeleri sağlar.',
     },
     {
       heading: 'Uygulanacak hukuk',
@@ -264,6 +428,14 @@ const RU: ContractCopy = {
     'Appointed agent': 'Назначенный агент',
     'Landlord agent': 'Агент арендодателя',
     'Tenant agent': 'Агент арендатора',
+    Price: 'Цена',
+    Deed: 'Документ о собственности',
+    Delivery: 'Сдача',
+    'On completion': 'При завершении',
+    Buyer: 'Покупатель',
+    Seller: 'Продавец',
+    'Seller agent': 'Агент продавца',
+    'Buyer agent': 'Агент покупателя',
   },
   months: (n) => `${n} мес.`,
   depositMonths: (n) => `аренда за ${n} мес.`,
@@ -287,6 +459,76 @@ const RU: ContractCopy = {
     {
       heading: 'Прекращение и продление',
       body: 'Любая из сторон вправе направить уведомление в соответствии с согласованным выше сроком. Платформа напомнит обеим сторонам до окончания срока, чтобы продление или выезд можно было организовать заранее.',
+    },
+    {
+      heading: 'Применимое право',
+      body: 'Настоящий договор регулируется правом Турецкой Республики Северного Кипра. Он фиксирует коммерческие условия, согласованные сторонами, и не заменяет независимую юридическую консультацию.',
+    },
+  ],
+  saleTitle: 'Договор купли-продажи',
+  offplanTitle: 'Договор купли-продажи на стадии строительства',
+  saleIntro:
+    'Настоящий договор фиксирует продажу описанного ниже объекта продавцом покупателю по указанной цене ' +
+    'и на указанных условиях. Он подписывается электронной подписью: каждая сторона вводит своё полное ' +
+    'имя, а платформа фиксирует имя, время и IP-адрес подключения.',
+  offplanIntro:
+    'Настоящий договор фиксирует продажу описанного ниже объекта, находящегося в стадии строительства, ' +
+    'застройщиком покупателю по указанной цене и на указанных условиях, со сдачей в указанную дату. Он ' +
+    'подписывается электронной подписью: каждая сторона вводит своё полное имя, а платформа фиксирует ' +
+    'имя, время и IP-адрес подключения.',
+  deedTypes: {
+    turkish: 'Турецкий титул (до 1974 г.)',
+    exchange: 'Обменный титул (Eşdeğer)',
+    allocation: 'Выделенный титул (Tahsis)',
+    foreign: 'Иностранный титул',
+    na: 'Не указан',
+  },
+  saleClauses: ({ price, deedType }) => [
+    {
+      heading: 'Цена и порядок оплаты',
+      body: `Согласованная цена составляет ${price}. Покупатель вносит задаток при подписании и остаток при завершении сделки в порядке, зафиксированном в комнате сделки. По каждому платежу следует загружать квитанцию, чтобы у обеих сторон была одна и та же запись.`,
+    },
+    {
+      heading: 'Титул и тип документа',
+      body: `Объект продаётся с документом «${deedType}». Продавец подтверждает, что титул принадлежит ему и свободен от нераскрытых обременений. Тип документа существенно влияет на то, что получает покупатель, поэтому до завершения сделки настоятельно рекомендуется независимая юридическая консультация по нему.`,
+    },
+    {
+      heading: 'Разрешение на покупку',
+      body: 'Покупателям, не являющимся гражданами, до перехода титула требуется разрешение на покупку. Подача заявления — обязанность покупателя; продавец предоставляет необходимые для заявления документы. Там, где разрешение требуется, завершение сделки обусловлено его получением.',
+    },
+    {
+      heading: 'Переход права и завершение',
+      body: 'При завершении уплачивается остаток, объект передаётся, и стороны обращаются в Земельный кадастр для перехода титула. На передаче присутствует представитель платформы. Владение переходит при завершении, а не при подписании.',
+    },
+    {
+      heading: 'Отказ и нарушение',
+      body: 'Если покупатель отказывается без предусмотренного договором основания, задаток может быть удержан. Если отказывается продавец, задаток возвращается. Это не относится к отказу в разрешении или к результатам проверки титула — в таких случаях задаток возвращается полностью.',
+    },
+    {
+      heading: 'Применимое право',
+      body: 'Настоящий договор регулируется правом Турецкой Республики Северного Кипра. Он фиксирует коммерческие условия, согласованные сторонами, и не заменяет независимую юридическую консультацию.',
+    },
+  ],
+  offplanClauses: ({ price, deedType, delivery }) => [
+    {
+      heading: 'Цена и график платежей',
+      body: `Согласованная цена составляет ${price} и уплачивается по графику, зафиксированному в комнате сделки: задаток при подписании, промежуточные платежи в ходе строительства и остаток при сдаче. По каждому платежу следует загружать квитанцию.`,
+    },
+    {
+      heading: 'Сдача объекта',
+      body: `Застройщик передаёт объект не позднее ${delivery}. При задержке застройщик уведомляет покупателя и сообщает новую дату. Платежи, привязанные к сдаче, наступают по факту передачи, а не по первоначальной дате.`,
+    },
+    {
+      heading: 'Титул и тип документа',
+      body: `Титул передаётся с документом «${deedType}» после завершения строительства и получения разрешения, если оно требуется. До перехода титула интерес покупателя следует защитить регистрацией договора; по этому вопросу настоятельно рекомендуется независимая юридическая консультация.`,
+    },
+    {
+      heading: 'Спецификация и приёмка',
+      body: 'Объект передаётся в соответствии со спецификацией, зафиксированной в комнате сделки. При передаче стороны совместно составляют дефектную ведомость; застройщик устраняет перечисленные замечания в разумный срок.',
+    },
+    {
+      heading: 'Разрешение на покупку',
+      body: 'Покупателям, не являющимся гражданами, до перехода титула требуется разрешение на покупку. Подача заявления — обязанность покупателя; застройщик предоставляет необходимые для заявления документы.',
     },
     {
       heading: 'Применимое право',

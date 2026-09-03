@@ -13,6 +13,8 @@
  *   8. the contract renders in the generating party's language — a Russian
  *      owner gets a Russian mandate, with the fallback recorded for scripts
  *      that cannot be shaped
+ *   9. a purchase deal produces a SALE agreement, not a tenancy — the resale
+ *      pipeline's document, at its own stage, naming buyer and seller
  *
  * Creates every account, listing and assignment it asserts on. The publish gate
  * is a platform setting, so it is restored in a `finally`.
@@ -289,13 +291,51 @@ async function main() {
     ok('8a a Russian owner gets a Russian mandate', ruMandate.terms?.locale === 'ru', `${ruMandate.terms?.locale}`);
     ok('8b the requested locale is recorded too', ruMandate.terms?.requestedLocale === 'ru', `${ruMandate.terms?.requestedLocale}`);
 
+    const { PDFDocument } = await import('pdf-lib');
+
+    // ── 9. a purchase deal produces a sale agreement ──────────────
+    // The mandate is signed and the listing is live, so the resale can now run
+    // to its contract stage and produce the other document this module makes.
+    await req('POST', `/contracts/${ruMandate.id}/sign`, { token: ruOwner, body: { typedName: 'RU Owner' } });
+    await req('POST', `/contracts/${ruMandate.id}/sign`, { token: agent.token, body: { typedName: 'Agent Example' } });
+    await req('POST', `/assignments/${a2.id}/publish`, { token: agent.token, body: { commissionGbp: 4000 } });
+
+    const offersWere = Boolean((await req('GET', '/settings/public')).offersEnabled);
+    await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: true } });
+    try {
+      const buyer = await otp(`+9053${u}5`, 'customer');
+      const offer = await req('POST', `/properties/${p2.id}/offers`, {
+        token: buyer,
+        body: { amount: 178000, currency: 'GBP' },
+      });
+      const { dealId } = await req('POST', `/offers/${offer.id}/respond`, {
+        token: agent.token,
+        body: { action: 'accept' },
+      });
+      // legal_check -> contract_signing
+      await req('POST', `/deals/${dealId}/advance`, { token: buyer });
+
+      const sale = await req('POST', `/deals/${dealId}/contract`, { token: buyer });
+      ok('9a a purchase deal produces a sale agreement', sale.kind === 'purchase_sale', sale.kind);
+      ok('9b not a tenancy', sale.kind !== 'rental_tenancy');
+      ok('9c the agreed price is recorded', Number(sale.terms?.priceAgreed) === 178000, `${sale.terms?.priceAgreed}`);
+      ok('9d the deed type is recorded', !!sale.terms?.deedType, `${sale.terms?.deedType}`);
+
+      const saleLink = await req('GET', `/documents/${sale.documentId}/url`, { token: buyer });
+      const saleBytes = Buffer.from(await (await fetch(saleLink.url)).arrayBuffer());
+      const saleTitle = (await PDFDocument.load(saleBytes)).getTitle() ?? '';
+      ok('9e the PDF is titled as a sale agreement', /Sale and Purchase/i.test(saleTitle), JSON.stringify(saleTitle));
+    } finally {
+      await req('PUT', '/admin/settings/offers.enabled', { token: admin, body: { value: offersWere } })
+        .catch(() => undefined);
+    }
+
     const ruLink = await req('GET', `/documents/${ruMandate.documentId}/url`, { token: ruOwner });
     const ruBytes = Buffer.from(await (await fetch(ruLink.url)).arrayBuffer());
     ok('8c it renders a real PDF', ruBytes.subarray(0, 5).toString() === '%PDF-');
     // Cyrillic used to be transliterated away by the WinAnsi font. Reading the
     // title back out of the rendered PDF is the decisive check that the
     // embedded Unicode face is actually in use.
-    const { PDFDocument } = await import('pdf-lib');
     const ruTitle = (await PDFDocument.load(ruBytes)).getTitle() ?? '';
     ok('8d the PDF title is in Cyrillic', /[Ѐ-ӿ]/.test(ruTitle), JSON.stringify(ruTitle));
     ok('8e and is the mandate title, not the tenancy one', ruTitle.includes('мандат') || ruTitle.includes('Агентский'), JSON.stringify(ruTitle));

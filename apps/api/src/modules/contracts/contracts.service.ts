@@ -25,6 +25,8 @@ import {
  * those deals continue to attach a lawyer-drafted PDF by hand.
  */
 const CONTRACT_STAGE = 'contract';
+/** Both purchase pipelines (resale and off-plan) produce their document here. */
+const SALE_CONTRACT_STAGE = 'contract_signing';
 
 /** Who must sign a tenancy: the principals, not their agents. */
 const SIGNATORY_ROLES = ['buyer', 'seller'];
@@ -34,6 +36,14 @@ const PARTY_LABEL: Record<string, string> = {
   seller: 'Landlord',
   agent_seller_side: 'Landlord agent',
   agent_buyer_side: 'Tenant agent',
+};
+
+/** A sale is between a buyer and a seller, not a tenant and a landlord. */
+const SALE_PARTY_LABEL: Record<string, string> = {
+  buyer: 'Buyer',
+  seller: 'Seller',
+  agent_seller_side: 'Seller agent',
+  agent_buyer_side: 'Buyer agent',
 };
 
 /** A mandate is signed by the owner and the appointed agent (§13.4). */
@@ -51,6 +61,13 @@ const MANDATE_PARTY_LABEL: Record<string, string> = {
  * overwritten rather than versioned: a tenancy has exactly one contract, and
  * the signature history lives in `contract_signatures` where it is queryable.
  */
+/** Which role names a document uses depends on what kind of document it is. */
+function partyLabels(kind: string): Record<string, string> {
+  if (kind === 'agent_mandate') return MANDATE_PARTY_LABEL;
+  if (kind === 'purchase_sale' || kind === 'offplan_sale') return SALE_PARTY_LABEL;
+  return PARTY_LABEL;
+}
+
 @Injectable()
 export class ContractsService {
   constructor(
@@ -74,12 +91,21 @@ export class ContractsService {
     const existing = await this.prisma.contract.findFirst({ where: { dealId } });
     if (existing) return this.detail(userId, existing.id);
 
-    if (deal.kind !== 'rental') {
-      throw new BadRequestException('Contract templates are available for rental deals');
-    }
-    if (deal.currentStageKey !== CONTRACT_STAGE) {
+    // A rental produces a tenancy; a purchase produces a sale agreement, and an
+    // off-plan purchase a materially different one again — stage payments, a
+    // delivery date and snagging rather than a single completion.
+    const isRental = deal.kind === 'rental';
+    const isOffPlan = !isRental && Boolean(deal.projectUnitId);
+    const kind: 'rental_tenancy' | 'purchase_sale' | 'offplan_sale' = isRental
+      ? 'rental_tenancy'
+      : isOffPlan
+        ? 'offplan_sale'
+        : 'purchase_sale';
+
+    const expectedStage = isRental ? CONTRACT_STAGE : SALE_CONTRACT_STAGE;
+    if (deal.currentStageKey !== expectedStage) {
       throw new BadRequestException(
-        `The contract is produced at the contract stage (deal is at ${deal.currentStageKey})`,
+        `The contract is produced at the ${expectedStage} stage (deal is at ${deal.currentStageKey})`,
       );
     }
 
@@ -93,7 +119,7 @@ export class ContractsService {
     // rather than two renderings that could differ.
     const requestedLocale = (await this.localeOf(userId)) ?? 'en';
     const locale = contractLocale(requestedLocale);
-    const terms = { ...this.termsFor(deal), locale, requestedLocale };
+    const terms = { ...this.termsFor(deal), kind, locale, requestedLocale };
     const document = await this.prisma.document.create({
       data: {
         ownerUserId: userId,
@@ -111,7 +137,7 @@ export class ContractsService {
 
     const contract = await this.prisma.contract.create({
       data: {
-        kind: 'rental_tenancy',
+        kind,
         dealId,
         propertyId: deal.propertyId,
         documentId: document.id,
@@ -141,7 +167,7 @@ export class ContractsService {
       action: 'contract.generated',
       entityType: 'contract',
       entityId: contract.id,
-      after: { dealId, kind: 'rental_tenancy' },
+      after: { dealId, kind },
       ip,
     });
 
@@ -298,7 +324,15 @@ export class ContractsService {
       include: {
         parties: { include: { user: { select: { id: true, phone: true, email: true } } } },
         snapshot: true,
-        property: { select: { titleI18n: true, district: true, region: { select: { nameI18n: true } } } },
+        property: {
+          select: {
+            titleI18n: true,
+            district: true,
+            deedType: true,
+            region: { select: { nameI18n: true } },
+          },
+        },
+        projectUnit: { select: { project: { select: { deliveryDate: true } } } },
       },
     });
     if (!deal) throw new NotFoundException('Deal not found');
@@ -450,7 +484,11 @@ export class ContractsService {
     return {
       propertyTitle: (deal.property?.titleI18n as { en?: string })?.en ?? '',
       address: [deal.property?.district, region].filter(Boolean).join(', '),
+      /** Same agreed figure; named per document so the PDF reads naturally. */
       rentAmount: price,
+      priceAgreed: price,
+      deedType: deal.property?.deedType ?? 'na',
+      deliveryDate: deal.projectUnit?.project?.deliveryDate?.toISOString() ?? null,
       currency: deal.snapshot?.currency ?? 'GBP',
       /** TRNC residential tenancies are conventionally annual */
       termMonths: 12,
@@ -475,17 +513,31 @@ export class ContractsService {
       },
     });
 
-    const parties = contract.signatures.map((sig) => ({
-      role:
-        (contract.kind === 'agent_mandate' ? MANDATE_PARTY_LABEL : PARTY_LABEL)[sig.partyRole] ??
-        sig.partyRole,
-      name: sig.user.email ?? sig.user.phone ?? sig.userId,
-      typedName: sig.typedName,
-      signedAt: sig.signedAt,
-    }));
+    // Role names are translated here rather than in each spec: they come from a
+    // per-kind English map, and a Russian contract naming its parties "Buyer"
+    // and "Seller" would be the same half-finished job the font fixed.
+    const docLocale = contractLocale((contract.terms as { locale?: ContractLocale })?.locale);
+    const roleNames = contractCopy(docLocale).labels;
+    const parties = contract.signatures.map((sig) => {
+      const english = partyLabels(contract.kind)[sig.partyRole] ?? sig.partyRole;
+      return {
+        role: roleNames[english] ?? english,
+        name: sig.user.email ?? sig.user.phone ?? sig.userId,
+        typedName: sig.typedName,
+        signedAt: sig.signedAt,
+      };
+    });
 
     if (contract.kind === 'agent_mandate') {
       const buffer = await this.pdf.render(this.mandateSpec(contract, parties));
+      await this.store(contract, buffer);
+      return;
+    }
+
+    if (contract.kind === 'purchase_sale' || contract.kind === 'offplan_sale') {
+      const buffer = await this.pdf.render(
+        this.saleSpec(contract, parties, contract.kind === 'offplan_sale'),
+      );
       await this.store(contract, buffer);
       return;
     }
@@ -551,6 +603,66 @@ ${copy.intro}` : copy.intro,
         sha256: createHash('sha256').update(buffer).digest('hex'),
       },
     });
+  }
+
+  /**
+   * Sale agreement, resale or off-plan (§7 purchase pipelines).
+   *
+   * The deed type is stated as a named legal category rather than translated
+   * into a description: in the TRNC it decides what a buyer actually receives,
+   * and a loose paraphrase in a signed document would be worse than the term.
+   */
+  private saleSpec(
+    contract: { id: string; createdAt: Date; terms: unknown },
+    parties: ContractSpec['parties'],
+    offPlan: boolean,
+  ): ContractSpec {
+    const terms = contract.terms as {
+      propertyTitle: string;
+      address: string;
+      priceAgreed: number | null;
+      currency: string;
+      deedType: string;
+      deliveryDate: string | null;
+      locale?: ContractLocale;
+      requestedLocale?: string;
+    };
+    const copy = contractCopy(contractLocale(terms.locale));
+    const label = (k: string) => copy.labels[k] ?? k;
+    const fallbackNote = terms.requestedLocale
+      ? NOT_IN_YOUR_LANGUAGE[terms.requestedLocale]
+      : undefined;
+
+    const price =
+      terms.priceAgreed === null
+        ? '—'
+        : `${terms.currency ?? 'GBP'} ${terms.priceAgreed.toLocaleString('en-GB')}`;
+    const deed = copy.deedTypes[terms.deedType] ?? copy.deedTypes.na;
+    const delivery = terms.deliveryDate ? terms.deliveryDate.slice(0, 10) : label('On completion');
+
+    const intro = offPlan ? copy.offplanIntro : copy.saleIntro;
+    const facts: ContractSpec['facts'] = [
+      [label('Property'), terms.propertyTitle || '—'],
+      [label('Address'), terms.address || '—'],
+      [label('Price'), price],
+      [label('Deed'), deed],
+      [label('Agreement date'), new Date(contract.createdAt).toISOString().slice(0, 10)],
+    ];
+    if (offPlan) {
+      facts.splice(4, 0, [label('Delivery'), delivery]);
+    }
+
+    return {
+      title: offPlan ? copy.offplanTitle : copy.saleTitle,
+      reference: copy.reference(contract.id),
+      intro: fallbackNote ? `${fallbackNote}\n\n${intro}` : intro,
+      facts,
+      clauses: offPlan
+        ? copy.offplanClauses({ price, deedType: deed, delivery })
+        : copy.saleClauses({ price, deedType: deed }),
+      parties,
+      footer: copy.footer,
+    };
   }
 
   /**
