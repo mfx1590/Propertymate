@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from 'pdf-lib';
+import { readFileSync } from 'fs';
+import { createRequire } from 'module';
+import fontkit from '@pdf-lib/fontkit';
+import { PDFDocument, rgb, type PDFFont, type PDFPage } from 'pdf-lib';
 
 export interface ContractParty {
   role: string;
@@ -19,6 +22,17 @@ export interface ContractSpec {
   footer: string;
 }
 
+/**
+ * Resolved through the package rather than a path relative to this file, so it
+ * works the same from `src/` under ts-node and from `dist/` in the container.
+ * `createRequire` because this compiles to CommonJS, where `import.meta` is
+ * unavailable.
+ */
+const require_ = createRequire(__filename);
+const fontPath = (file: string) => require_.resolve(`dejavu-fonts-ttf/ttf/${file}`);
+const UNICODE_REGULAR = readFileSync(fontPath('DejaVuSans.ttf'));
+const UNICODE_BOLD = readFileSync(fontPath('DejaVuSans-Bold.ttf'));
+
 const MARGIN = 56;
 const PAGE = { width: 595.28, height: 841.89 }; // A4 portrait
 const BODY_SIZE = 10;
@@ -27,12 +41,20 @@ const LINE = 14;
 /**
  * Contract PDF rendering (Plan §7 "template PDF generated", §6.2 mandate).
  *
- * Uses pdf-lib's built-in Helvetica, which is WinAnsi-encoded. That covers
- * English cleanly but cannot represent Turkish ı/ş/ğ, Cyrillic or Arabic, so
- * generated contracts are English-only for v1 and non-encodable characters are
- * transliterated rather than silently crashing the render. Producing TR/RU/FA
- * contracts means embedding a Unicode TTF (fontkit + a Noto face) — a deliberate
- * follow-up, not an oversight.
+ * Renders with an embedded DejaVu Sans rather than pdf-lib's built-in
+ * Helvetica, which is WinAnsi-encoded and cannot represent Turkish ı/ş/ğ or
+ * Cyrillic at all — those used to be transliterated away, so a Russian party
+ * signed a document with their own name spelled in Latin.
+ *
+ * **Farsi is deliberately not rendered in Farsi.** The font has the glyphs, but
+ * Arabic script needs contextual shaping and bidi reordering, and pdf-lib draws
+ * glyphs in the order given with no shaping engine. Measured on this font,
+ * shaping "سلام" yields 3 glyphs where a naive per-codepoint lookup yields 4
+ * different ones — so embedding the font alone produces disconnected letters in
+ * the wrong order. Unreadable text in a legal document is worse than English
+ * text, so FA contracts render in English and say so. Fixing it properly needs
+ * a shaping pass (harfbuzz//`fontkit.layout`) feeding positioned glyphs, or an
+ * HTML-to-PDF renderer.
  */
 @Injectable()
 export class ContractPdfService {
@@ -42,8 +64,10 @@ export class ContractPdfService {
     pdf.setProducer('PropVerify');
     pdf.setCreationDate(new Date());
 
-    const font = await pdf.embedFont(StandardFonts.Helvetica);
-    const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+    pdf.registerFontkit(fontkit);
+    // Subset so a 739KB face does not ride along in full on every contract.
+    const font = await pdf.embedFont(UNICODE_REGULAR, { subset: true });
+    const bold = await pdf.embedFont(UNICODE_BOLD, { subset: true });
 
     let page = pdf.addPage([PAGE.width, PAGE.height]);
     let y = PAGE.height - MARGIN;
@@ -161,19 +185,20 @@ function wrap(text: string, font: PDFFont, size: number, maxWidth: number): stri
   return lines;
 }
 
-const TRANSLITERATE: Record<string, string> = {
-  ı: 'i', İ: 'I', ş: 's', Ş: 'S', ğ: 'g', Ğ: 'G', ö: 'o', Ö: 'O',
-  ü: 'u', Ü: 'U', ç: 'c', Ç: 'C', '’': "'", '‘': "'", '“': '"', '”': '"', '—': '-', '–': '-',
-};
+/**
+ * Arabic-script ranges. Present in the font but not shapeable here (see the
+ * class docblock), so they are stripped rather than drawn wrong. Reaching this
+ * means something bypassed the locale fallback, and a gap is a louder signal
+ * than a line of mangled glyphs.
+ */
+const UNSHAPEABLE = /[؀-ۿݐ-ݿﭐ-﷿ﹰ-﻿]/g;
 
 /**
- * Helvetica is WinAnsi-only. A name with a Turkish ı in it must not crash the
- * render of a legal document, so unrepresentable characters are transliterated
- * where there is an obvious equivalent and dropped otherwise.
+ * The embedded face covers Latin, Turkish and Cyrillic, so nothing in those
+ * scripts needs substituting any more. This is now only a guard: a character
+ * the font cannot draw would otherwise throw mid-render and lose the whole
+ * document.
  */
 function safe(text: string): string {
-  return [...text]
-    .map((ch) => TRANSLITERATE[ch] ?? ch)
-    .filter((ch) => ch.charCodeAt(0) < 256)
-    .join('');
+  return text.replace(UNSHAPEABLE, '');
 }
