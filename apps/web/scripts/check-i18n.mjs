@@ -36,6 +36,7 @@ const ALLOWED_IDENTICAL = {
   'marketInsights.history.perM2': 'tr: a currency-per-unit symbol, identical in every locale that keeps Latin units',
   'adminDisputes.statements.byAdmin': 'tr: "Platform" is the Turkish word too',
   'disputes.statements.admin': 'tr: "Platform" is the Turkish word too',
+  'adminAudit.col.ip': 'the initialism is used untranslated in tr, ru and fa',
   // The English name for these regions is already the Turkish name.
   'regionPage.names.iskele': 'Turkish place name',
   'regionPage.names.guzelyurt': 'Turkish place name',

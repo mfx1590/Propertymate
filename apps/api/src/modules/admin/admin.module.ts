@@ -3,6 +3,8 @@ import { ModerationModule } from '../moderation/moderation.module';
 import { AdminListingsController } from './admin-listings.controller';
 import { UsersAdminController } from './users-admin.controller';
 import { UsersAdminService } from './users-admin.service';
+import { AuditBrowserController, ExportsController } from './exports.controller';
+import { ExportsService } from './exports.service';
 
 /**
  * ModerationModule supplies the identity-ban list: banning from here must
@@ -11,7 +13,7 @@ import { UsersAdminService } from './users-admin.service';
  */
 @Module({
   imports: [ModerationModule],
-  controllers: [AdminListingsController, UsersAdminController],
-  providers: [UsersAdminService],
+  controllers: [AdminListingsController, UsersAdminController, AuditBrowserController, ExportsController],
+  providers: [UsersAdminService, ExportsService],
 })
 export class AdminModule {}

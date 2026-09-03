@@ -65,7 +65,9 @@
       "myReviews": "My reviews",
       "reviewReports": "Review reports",
       "legalRequests": "Quote requests",
-      "myDisputes": "My disputes"
+      "myDisputes": "My disputes",
+      "auditLog": "Audit log",
+      "exports": "Data exports"
     },
     "roles": {
       "customer": "Customer",
@@ -1652,5 +1654,44 @@
     "formCancel": "Cancel",
     "opened": "Your dispute is open. The other side has been told, and an admin will pick it up.",
     "openedLink": "Follow it in My disputes"
+  },
+  "adminAudit": {
+    "title": "Audit log",
+    "subtitle": "Every action anyone has taken on the platform, as it was recorded. Filter, then export exactly what you are looking at.",
+    "anyAction": "Any action",
+    "entityType": "Entity type",
+    "entityId": "Entity id",
+    "actorId": "Actor id",
+    "apply": "Apply",
+    "reset": "Reset",
+    "exportThis": "Export this view",
+    "col": {
+      "when": "When",
+      "actor": "Actor",
+      "action": "Action",
+      "entity": "Entity",
+      "ip": "IP"
+    },
+    "system": "system",
+    "details": "Details",
+    "hide": "Hide",
+    "empty": "Nothing matches these filters.",
+    "more": "Load more"
+  },
+  "adminExports": {
+    "title": "Data exports",
+    "subtitle": "Download a dataset as CSV. Files open cleanly in Excel in every language the platform supports.",
+    "datasets": {
+      "users": "Users",
+      "listings": "Listings",
+      "deals": "Deals",
+      "subscriptions": "Subscriptions",
+      "payments": "Payment ledger",
+      "disputes": "Disputes",
+      "audit": "Audit log"
+    },
+    "rows": "{count, plural, one {# row} other {# rows}}",
+    "download": "Download CSV",
+    "note": "Every download is written to the audit log with who pulled it, which dataset, and how many rows. Password hashes and session tokens are never exported."
   }
 }

@@ -110,6 +110,8 @@ export const ROLE_MODULES: Partial<Record<RoleKey, RoleModule>> = {
       { labelKey: 'users', href: '/dashboard/admin/users' },
       { labelKey: 'disputes', href: '/dashboard/admin/disputes' },
       { labelKey: 'reviewReports', href: '/dashboard/admin/reviews' },
+      { labelKey: 'auditLog', href: '/dashboard/admin/audit' },
+      { labelKey: 'exports', href: '/dashboard/admin/exports' },
     ],
   },
   // customer intentionally has no module: customers use the public site

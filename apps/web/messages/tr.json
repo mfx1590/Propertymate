@@ -65,7 +65,9 @@
       "myReviews": "Değerlendirmelerim",
       "reviewReports": "Değerlendirme bildirimleri",
       "legalRequests": "Teklif talepleri",
-      "myDisputes": "İhtilaflarım"
+      "myDisputes": "İhtilaflarım",
+      "auditLog": "Denetim kaydı",
+      "exports": "Veri dışa aktarma"
     },
     "roles": {
       "customer": "Müşteri",
@@ -1652,5 +1654,44 @@
     "formCancel": "Vazgeç",
     "opened": "İhtilafınız açıldı. Karşı tarafa bildirildi; bir yönetici dosyayı ele alacak.",
     "openedLink": "İhtilaflarım sayfasından takip edin"
+  },
+  "adminAudit": {
+    "title": "Denetim kaydı",
+    "subtitle": "Platformda herkesin yaptığı her işlem, kaydedildiği hâliyle. Filtreleyin, sonra tam olarak gördüğünüzü dışa aktarın.",
+    "anyAction": "Tüm işlemler",
+    "entityType": "Varlık türü",
+    "entityId": "Varlık kimliği",
+    "actorId": "Aktör kimliği",
+    "apply": "Uygula",
+    "reset": "Sıfırla",
+    "exportThis": "Bu görünümü dışa aktar",
+    "col": {
+      "when": "Ne zaman",
+      "actor": "Aktör",
+      "action": "İşlem",
+      "entity": "Varlık",
+      "ip": "IP"
+    },
+    "system": "sistem",
+    "details": "Ayrıntılar",
+    "hide": "Gizle",
+    "empty": "Bu filtrelere uyan kayıt yok.",
+    "more": "Daha fazla yükle"
+  },
+  "adminExports": {
+    "title": "Veri dışa aktarma",
+    "subtitle": "Bir veri kümesini CSV olarak indirin. Dosyalar platformun desteklediği her dilde Excel’de sorunsuz açılır.",
+    "datasets": {
+      "users": "Kullanıcılar",
+      "listings": "İlanlar",
+      "deals": "İşlemler",
+      "subscriptions": "Abonelikler",
+      "payments": "Ödeme kaydı",
+      "disputes": "İhtilaflar",
+      "audit": "Denetim kaydı"
+    },
+    "rows": "{count, plural, other {# satır}}",
+    "download": "CSV indir",
+    "note": "Her indirme; kimin, hangi veri kümesini, kaç satır çektiği bilgisiyle denetim kaydına yazılır. Parola özetleri ve oturum belirteçleri asla dışa aktarılmaz."
   }
 }
