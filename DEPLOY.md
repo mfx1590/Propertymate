@@ -5,8 +5,7 @@ The complete runbook for the single-VPS deployment on `propertymate.tech`
 `docs/deployment.md`, which now just points here.
 
 Two kinds of reader: **first deployment** (sections 1–5), and **updating the
-live box** (section 6 — which is what you need right now: the VPS is ten
-commits and five migrations behind `main`).
+live box** (section 6, followed by the section 7 checklist).
 
 ---
 
