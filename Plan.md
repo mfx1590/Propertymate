@@ -123,6 +123,13 @@ with Meta in each of the four languages.
 > **Local infra note:** the Redis host port is overridable via `REDIS_PORT` (compose defaults to
 > `6379`) for machines where another project already holds 6379.
 
+> **Deployment runbook (2026-09-04):** consolidated into [DEPLOY.md](DEPLOY.md) at the repository root
+> (`docs/deployment.md` is now a pointer). It carries the exact update sequence for the live box —
+> `up --build`, then a **re-run of `db:seed`** (which writes the RU/FA region names and the lawyer
+> role), optional `db:demo`, one `market-snapshot` trigger, one search reindex — plus a per-feature
+> checklist of what to look at, and what is inert until `RESEND_API_KEY` and the WhatsApp credentials
+> are set. The VPS was last deployed at `5eff395`; ten commits and five migrations are pending there.
+
 > **CI consolidation (2026-09-04):** with 22 e2e suites each spending a few OTP sends against the
 > §2.4 limit of 5 per minute, the pipeline had grown 21 × `sleep 60` between suites — 21 minutes of
 > a 25-minute run. `AUTH_THROTTLE_BYPASS=1` now switches rate limiting off for a **non-production**

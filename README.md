@@ -4,7 +4,7 @@ Trust-first real estate super app for the TRNC. Every property, agent, agency an
 document-verified before going live. Covers the full journey: discovery → viewing → offer →
 contract → completion → post-deal services.
 
-> Master specification: [Plan.md](./Plan.md). The codebase is name-agnostic (`propverify` is a working name).
+> Master specification: [Plan.md](./Plan.md). Deployment runbook: [DEPLOY.md](./DEPLOY.md). The codebase is name-agnostic (`propverify` is a working name).
 
 ## Repo layout (Turborepo + npm workspaces)
 
