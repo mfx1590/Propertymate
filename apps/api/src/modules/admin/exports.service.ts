@@ -123,8 +123,12 @@ export class ExportsService {
 
   /**
    * Stream one dataset as CSV onto the response. The audit row is written
-   * AFTER the stream completes, with the real row count — an export that
-   * failed halfway is logged as what it was.
+   * after the data but BEFORE the response is ended, with the real row count
+   * — so an export that failed halfway is logged as what it was, and by the
+   * time a client sees the download complete, the record of it exists. The
+   * first version ended the response first and wrote the row after; the
+   * client then read the audit trail before the row landed, on a runner
+   * where the database was a few milliseconds slower than the socket.
    */
   async streamCsv(
     adminId: string,
@@ -147,16 +151,20 @@ export class ExportsService {
     try {
       rowCount = await this.writeDataset(ds, res, opts.auditFilter ?? {});
     } finally {
-      res.end();
-      await this.audit.log({
-        actorId: adminId,
-        action: 'data.export',
-        entityType: 'export',
-        entityId: ds,
-        // Dates in the filter serialised to strings — the audit column is JSON.
-        after: JSON.parse(JSON.stringify({ dataset: ds, rowCount, filter: opts.auditFilter ?? null })),
-        ip: opts.ip,
-      });
+      try {
+        await this.audit.log({
+          actorId: adminId,
+          action: 'data.export',
+          entityType: 'export',
+          entityId: ds,
+          // Dates in the filter serialised to strings — the audit column is JSON.
+          after: JSON.parse(JSON.stringify({ dataset: ds, rowCount, filter: opts.auditFilter ?? null })),
+          ip: opts.ip,
+        });
+      } finally {
+        // Whatever happened to the audit write, the client must not hang.
+        res.end();
+      }
     }
   }
 
