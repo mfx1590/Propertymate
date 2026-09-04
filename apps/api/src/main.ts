@@ -3,6 +3,7 @@ import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { throttleBypassActive } from './common/guards/app-throttler.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -33,6 +34,12 @@ async function bootstrap() {
     ],
     credentials: true,
   });
+
+  // Said once, loudly, at boot: a process with the §2.4 limits off must never
+  // be mistaken for a normal one when someone reads the log later.
+  if (throttleBypassActive()) {
+    logger.warn('AUTH_THROTTLE_BYPASS is set — rate limiting is OFF for this non-production process');
+  }
 
   // flush pino + close DB/connections cleanly on SIGTERM/SIGINT
   app.enableShutdownHooks();

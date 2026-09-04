@@ -122,6 +122,15 @@ with Meta in each of the four languages.
 > **Local infra note:** the Redis host port is overridable via `REDIS_PORT` (compose defaults to
 > `6379`) for machines where another project already holds 6379.
 
+> **CI consolidation (2026-09-04):** with 22 e2e suites each spending a few OTP sends against the
+> §2.4 limit of 5 per minute, the pipeline had grown 21 × `sleep 60` between suites — 21 minutes of
+> a 25-minute run. `AUTH_THROTTLE_BYPASS=1` now switches rate limiting off for a **non-production**
+> process only (the production Dockerfile bakes `NODE_ENV=production`, and the guard ignores the flag
+> under it, so no `.env` mistake on the VPS can disable the limits); the API logs a warning at boot
+> when it is active. CI sets it on the API start step and the sleeps are gone. No suite ever asserted
+> a 429 — they only backed off on one — so nothing tested was lost. Set it locally before e2e runs
+> too; a run that had to wait out a throttle window proved less than it appeared to.
+
 ### Change Log (spec/role/requirement changes made on request)
 
 | Date | Change | Requested by | Sections touched |

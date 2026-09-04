@@ -69,6 +69,12 @@ jobs:
           npm run build -w apps/api
 
       - name: Start API
+        # Rate limiting off for the suites (non-production only — see
+        # apps/api/src/common/guards/app-throttler.guard.ts). Before this, each
+        # pair of suites needed a 60s pause for the OTP window to drain: 21
+        # minutes of sleep in a 25-minute pipeline.
+        env:
+          AUTH_THROTTLE_BYPASS: '1'
         run: |
           node apps/api/dist/main.js > api.log 2>&1 &
           for i in $(seq 1 30); do
@@ -79,132 +85,65 @@ jobs:
       - name: Run critical-flow e2e suite
         run: npm run test:e2e -w apps/api
 
-      # Each suite spends OTP requests (3 / 2 / 4 / 5 / 1 / 4 / 1 / 3 / 3 / 3 / 1 / 2 / 5 / 2 / 1 / 4 / 2 / 5 / 2 / 1 / 3 / 1) against the 5-per-60s
-      # limit on /auth/otp/request (§2.4), so every pair needs the window to
-      # drain first. The suites also back off on a 429 themselves, so a slow
-      # runner that overruns the gap retries instead of failing the build.
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
-
       - name: Run project-module e2e suite
         run: npm run test:e2e:projects -w apps/api
-
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
 
       - name: Run agency-team e2e suite
         run: npm run test:e2e:team -w apps/api
 
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
-
       - name: Run reputation + analytics e2e suite
         run: npm run test:e2e:reputation -w apps/api
-
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
 
       - name: Run notification-channel e2e suite
         run: npm run test:e2e:notifications -w apps/api
 
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
-
       - name: Run lead-inbox e2e suite
         run: npm run test:e2e:leads -w apps/api
-
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
 
       - name: Run recommendation e2e suite
         run: npm run test:e2e:recommendations -w apps/api
 
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
-
       - name: Run contract e-sign e2e suite
         run: npm run test:e2e:contracts -w apps/api
-
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
 
       - name: Run referral e2e suite
         run: npm run test:e2e:referrals -w apps/api
 
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
-
       - name: Run admin-console e2e suite
         run: npm run test:e2e:admin -w apps/api
-
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
 
       - name: Run search-suggestion e2e suite
         run: npm run test:e2e:search -w apps/api
 
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
-
       - name: Run push-device e2e suite
         run: npm run test:e2e:push -w apps/api
-
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
 
       - name: Run review-moderation e2e suite
         run: npm run test:e2e:moderation -w apps/api
 
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
-
       - name: Run discovery-alert e2e suite
         run: npm run test:e2e:alerts -w apps/api
-
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
 
       - name: Run region-page e2e suite
         run: npm run test:e2e:regions -w apps/api
 
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
-
       - name: Run agent-mandate e2e suite
         run: npm run test:e2e:mandate -w apps/api
-
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
 
       - name: Run map-search e2e suite
         run: npm run test:e2e:map -w apps/api
 
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
-
       - name: Run lawyer-marketplace e2e suite
         run: npm run test:e2e:legal -w apps/api
-
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
 
       - name: Run payment-ledger e2e suite
         run: npm run test:e2e:payments -w apps/api
 
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
-
       - name: Run market-insights e2e suite
         run: npm run test:e2e:insights -w apps/api
 
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
-
       - name: Run dispute-workflow e2e suite
         run: npm run test:e2e:disputes -w apps/api
-
-      - name: Let the OTP rate-limit window drain
-        run: sleep 60
 
       - name: Run data-export e2e suite
         run: npm run test:e2e:exports -w apps/api
