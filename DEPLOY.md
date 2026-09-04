@@ -123,13 +123,11 @@ docker compose -f docker-compose.prod.yml logs api | grep "OTP for"
 
 ---
 
-## 6. Updating the live box — do this now
+## 6. Updating the live box
 
-The VPS was last deployed at `5eff395`. Since then: ten commits, five
-migrations (lawyer marketplace, plan pricing + payment ledger, market
-snapshots, dispute statements, document-number OCR), all applied
-automatically on boot. Everything after the `up` is what makes the new
-features visible.
+This is the sequence for every update. Migrations apply automatically on
+boot; everything after the `up` is what makes new features visible. Last run
+in full on 2026-09-04, bringing the box to `29f1b46`.
 
 ```bash
 cd ~/Propertymate && git pull && docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
@@ -172,8 +170,7 @@ curl -s -X POST https://api.propertymate.tech/search/reindex -H "Authorization: 
 
 ## 7. What to look at afterwards
 
-Eighteen features have landed since anyone last saw the site. In the order
-they are quickest to check:
+After an update, in the order they are quickest to check:
 
 | Page | What should be there |
 |---|---|

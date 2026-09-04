@@ -128,7 +128,7 @@ with Meta in each of the four languages.
 > `up --build`, then a **re-run of `db:seed`** (which writes the RU/FA region names and the lawyer
 > role), optional `db:demo`, one `market-snapshot` trigger, one search reindex — plus a per-feature
 > checklist of what to look at, and what is inert until `RESEND_API_KEY` and the WhatsApp credentials
-> are set. The VPS was last deployed at `5eff395`; ten commits and five migrations are pending there.
+> are set. **Deployed 2026-09-04:** the VPS ran the full sequence (pull/rebuild, seed, demo, snapshot for all six regions, reindex of 50 listings, health ready) and is at `29f1b46` — every step through 28 is live on propertymate.tech. Still unset there: `RESEND_API_KEY` and the WhatsApp credentials.
 
 > **CI consolidation (2026-09-04):** with 22 e2e suites each spending a few OTP sends against the
 > §2.4 limit of 5 per minute, the pipeline had grown 21 × `sleep 60` between suites — 21 minutes of
