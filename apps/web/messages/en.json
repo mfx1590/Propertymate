@@ -349,7 +349,8 @@
       "wrong_type": "Wrong type",
       "suspected_forgery": "Suspected forgery",
       "other": "Other"
-    }
+    },
+    "docNumberRead": "No. {number} (read by OCR)"
   },
   "listings": {
     "kind": {

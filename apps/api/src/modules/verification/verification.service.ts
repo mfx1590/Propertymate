@@ -176,12 +176,24 @@ export class VerificationService {
     // §13.2 durable ban: the same identity papers turning up on a new account.
     // A separate, louder signal than generic file reuse — reuse can be innocent
     // (a shared utility bill), this cannot.
+    // Two keys (step 28): the file hash catches the same upload; the OCR'd
+    // document number catches the same passport photographed again, which is
+    // what someone opening a second account actually does.
+    const numberHashes = documents.map((d) => d.docNumberHash).filter((h): h is string => !!h);
     const bannedMatches = await this.prisma.bannedIdentity.findMany({
-      where: { sha256: { in: documents.map((d) => d.sha256) } },
-      select: { sha256: true, documentType: true, bannedUserId: true },
+      where: {
+        OR: [
+          { sha256: { in: documents.map((d) => d.sha256) } },
+          ...(numberHashes.length ? [{ docNumberHash: { in: numberHashes } }] : []),
+        ],
+      },
+      select: { sha256: true, docNumberHash: true, documentType: true, bannedUserId: true },
     });
-    const bannedIdentitySignals = bannedMatches.map(
-      (m) => `${m.documentType}: this document belongs to a BANNED account (${m.bannedUserId})`,
+    const fileHashes = new Set(documents.map((d) => d.sha256));
+    const bannedIdentitySignals = bannedMatches.map((m) =>
+      fileHashes.has(m.sha256)
+        ? `${m.documentType}: this document belongs to a BANNED account (${m.bannedUserId})`
+        : `${m.documentType}: the DOCUMENT NUMBER on this upload matches a BANNED account (${m.bannedUserId}) — same papers, re-photographed`,
     );
 
     return {
@@ -210,6 +222,9 @@ export class VerificationService {
         rejectNote: d.rejectNote,
         uploadedAt: d.uploadedAt,
         ownerUserId: d.ownerUserId,
+        // step 28: what OCR read, shown to the reviewing admin beside the scan
+        docNumber: d.docNumber,
+        docNumberHash: d.docNumberHash,
         // watermark-style viewer overlay is a web concern; URL is 5-min signed
         signedUrl: await this.storage.signedDocumentUrl(d.storageKey, 300),
       })),
@@ -306,10 +321,16 @@ export class VerificationService {
       const docIds = documentDecisions.map((d) => d.documentId);
       const hashes = await this.prisma.document.findMany({
         where: { id: { in: docIds } },
-        select: { sha256: true },
+        select: { sha256: true, docNumberHash: true },
       });
+      const numberHashes = hashes.map((h) => h.docNumberHash).filter((h): h is string => !!h);
       const blocked = await this.prisma.bannedIdentity.findMany({
-        where: { sha256: { in: hashes.map((h) => h.sha256) } },
+        where: {
+          OR: [
+            { sha256: { in: hashes.map((h) => h.sha256) } },
+            ...(numberHashes.length ? [{ docNumberHash: { in: numberHashes } }] : []),
+          ],
+        },
         select: { documentType: true, bannedUserId: true },
       });
       if (blocked.length > 0) {

@@ -349,7 +349,8 @@
       "wrong_type": "Yanlış tür",
       "suspected_forgery": "Sahtecilik şüphesi",
       "other": "Diğer"
-    }
+    },
+    "docNumberRead": "No. {number} (OCR ile okundu)"
   },
   "listings": {
     "kind": {

@@ -349,7 +349,8 @@
       "wrong_type": "Неверный тип",
       "suspected_forgery": "Подозрение на подделку",
       "other": "Другое"
-    }
+    },
+    "docNumberRead": "№ {number} (распознано OCR)"
   },
   "listings": {
     "kind": {

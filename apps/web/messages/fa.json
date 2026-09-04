@@ -349,7 +349,8 @@
       "wrong_type": "نوع نادرست",
       "suspected_forgery": "احتمال جعل",
       "other": "دیگر"
-    }
+    },
+    "docNumberRead": "شمارهٔ {number} (خوانده‌شده با OCR)"
   },
   "listings": {
     "kind": {

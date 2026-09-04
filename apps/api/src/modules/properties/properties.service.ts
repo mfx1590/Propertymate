@@ -11,6 +11,8 @@ import { MIN_LISTING_PHOTOS, VERIFICATION_SLA_HOURS } from '@propverify/shared';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
 import { StorageService } from '../../common/storage/storage.service';
+import { OcrService } from '../../common/ocr/ocr.service';
+import { isOcrDocument } from '../../common/identity-documents';
 import { MediaService } from '../media/media.service';
 import { SubscriptionsService } from '../marketplace/subscriptions.service';
 import { UpdatePropertyDto } from './dto/properties.dto';
@@ -32,6 +34,7 @@ export class PropertiesService {
     private readonly media: MediaService,
     private readonly subscriptions: SubscriptionsService,
     private readonly events: EventEmitter2,
+    private readonly ocr: OcrService,
   ) {}
 
   // ── drafts & editing ─────────────────────────────────────────────
@@ -239,6 +242,11 @@ export class PropertiesService {
         status: 'pending',
       },
     });
+
+    // §13.2 step 28: an owner's ID on a listing is identity paper too.
+    if (isOcrDocument(documentType, file.mimetype)) {
+      void this.ocr.processDocument(doc.id, file.buffer);
+    }
     // re-upload of a rejected doc requeues the listing for review (Plan §4 step 6/7)
     const property = await this.prisma.property.findUnique({
       where: { id: propertyId },

@@ -68,6 +68,9 @@ jobs:
           npm run build -w packages/shared
           npm run build -w apps/api
 
+      - name: Fetch OCR language data (step 28)
+        run: npm run ocr:fetch -w apps/api
+
       - name: Start API
         # Rate limiting off for the suites (non-production only — see
         # apps/api/src/common/guards/app-throttler.guard.ts). Before this, each
@@ -147,6 +150,9 @@ jobs:
 
       - name: Run data-export e2e suite
         run: npm run test:e2e:exports -w apps/api
+
+      - name: Run identity-OCR e2e suite
+        run: npm run test:e2e:ocr -w apps/api
 
       - name: API logs on failure
         if: failure()

@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { PinoLoggerModule } from './common/logging/logger.module';
 import { AuditModule } from './common/audit/audit.module';
 import { StorageModule } from './common/storage/storage.module';
+import { OcrModule } from './common/ocr/ocr.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { AppThrottlerGuard } from './common/guards/app-throttler.guard';
 import { PermissionsGuard } from './common/guards/permissions.guard';
@@ -47,6 +48,7 @@ import { JobsModule } from './jobs/jobs.module';
     PrismaModule,
     AuditModule,
     StorageModule,
+    OcrModule,
     AuthModule,
     UsersModule,
     RolesModule,

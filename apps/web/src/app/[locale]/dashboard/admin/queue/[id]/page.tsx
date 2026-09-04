@@ -11,6 +11,8 @@ const REASON_CODES = ['illegible', 'expired', 'name_mismatch', 'wrong_type', 'su
 interface ReviewDoc {
   id: string;
   documentType: string;
+  /** step 28: what local OCR read off an identity document, if anything */
+  docNumber?: string | null;
   mime: string;
   status: string;
   rejectReasonCode: string | null;
@@ -161,6 +163,13 @@ export default function ReviewDetailPage() {
             <div key={doc.id} className="rounded-xl border border-gray-200 p-4">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="font-medium">{doc.documentType}</span>
+                {/* step 28: the number OCR read — beside the scan, so the admin
+                    can check the machine against the paper in one glance */}
+                {doc.docNumber && (
+                  <span className="ms-2 rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[11px] text-gray-600">
+                    {t('docNumberRead', { number: doc.docNumber })}
+                  </span>
+                )}
                 <span className="text-xs text-gray-400">
                   {new Date(doc.uploadedAt).toLocaleString()} · {doc.mime}
                 </span>

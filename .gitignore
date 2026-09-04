@@ -39,3 +39,7 @@ test-results/
 
 # ts incremental build info
 *.tsbuildinfo
+
+# Tesseract language data — fetched by `npm run ocr:fetch -w apps/api` (step 28)
+apps/api/ocr/*.traineddata
+apps/api/ocr/*.traineddata.gz

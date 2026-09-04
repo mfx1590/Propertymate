@@ -559,6 +559,13 @@ model Document {
   status           DocumentStatus    @default(pending)
   rejectReasonCode RejectReasonCode? @map("reject_reason_code")
   rejectNote       String?           @map("reject_note")
+  /// The document number read off an identity document by local OCR (step 28),
+  /// normalised — uppercase, no spaces or MRZ filler. Null when nothing legible
+  /// was found, which is the honest answer for a bad photo or a PDF.
+  docNumber        String?           @map("doc_number")
+  /// SHA-256 of `docNumber`, so a banned identity can be matched by the number
+  /// without the number itself being stored on the ban list.
+  docNumberHash    String?           @map("doc_number_hash")
   uploadedAt       DateTime          @default(now()) @map("uploaded_at")
   deletedAt        DateTime?         @map("deleted_at")
 
@@ -568,6 +575,7 @@ model Document {
   contract      Contract?
 
   @@index([sha256]) // same-document-across-accounts fraud signal (Plan §4)
+  @@index([docNumberHash]) // same PERSON across accounts — survives a re-photograph (§13.2)
   @@index([entityType, entityId])
   @@map("documents")
 }
@@ -1131,6 +1139,9 @@ model BannedIdentity {
   bannedUserId String   @map("banned_user_id")
   /// SHA-256 of the identity document as uploaded.
   sha256       String   @unique
+  /// SHA-256 of the OCR'd document number, when one was read. This is what
+  /// catches the same passport re-photographed — the file hash never can.
+  docNumberHash String? @map("doc_number_hash")
   documentType String   @map("document_type")
   reason       String?
   createdAt    DateTime @default(now()) @map("created_at")
@@ -1138,6 +1149,7 @@ model BannedIdentity {
   bannedUser User @relation("BannedIdentityUser", fields: [bannedUserId], references: [id], onDelete: Cascade)
 
   @@index([bannedUserId])
+  @@index([docNumberHash])
   @@map("banned_identities")
 }
 

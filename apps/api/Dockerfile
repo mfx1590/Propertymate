@@ -24,6 +24,10 @@ COPY . .
 RUN npx prisma generate --schema apps/api/prisma/schema.prisma
 RUN npm run build -w @propverify/shared
 RUN npm run build -w @propverify/api
+# Tesseract language data for the §13.2 document-number OCR (step 28). Fetched
+# at build so the runtime container needs no egress and no identity upload
+# ever waits on a download.
+RUN npm run ocr:fetch -w @propverify/api
 
 # ── runtime ──────────────────────────────────────────────────────────
 FROM node:20-bookworm-slim AS runtime

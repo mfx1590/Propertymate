@@ -36,7 +36,9 @@
     "test:e2e:payments": "node test/e2e/payment-ledger-flows.mjs",
     "test:e2e:insights": "node test/e2e/market-insights-flows.mjs",
     "test:e2e:disputes": "node test/e2e/dispute-workflow-flows.mjs",
-    "test:e2e:exports": "node test/e2e/data-export-flows.mjs"
+    "test:e2e:exports": "node test/e2e/data-export-flows.mjs",
+    "test:e2e:ocr": "node test/e2e/identity-ocr-flows.mjs",
+    "ocr:fetch": "node scripts/fetch-ocr-lang.mjs"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
@@ -71,7 +73,8 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "sharp": "^0.35.3",
-    "socket.io": "^4.8.3"
+    "socket.io": "^4.8.3",
+    "tesseract.js": "^5.1.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.4.9",

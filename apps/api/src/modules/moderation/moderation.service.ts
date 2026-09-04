@@ -10,7 +10,7 @@ import { SettingsService } from '../marketplace/settings.service';
  * Only these make a ban durable — a shared utility bill says nothing about who
  * is holding the account.
  */
-const IDENTITY_DOCUMENT_TYPES = ['government_id', 'owner_id', 'selfie_with_id', 'signatory_id'];
+import { IDENTITY_DOCUMENT_TYPES } from '../../common/identity-documents';
 
 /** Default from Plan §13.2 ("after 2–3 warnings, configurable"). */
 const DEFAULT_WARNINGS_BEFORE_BAN = 3;
@@ -400,10 +400,10 @@ export class ModerationService {
     const docs = await this.prisma.document.findMany({
       where: {
         ownerUserId: userId,
-        documentType: { in: IDENTITY_DOCUMENT_TYPES },
+        documentType: { in: [...IDENTITY_DOCUMENT_TYPES] },
         deletedAt: null,
       },
-      select: { sha256: true, documentType: true },
+      select: { sha256: true, documentType: true, docNumberHash: true },
     });
 
     let recorded = 0;
@@ -415,6 +415,9 @@ export class ModerationService {
           data: {
             bannedUserId: userId,
             sha256: doc.sha256,
+            // The number, where OCR read one (step 28). This is the key that
+            // survives a re-photograph; the file hash above does not.
+            docNumberHash: doc.docNumberHash,
             documentType: doc.documentType,
             reason: reason?.trim() || null,
           },

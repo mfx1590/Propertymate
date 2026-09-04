@@ -10,6 +10,8 @@ import { validate } from 'class-validator';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuditService } from '../../common/audit/audit.service';
 import { StorageService } from '../../common/storage/storage.service';
+import { OcrService } from '../../common/ocr/ocr.service';
+import { isOcrDocument } from '../../common/identity-documents';
 import {
   ApplicableRoleKey,
   UpdateAgencyProfileDto,
@@ -32,6 +34,7 @@ export class ProfilesService {
     private readonly prisma: PrismaService,
     private readonly audit: AuditService,
     private readonly storage: StorageService,
+    private readonly ocr: OcrService,
   ) {}
 
   async applyForRole(userId: string, roleKey: ApplicableRoleKey, ip?: string) {
@@ -227,6 +230,12 @@ export class ProfilesService {
       },
     });
 
+    // §13.2 step 28: read the document number off identity papers, in the
+    // background — a slow OCR pass must not sit between Upload and "done".
+    if (isOcrDocument(documentType, file.mimetype)) {
+      void this.ocr.processDocument(doc.id, file.buffer);
+    }
+
     // re-upload after a rejection requeues the profile for review
     const open = await this.prisma.verificationItem.count({
       where: { entityType: 'profile', entityId: userRole.id, status: { in: ['queued', 'claimed'] } },
@@ -266,6 +275,7 @@ export class ProfilesService {
         status: true,
         rejectReasonCode: true,
         rejectNote: true,
+        docNumber: true,
         uploadedAt: true,
       },
       orderBy: { uploadedAt: 'desc' },
