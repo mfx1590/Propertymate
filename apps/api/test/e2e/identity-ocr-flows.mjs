@@ -96,20 +96,35 @@ async function retry(fn, predicate, tries = 40, gap = 500) {
  * zone whose second line begins with the document number. `scale` changes
  * the rendered size so two cards with the same number have different bytes.
  */
+/** ICAO 9303 check digit (7-3-1 weights, A=10…Z=35, `<`=0, mod 10). */
+function mrzCheckDigit(field) {
+  const w = [7, 3, 1];
+  let sum = 0;
+  for (let i = 0; i < field.length; i++) {
+    const ch = field[i];
+    const v = ch === '<' ? 0 : /[0-9]/.test(ch) ? Number(ch) : ch.charCodeAt(0) - 55;
+    sum += v * w[i % 3];
+  }
+  return sum % 10;
+}
+
 async function passportPng(number, scale) {
   const w = Math.round(1000 * scale);
   const h = Math.round(640 * scale);
   const fs = Math.round(38 * scale);
   const mrz1 = 'P<GBRDOE<<JOHN<ANDREW<<<<<<<<<<<<<<<<<<<<<<<<'.padEnd(44, '<');
-  const mrz2 = `${number.padEnd(9, '<')}0GBR8001011M3001011<<<<<<<<<<<<<<04`.padEnd(44, '<');
+  // A real check digit after the number: the API verifies reads against it
+  // and repairs single confused glyphs, so the card must carry a true one.
+  const field = number.padEnd(9, '<');
+  const mrz2 = `${field}${mrzCheckDigit(field)}GBR8001011M3001011<<<<<<<<<<<<<<04`.padEnd(44, '<');
   // The MRZ filler is `<`, which is also XML's one forbidden character in text.
   const xml = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">
     <rect width="100%" height="100%" fill="white"/>
     <text x="${40 * scale}" y="${90 * scale}" font-family="Arial" font-size="${fs}" fill="black">PASSPORT</text>
     <text x="${40 * scale}" y="${180 * scale}" font-family="Arial" font-size="${fs}" fill="black">Passport No: ${xml(number)}</text>
-    <text x="${40 * scale}" y="${500 * scale}" font-family="Courier New" font-size="${fs}" fill="black" xml:space="preserve">${xml(mrz1)}</text>
-    <text x="${40 * scale}" y="${560 * scale}" font-family="Courier New" font-size="${fs}" fill="black" xml:space="preserve">${xml(mrz2)}</text>
+    <text x="${40 * scale}" y="${500 * scale}" font-family="Courier New, Liberation Mono, monospace" font-size="${fs}" fill="black" xml:space="preserve">${xml(mrz1)}</text>
+    <text x="${40 * scale}" y="${560 * scale}" font-family="Courier New, Liberation Mono, monospace" font-size="${fs}" fill="black" xml:space="preserve">${xml(mrz2)}</text>
   </svg>`;
   return sharp(Buffer.from(svg)).png().toBuffer();
 }
@@ -193,14 +208,17 @@ async function main() {
     const cardB = await passportPng(NUMBER, 1.3);
     ok('3a the second image is a different file', !cardA.equals(cardB) && cardA.length !== cardB.length);
     await uploadProfile(agentB, cardB, 'B');
-    await retry(
+    const docsB = await retry(
       () => req('GET', '/users/me/profile/solo_agent/documents', { token: agentB }),
       (docs) => docs.some((d) => d.documentType === 'government_id' && d.docNumber),
     );
+    const readB = docsB.find((d) => d.documentType === 'government_id')?.docNumber ?? null;
+    // Stated separately so a mismatch names the misread instead of just "[]".
+    ok('3b′ the larger render reads the same number', readB === NUMBER, `A=${NUMBER} B=${readB}`);
 
     const itemB = await queueItemFor(phones.b);
     const detailB = await req('GET', `/admin/verification/${itemB.id}`, { token: admin });
-    ok('3b the queue flags the banned identity from the NUMBER alone', detailB.profile.bannedIdentityMatch === true, JSON.stringify(detailB.profile.fraudSignals));
+    ok('3b the queue flags the banned identity from the NUMBER alone', detailB.profile.bannedIdentityMatch === true, `A=${NUMBER} B=${readB} signals=${JSON.stringify(detailB.profile.fraudSignals)}`);
     ok('3c and the signal says it was re-photographed, naming the banned account', detailB.profile.fraudSignals.some((s) => s.includes('DOCUMENT NUMBER') && s.includes(idA)), JSON.stringify(detailB.profile.fraudSignals));
     ok('3d while the file-hash signal, correctly, is silent', !detailB.profile.fraudSignals.some((s) => s.includes('same file')));
 

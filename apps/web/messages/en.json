@@ -240,7 +240,17 @@
     "to": "To (£)",
     "profit": "Platform profit (£)",
     "add": "Add",
-    "delete": "Delete"
+    "delete": "Delete",
+    "platformHint": "Every knob the platform reads, with its type and default. A setting listed here is one something actually consults.",
+    "readBy": "Read by",
+    "seam": "Not live yet",
+    "invalidStored": "Stored value unusable",
+    "isDefault": "Default",
+    "resetToDefault": "Reset to {value}",
+    "on": "On",
+    "off": "Off",
+    "unrecognised": "Unrecognised settings",
+    "unrecognisedHint": "These rows sit in the database but no code reads them. Re-running the seed removes them."
   },
   "mediated": {
     "title": "Mediated listings",

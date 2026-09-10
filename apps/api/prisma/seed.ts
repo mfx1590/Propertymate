@@ -5,6 +5,7 @@
  */
 import { PrismaClient, VerificationContext, DealKind } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
+import { LEGACY_SETTINGS, PLATFORM_SETTINGS, coerceSetting } from '../src/common/platform-settings';
 
 const prisma = new PrismaClient();
 
@@ -299,20 +300,38 @@ async function main() {
     });
   }
 
-  // ── marketplace core (§13) defaults ──────────────────────────────
-  const SETTINGS: Array<[string, unknown]> = [
-    ['assignment.max_agents', 3],            // owner picks up to N agents (§13.4)
-    ['assignment.min_term_months', 1],
-    ['assignment.max_term_months', 6],
-    ['resale.mode', 'agent_only'],           // future toggle: 'owner_direct_allowed'
-    ['reviews.warnings_before_ban', 3],
-  ];
-  for (const [key, value] of SETTINGS) {
-    await prisma.platformSetting.upsert({
-      where: { key },
-      update: {},
-      create: { key, value: value as object },
-    });
+  // ── platform settings (§13.4/§13.5) ──────────────────────────────
+  // Deliberately seeds NO rows. Defaults live with the declarations in
+  // `common/platform-settings`, and the admin console lists every declared
+  // setting whether or not a row exists — so a row here means one thing only:
+  // somebody deliberately changed this. Writing the defaults into the table
+  // would make all ten read as "modified" on a fresh install and would pin
+  // them, so a revised default could never reach a deployed environment.
+  //
+  // What this seed does own is retiring rows that answer to no declaration.
+  // It wrote `reviews.warnings_before_ban` for a year; nothing ever read it,
+  // while the moderation service read `moderation.warnings_before_ban`.
+  for (const legacy of LEGACY_SETTINGS) {
+    const row = await prisma.platformSetting.findUnique({ where: { key: legacy.key } });
+    if (!row) continue;
+
+    // A renamed key carries its value across — an admin who deliberately typed
+    // a number should not lose it to a prefix change — but only when that
+    // value was a real choice (not a copy of the default) and the new key has
+    // not been set already, which would be the more recent intention.
+    if (legacy.replacedBy) {
+      const coerced = coerceSetting(legacy.replacedBy, row.value);
+      const existing = await prisma.platformSetting.findUnique({ where: { key: legacy.replacedBy } });
+      const wasDefault =
+        JSON.stringify(row.value) === JSON.stringify(PLATFORM_SETTINGS[legacy.replacedBy].default);
+      if (coerced.ok && !wasDefault && !existing) {
+        await prisma.platformSetting.create({ data: { key: legacy.replacedBy, value: coerced.value } });
+        console.log(`  carried ${legacy.key}=${JSON.stringify(row.value)} over to ${legacy.replacedBy}`);
+      }
+    }
+
+    await prisma.platformSetting.delete({ where: { key: legacy.key } });
+    console.log(`  retired setting ${legacy.key} (read by nothing)`);
   }
 
   // §13.5 example profit bands — fully editable in the main admin dashboard

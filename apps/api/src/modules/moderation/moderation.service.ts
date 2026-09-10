@@ -12,9 +12,8 @@ import { SettingsService } from '../marketplace/settings.service';
  */
 import { IDENTITY_DOCUMENT_TYPES } from '../../common/identity-documents';
 
-/** Default from Plan §13.2 ("after 2–3 warnings, configurable"). */
-const DEFAULT_WARNINGS_BEFORE_BAN = 3;
-const WARNINGS_SETTING = 'moderation.warnings_before_ban';
+// The threshold from Plan §13.2 ("after 2–3 warnings, configurable") is
+// declared with the other platform settings, default included.
 
 const MAX_REASON = 1000;
 
@@ -44,7 +43,7 @@ export class ModerationService {
   ) {}
 
   private warningsBeforeBan(): Promise<number> {
-    return this.settings.get(WARNINGS_SETTING, DEFAULT_WARNINGS_BEFORE_BAN);
+    return this.settings.get('moderation.warnings_before_ban');
   }
 
   // ── profile owner ────────────────────────────────────────────────

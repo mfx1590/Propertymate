@@ -30,14 +30,22 @@ export class PublicSettingsController {
 export class AdminSettingsController {
   constructor(private readonly settings: SettingsService) {}
 
+  /**
+   * Every declared setting with its effective value and where that value came
+   * from, followed by any row in the table that answers to no declaration.
+   * The console needs both: a knob nothing reads must be visibly different
+   * from one that is live, which is precisely what listing the raw table could
+   * not show.
+   */
   @Get()
   all() {
     return this.settings.all();
   }
 
+  /** Write a setting, or reset it to its declared default with `null`. */
   @Put(':key')
   set(@Param('key') key: string, @Body() body: { value: unknown }) {
-    return this.settings.set(key, body.value);
+    return this.settings.set(key, body.value ?? null);
   }
 
   @Get('profit-bands/list')

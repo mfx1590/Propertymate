@@ -38,7 +38,9 @@
     "test:e2e:disputes": "node test/e2e/dispute-workflow-flows.mjs",
     "test:e2e:exports": "node test/e2e/data-export-flows.mjs",
     "test:e2e:ocr": "node test/e2e/identity-ocr-flows.mjs",
-    "ocr:fetch": "node scripts/fetch-ocr-lang.mjs"
+    "test:e2e:settings": "node test/e2e/platform-settings-flows.mjs",
+    "ocr:fetch": "node scripts/fetch-ocr-lang.mjs",
+    "ocr:probe": "node scripts/ocr-probe.mjs"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"

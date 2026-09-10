@@ -108,7 +108,7 @@ export class ReferralsService {
       });
       if (!referral || referral.status !== 'pending') return;
 
-      const expiryDays = Number(await this.settings.get('referral.credit_expiry_days', 180));
+      const expiryDays = await this.settings.get('referral.credit_expiry_days');
 
       await this.prisma.$transaction([
         this.prisma.referral.update({
@@ -220,7 +220,7 @@ export class ReferralsService {
     });
     if (!credit) throw new BadRequestException('You have no available featured credits');
 
-    const days = Number(await this.settings.get('referral.featured_days', 14));
+    const days = await this.settings.get('referral.featured_days');
     const featuredUntil = new Date(Date.now() + days * 86_400_000);
 
     await this.prisma.$transaction([

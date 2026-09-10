@@ -78,15 +78,15 @@ export class AssignmentsService {
     }
 
     const [maxAgents, minTerm, maxTerm] = await Promise.all([
-      this.settings.get('assignment.max_agents', 3),
-      this.settings.get('assignment.min_term_months', 1),
-      this.settings.get('assignment.max_term_months', 6),
+      this.settings.get('assignment.max_agents'),
+      this.settings.get('assignment.min_term_months'),
+      this.settings.get('assignment.max_term_months'),
     ]);
     const unique = [...new Set(agentUserIds)];
-    if (unique.length === 0 || unique.length > Number(maxAgents)) {
+    if (unique.length === 0 || unique.length > maxAgents) {
       throw new BadRequestException(`Choose between 1 and ${maxAgents} agents`);
     }
-    if (termMonths < Number(minTerm) || termMonths > Number(maxTerm)) {
+    if (termMonths < minTerm || termMonths > maxTerm) {
       throw new BadRequestException(`Term must be ${minTerm}–${maxTerm} months`);
     }
 
@@ -209,7 +209,7 @@ export class AssignmentsService {
     // default, following the `offers.enabled` precedent — the document and the
     // signing flow are complete, and turning this on makes it load-bearing
     // without a code change. Existing deployments keep working until then.
-    if (await this.settings.get('mandate.required_before_publish', false)) {
+    if (await this.settings.get('mandate.required_before_publish')) {
       const signed = await this.prisma.contract.findFirst({
         where: { assignmentId, status: 'signed' },
         select: { id: true },

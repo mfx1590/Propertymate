@@ -240,7 +240,17 @@
     "to": "Bitiş (£)",
     "profit": "Platform kârı (£)",
     "add": "Ekle",
-    "delete": "Sil"
+    "delete": "Sil",
+    "platformHint": "Platformun okuduğu tüm ayarlar, türleri ve varsayılan değerleriyle. Burada listelenen her ayarı gerçekten bir özellik kullanır.",
+    "readBy": "Kullanan",
+    "seam": "Henüz etkin değil",
+    "invalidStored": "Kayıtlı değer kullanılamıyor",
+    "isDefault": "Varsayılan",
+    "resetToDefault": "{value} değerine sıfırla",
+    "on": "Açık",
+    "off": "Kapalı",
+    "unrecognised": "Tanınmayan ayarlar",
+    "unrecognisedHint": "Bu satırlar veritabanında duruyor ama hiçbir kod onları okumuyor. Başlangıç verisi yeniden çalıştırılınca kaldırılırlar."
   },
   "mediated": {
     "title": "Aracılı ilanlar",
