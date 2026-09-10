@@ -70,8 +70,8 @@ export default async function HomePage({ params: { locale } }: { params: { local
           <span className={`${s.serif} text-xl font-bold`} style={{ color: 'var(--dark-text)' }}>
             {t('common.appName')}
           </span>
-          <nav className="flex items-center gap-5 text-sm">
-            <div className="hidden gap-3 sm:flex" style={{ color: 'var(--muted-on-dark)' }}>
+          <nav className="flex items-center gap-3 text-sm sm:gap-5">
+            <div className="flex gap-2.5 text-xs sm:gap-3 sm:text-sm" style={{ color: 'var(--muted-on-dark)' }}>
               {LOCALES.map((l) => (
                 <Link
                   key={l}
@@ -84,10 +84,10 @@ export default async function HomePage({ params: { locale } }: { params: { local
                 </Link>
               ))}
             </div>
-            <Link href="/auth" style={{ color: 'var(--dark-text)' }}>
+            <Link href="/auth" className="hidden sm:inline" style={{ color: 'var(--dark-text)' }}>
               {t('common.signIn')}
             </Link>
-            <Link href="/auth" className={`${s.goldBtn} rounded-full px-5 py-2 text-sm`}>
+            <Link href="/auth" className={`${s.goldBtn} rounded-full px-4 py-2 text-xs sm:px-5 sm:text-sm`}>
               {t('common.register')}
             </Link>
           </nav>
@@ -109,7 +109,9 @@ export default async function HomePage({ params: { locale } }: { params: { local
 
         <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-5 pb-28 pt-32">
           <div className="max-w-2xl">
-            <p className={s.kicker}>{t('home.heroKicker')}</p>
+            <p className={s.kicker} style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}>
+              {t('home.heroKicker')}
+            </p>
             <h1
               className={`${s.serif} mt-5 text-[2.6rem] font-semibold leading-[1.08] sm:text-6xl`}
               style={{ color: 'var(--dark-text)' }}
