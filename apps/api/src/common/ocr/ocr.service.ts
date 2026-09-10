@@ -150,26 +150,124 @@ export class OcrService implements OnModuleDestroy {
     // enough, and containing the `<` filler no natural line has.
     const mrz = lines.filter((l) => l.length >= 28 && /^[A-Z0-9<]+$/.test(l) && l.includes('<'));
 
-    // TD3: the second of two 44-ish lines, starting with the document number.
-    const td3 = mrz.find((l, i) => i > 0 && l.length >= 40 && !l.startsWith('P<') && !l.startsWith('I<'));
-    if (td3) {
-      const num = this.clean(td3.slice(0, 9));
-      if (num) return num;
-    }
-    // TD1: the first line begins with the document code and issuer, then the number.
-    const td1 = mrz.find((l) => l.length >= 28 && l.length <= 32 && /^[ACI][A-Z<]/.test(l));
-    if (td1) {
-      const num = this.clean(td1.slice(5, 14));
-      if (num) return num;
+    // The visual zone — "Passport No: X" printed on the page — is a second,
+    // independent read of the same number. It cannot verify itself, but it
+    // can be verified against the MRZ's check digit, which is what breaks the
+    // tie when the MRZ read is off by a glyph.
+    // Matched per line and without spaces inside the token: joining the page
+    // into one string let the capture run past the number into the next line
+    // ("P085175A P<GBR…" became "P085175AP"), which then disagreed with the
+    // MRZ and threw away a good read.
+    let visual: string | null = null;
+    for (const line of text.toUpperCase().split(/\r?\n/)) {
+      const m = /(?:PASSPORT\s*NO|DOCUMENT\s*NO|KIMLIK\s*NO|ID\s*NO|SERI\s*NO|\bNO)\s*[:.]?\s*([A-Z0-9]{6,14})\b/.exec(line);
+      if (m) {
+        visual = this.clean(m[1]);
+        if (visual) break;
+      }
     }
 
-    // Visual zone fallback: a label, then the number.
-    const joined = text.toUpperCase().replace(/[\r\n]+/g, ' ');
-    const labelled = /(?:PASSPORT\s*NO|DOCUMENT\s*NO|KIMLIK\s*NO|ID\s*NO|SERI\s*NO|NO)\s*[:.]?\s*([A-Z0-9][A-Z0-9 ]{5,13}[A-Z0-9])/.exec(joined);
-    if (labelled) {
-      const num = this.clean(labelled[1]);
-      if (num && /\d/.test(num)) return num;
+    // TD3: the second of two 44-ish lines, starting with the document number,
+    // followed by its check digit.
+    const td3 = mrz.find((l, i) => i > 0 && l.length >= 40 && !l.startsWith('P<') && !l.startsWith('I<'));
+    if (td3) return this.verifiedMrzNumber(td3.slice(0, 9), td3[9], visual);
+    // TD1: the first line begins with the document code and issuer, then the
+    // number and its check digit.
+    const td1 = mrz.find((l) => l.length >= 28 && l.length <= 32 && /^[ACI][A-Z<]/.test(l));
+    if (td1) return this.verifiedMrzNumber(td1.slice(5, 14), td1[14], visual);
+
+    // No MRZ at all (an older card, a licence): the visual read, unverified.
+    return visual && /\d/.test(visual) ? visual : null;
+  }
+
+  /**
+   * ICAO 9303 check digit: weights 7-3-1 repeating over the field, A=10…Z=35,
+   * `<`=0, sum mod 10. Every MRZ document number is followed by one — which is
+   * what makes an OCR read of it *verifiable* rather than merely plausible.
+   */
+  static mrzCheckDigit(field: string): number {
+    const weights = [7, 3, 1];
+    let sum = 0;
+    for (let i = 0; i < field.length; i++) {
+      const ch = field[i];
+      const v = ch === '<' ? 0 : /[0-9]/.test(ch) ? Number(ch) : /[A-Z]/.test(ch) ? ch.charCodeAt(0) - 55 : 0;
+      sum += v * weights[i % 3];
     }
+    return sum % 10;
+  }
+
+  /**
+   * Glyph pairs OCR-B readers confuse on a phone photo. Each entry lists what
+   * a character may really have been; repairs try one substitution at a time
+   * and keep only a candidate whose check digit verifies.
+   */
+  private static readonly CONFUSIONS: Record<string, string[]> = {
+    O: ['0', 'Q', 'D'], '0': ['O', 'D', 'Q'],
+    I: ['1', 'L', 'T'], '1': ['I', 'L', '7'],
+    B: ['8', 'R'], '8': ['B', '3'],
+    S: ['5'], '5': ['S', '6'],
+    Z: ['2', '7'], '2': ['Z'],
+    G: ['6', 'C'], '6': ['G', 'b'],
+    Q: ['O', '0'], D: ['O', '0'],
+    A: ['4'], '4': ['A'],
+  };
+
+  /**
+   * The MRZ number, but only when its check digit agrees — repairing a single
+   * confused glyph when that is what it takes.
+   *
+   * This exists because of a CI failure: the same synthetic passport rendered
+   * 30% larger read one character differently, and a ban keyed on the number
+   * silently missed. Real MRZ readers never trust the raw read; they trust the
+   * check digit. When the check digit itself is unreadable (not a digit), the
+   * raw read is returned unverified — better a matchable number than none —
+   * and when it is readable but nothing verifies, the answer is nothing.
+   */
+  private verifiedMrzNumber(rawField: string, checkChar: string | undefined, visual: string | null): string | null {
+    const field = rawField.padEnd(9, '<').slice(0, 9);
+    const cleaned = this.clean(field);
+    if (!cleaned) return null;
+    // An unreadable check digit leaves nothing to verify against: the raw
+    // read is kept — a matchable number beats none — unless the visual zone
+    // disagrees, in which case neither can be trusted.
+    if (checkChar === undefined || !/[0-9]/.test(checkChar)) {
+      return visual && visual !== cleaned ? null : cleaned;
+    }
+    const expected = Number(checkChar);
+    const verifies = (f: string) => OcrService.mrzCheckDigit(f.padEnd(9, '<').slice(0, 9)) === expected;
+
+    if (verifies(field)) return cleaned;
+
+    // The MRZ read failed its own check. Before guessing at glyphs, ask the
+    // other read on the page: a visual-zone number that satisfies the MRZ
+    // check digit is two independent reads agreeing, which is the strongest
+    // evidence available.
+    if (visual && verifies(visual)) {
+      this.logger.log('OCR MRZ number failed its check digit; the visual-zone read verifies against it and is used');
+      return visual;
+    }
+
+    // Single-glyph repairs. Check-digit arithmetic is mod 10, so roughly one
+    // random substitution in ten "verifies" by accident — a first-wins search
+    // returned a wrong number in testing. Only a UNIQUE verifying candidate is
+    // trusted; two or more is ambiguity, and ambiguity records nothing.
+    const candidates = new Set<string>();
+    for (let i = 0; i < field.length; i++) {
+      for (const alt of OcrService.CONFUSIONS[field[i]] ?? []) {
+        const candidate = field.slice(0, i) + alt.toUpperCase() + field.slice(i + 1);
+        if (verifies(candidate)) candidates.add(candidate);
+      }
+    }
+    if (candidates.size === 1) {
+      const [only] = candidates;
+      this.logger.log(`OCR repaired an MRZ document number via its check digit (unique single-glyph repair)`);
+      return this.clean(only);
+    }
+    this.logger.warn(
+      candidates.size === 0
+        ? 'OCR MRZ document number failed its check digit and no single-glyph repair verifies — recording nothing'
+        : `OCR MRZ document number failed its check digit and ${candidates.size} repairs verify — ambiguous, recording nothing`,
+    );
     return null;
   }
 
