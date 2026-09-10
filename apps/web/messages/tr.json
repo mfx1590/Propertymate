@@ -779,7 +779,16 @@
         "answerBody": "İlan sahibi her 90 günde bir mülkün hâlâ müsait olduğunu onaylamak zorunda. Onaylamazsa ilan aramadan otomatik olarak kalkar; yani gördüğünüz her sonucun arkasında bu çeyrekte biri durmuş demektir."
       }
     },
-    "whyFooter": "Doğrulama belgeye dayalı bir kontroldür; hukuki danışmanlık ya da tapu garantisi değildir. Ne gördüğümüzü size açıkça söyleriz ve imzadan önce yine de kendi avukatınıza danışmanızı öneririz."
+    "whyFooter": "Doğrulama belgeye dayalı bir kontroldür; hukuki danışmanlık ya da tapu garantisi değildir. Ne gördüğümüzü size açıkça söyleriz ve imzadan önce yine de kendi avukatınıza danışmanızı öneririz.",
+    "journey": {
+      "coast": "Girne — liman, kale, sahil",
+      "valley": "Bellapais — dağ vadisi",
+      "neighbourhood": "Zeytin terasları, çatılar, aşağıda bir havuz",
+      "villa": "Kemerin içinden — eve",
+      "scrollHint": "Adaya inmek için kaydırın",
+      "holdTitle": "Manzara sizin. Evraklar ise çoktan kontrol edildi.",
+      "holdCta": "Doğrulanmış evlere göz atın"
+    }
   },
   "projects": {
     "status": {

@@ -779,7 +779,16 @@
         "answerBody": "Every 90 days the lister has to confirm the property is still available. If they don't, it drops out of search automatically, so every result you see is one somebody stood behind this quarter."
       }
     },
-    "whyFooter": "Verification is a documentary check, not legal advice or a guarantee of title. We tell you exactly what we saw, and we still recommend your own lawyer before you sign."
+    "whyFooter": "Verification is a documentary check, not legal advice or a guarantee of title. We tell you exactly what we saw, and we still recommend your own lawyer before you sign.",
+    "journey": {
+      "coast": "Kyrenia — harbour, castle, coast",
+      "valley": "Bellapais — the mountain valley",
+      "neighbourhood": "Olive terraces, rooftops, a pool below",
+      "villa": "Through the arch — home",
+      "scrollHint": "Scroll to descend into the island",
+      "holdTitle": "The view is yours. The paperwork is already checked.",
+      "holdCta": "Browse verified homes"
+    }
   },
   "projects": {
     "status": {
