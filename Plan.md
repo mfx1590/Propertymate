@@ -137,7 +137,9 @@ with Meta in each of the four languages.
 > spent the month's allowance before the consolidation below took effect. Nothing pushed since
 > `1a93f14` touches code. Fix is on the GitHub account (Settings → Billing & plans); until then no
 > push can honestly be called CI-green. `ci.yml` now skips docs-only pushes so `.md` changes stop
-> spending minutes.
+> spending minutes. **Resolved the same day:** Mehdi made the repository public (Actions is unmetered
+> there — see the Change Log row); the blocked run was re-run and came back green (`ae54b4b`, all 23
+> suites), and a Plan.md-only push afterwards correctly started no run.
 
 > **CI consolidation (2026-09-04):** with 22 e2e suites each spending a few OTP sends against the
 > §2.4 limit of 5 per minute, the pipeline had grown 21 × `sleep 60` between suites — 21 minutes of
