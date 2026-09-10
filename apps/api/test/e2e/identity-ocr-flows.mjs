@@ -123,8 +123,8 @@ async function passportPng(number, scale) {
     <rect width="100%" height="100%" fill="white"/>
     <text x="${40 * scale}" y="${90 * scale}" font-family="Arial" font-size="${fs}" fill="black">PASSPORT</text>
     <text x="${40 * scale}" y="${180 * scale}" font-family="Arial" font-size="${fs}" fill="black">Passport No: ${xml(number)}</text>
-    <text x="${40 * scale}" y="${500 * scale}" font-family="DejaVu Sans Mono, Consolas, Courier New, monospace" font-size="${fs}" letter-spacing="${Math.round(2 * scale)}" fill="black" xml:space="preserve">${xml(mrz1)}</text>
-    <text x="${40 * scale}" y="${560 * scale}" font-family="DejaVu Sans Mono, Consolas, Courier New, monospace" font-size="${fs}" letter-spacing="${Math.round(2 * scale)}" fill="black" xml:space="preserve">${xml(mrz2)}</text>
+    <text x="${40 * scale}" y="${500 * scale}" font-family="Courier New, Liberation Mono, monospace" font-size="${fs}" fill="black" xml:space="preserve">${xml(mrz1)}</text>
+    <text x="${40 * scale}" y="${560 * scale}" font-family="Courier New, Liberation Mono, monospace" font-size="${fs}" fill="black" xml:space="preserve">${xml(mrz2)}</text>
   </svg>`;
   return sharp(Buffer.from(svg)).png().toBuffer();
 }

@@ -64,9 +64,14 @@ export class OcrService implements OnModuleDestroy {
         // only turns the second, fatal report into a log line.
         errorHandler: (err: unknown) => this.logger.warn(`OCR worker error: ${err}`),
       }).then(async (w) => {
-        // The MRZ alphabet plus what a printed number can contain. Narrowing
-        // the whitelist is the single biggest accuracy lever on OCR-B text.
-        await w.setParameters({ tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<:. ' });
+        // The MRZ alphabet, plus lowercase for the visual zone: "Passport No:"
+        // is printed in mixed case, and an uppercase-only whitelist left that
+        // line unreadable — which silently disabled the second read the
+        // check-digit tie-break depends on. The MRZ itself has no lowercase,
+        // so admitting it costs the machine-readable zone nothing.
+        await w.setParameters({
+          tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789<:. ',
+        });
         return w;
       });
       this.worker.catch((err) => {
