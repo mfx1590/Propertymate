@@ -790,14 +790,20 @@
       }
     },
     "whyFooter": "Doğrulama belgeye dayalı bir kontroldür; hukuki danışmanlık ya da tapu garantisi değildir. Ne gördüğümüzü size açıkça söyleriz ve imzadan önce yine de kendi avukatınıza danışmanızı öneririz.",
-    "journey": {
-      "coast": "Girne — liman, kale, sahil",
-      "valley": "Bellapais — dağ vadisi",
-      "neighbourhood": "Zeytin terasları, çatılar, aşağıda bir havuz",
-      "villa": "Kemerin içinden — eve",
-      "scrollHint": "Adaya inmek için kaydırın",
-      "holdTitle": "Manzara sizin. Evraklar ise çoktan kontrol edildi.",
-      "holdCta": "Doğrulanmış evlere göz atın"
+    "heroKicker": "Kuzey Kıbrıs, doğrulanmış",
+    "stats": {
+      "regions": "bölge, tek doğrulama standardı",
+      "deeds": "tapu türü her ilanda okunur ve etiketlenir",
+      "days": "günde bir, her ilan hâlâ gerçek olduğunu onaylamalı"
+    },
+    "regionsSub": "Altı bölge, tek söz: açtığınız her ilan kontrol edilmiştir.",
+    "ctaTitle": "Manzara sizin. Evraklar ise çoktan kontrol edildi.",
+    "ctaButton": "Doğrulanmış evlere göz atın",
+    "stamp": "Doğrulandı",
+    "check": {
+      "deed": "Tapu senedi",
+      "seller": "Satıcı kimliği",
+      "fresh": "Hâlâ satışta"
     }
   },
   "projects": {

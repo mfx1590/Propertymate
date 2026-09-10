@@ -790,14 +790,20 @@
       }
     },
     "whyFooter": "Verification is a documentary check, not legal advice or a guarantee of title. We tell you exactly what we saw, and we still recommend your own lawyer before you sign.",
-    "journey": {
-      "coast": "Kyrenia — harbour, castle, coast",
-      "valley": "Bellapais — the mountain valley",
-      "neighbourhood": "Olive terraces, rooftops, a pool below",
-      "villa": "Through the arch — home",
-      "scrollHint": "Scroll to descend into the island",
-      "holdTitle": "The view is yours. The paperwork is already checked.",
-      "holdCta": "Browse verified homes"
+    "heroKicker": "Northern Cyprus, verified",
+    "stats": {
+      "regions": "regions of the island, one verification standard",
+      "deeds": "deed types read and tagged on every listing",
+      "days": "days — then every listing must confirm it is still real"
+    },
+    "regionsSub": "Six regions, one promise: everything you open has been checked.",
+    "ctaTitle": "The view is yours. The paperwork is already checked.",
+    "ctaButton": "Browse verified homes",
+    "stamp": "Verified",
+    "check": {
+      "deed": "Title deed",
+      "seller": "Seller identity",
+      "fresh": "Still available"
     }
   },
   "projects": {
