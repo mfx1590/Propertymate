@@ -14,8 +14,8 @@ Read Plan.md §0 first — the master spec and the living status log, current
 through step 28. My memory files have the ops gotchas and standing decisions.
 
 STATE: main is at the tip of origin/main — run `git log --oneline -1` (it was
-cde818b when this was written). Confirm CI is green on that tip with
-`gh run list --limit 1` before building on it. The repository is PUBLIC since
+f1fc7c5 when this was written, CI green, all 23 suites). Confirm CI is
+green on the tip with `gh run list --limit 1` before building on it. The repository is PUBLIC since
 2026-09-10 (Actions minutes): never commit anything that must stay private.
 Phases 1 and 2 complete;
 §6.1 complete; Phase 3 built except the items gated on me. Deployed on
