@@ -14,7 +14,10 @@ Read Plan.md §0 first — the master spec and the living status log, current
 through step 28. My memory files have the ops gotchas and standing decisions.
 
 STATE: main is at the tip of origin/main — run `git log --oneline -1` (it was
-7b27ad0 when this was written), CI green, working tree clean. Phases 1 and 2 complete;
+cde818b when this was written). Confirm CI is green on that tip with
+`gh run list --limit 1` before building on it. The repository is PUBLIC since
+2026-09-10 (Actions minutes): never commit anything that must stay private.
+Phases 1 and 2 complete;
 §6.1 complete; Phase 3 built except the items gated on me. Deployed on
 propertymate.tech (Hostinger KVM 2, Caddy TLS) — the VPS is at 29f1b46, the
 later commits are docs only. Runbook: DEPLOY.md at the repo root.
@@ -82,6 +85,9 @@ Pick up the other window's changes with `git merge main` whenever you need
 them — conflicts are impossible outside your own paths, because the other
 window never edits them. Memory is per-directory: this window starts with
 NO memory files, so everything you need is in this message and the two docs.
+
+The repository is PUBLIC: never commit anything that must stay private, and
+never commit the plates (media bucket only).
 
 YOU OWN ONLY: apps/web/src/app/[locale]/page.tsx,
 apps/web/src/components/landing/**, the `home` namespace in
