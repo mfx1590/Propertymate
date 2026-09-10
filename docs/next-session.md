@@ -13,7 +13,8 @@ Continue building Propertymate (C:\Users\mehdi\Desktop\Propertymate).
 Read Plan.md §0 first — the master spec and the living status log, current
 through step 28. My memory files have the ops gotchas and standing decisions.
 
-STATE: main at 1a93f14, CI green, working tree clean. Phases 1 and 2 complete;
+STATE: main is at the tip of origin/main — run `git log --oneline -1` (it was
+7b27ad0 when this was written), CI green, working tree clean. Phases 1 and 2 complete;
 §6.1 complete; Phase 3 built except the items gated on me. Deployed on
 propertymate.tech (Hostinger KVM 2, Caddy TLS) — the VPS is at 29f1b46, the
 later commits are docs only. Runbook: DEPLOY.md at the repo root.
@@ -68,7 +69,8 @@ the Island"), the layer stack, the five hidden transitions, the Higgsfield
 continuity rules, and the engineering constraints. Then Plan.md §0 for how
 the rest of the site is built. My memory files have the ops gotchas.
 
-STATE: work on branch `feat/landing` off main (1a93f14). Merge to main by PR
+STATE: work on branch `feat/landing` off the tip of main (`git log --oneline -1`;
+7b27ad0 when this was written). Merge to main by PR
 when done. Another window is doing feature work on main in parallel.
 
 YOU OWN ONLY: apps/web/src/app/[locale]/page.tsx,
