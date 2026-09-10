@@ -5,9 +5,9 @@ import { SettingsService } from '../marketplace/settings.service';
 import { SearchService, type SearchParams } from './search.service';
 import { parsePolygonParam } from './geo';
 
-/** Ignore rounding-level movements; a 0.2% "drop" is not news (§6.1). */
-const DEFAULT_MIN_DROP_PCT = 1;
-const MIN_DROP_SETTING = 'alerts.price_drop_min_pct';
+// The threshold that ignores rounding-level movements — a 0.2% "drop" is not
+// news (§6.1) — is declared with the rest of the platform settings, defaults
+// and bounds included, rather than kept as a constant here.
 
 /** Guardrail: one sweep should never fan out unboundedly on a bad query. */
 const MAX_SAVED_SEARCHES = 5000;
@@ -138,7 +138,7 @@ export class AlertsService {
    * true start-to-end movement instead of only the last step.
    */
   async runPriceDropAlerts(): Promise<{ checked: number; alerted: number }> {
-    const minDropPct = await this.settings.get(MIN_DROP_SETTING, DEFAULT_MIN_DROP_PCT);
+    const minDropPct = await this.settings.get('alerts.price_drop_min_pct');
     const favorites = await this.prisma.favorite.findMany({
       take: MAX_FAVORITES,
       select: {

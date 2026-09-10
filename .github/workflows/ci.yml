@@ -167,6 +167,9 @@ jobs:
       - name: Run identity-OCR e2e suite
         run: npm run test:e2e:ocr -w apps/api
 
+      - name: Run platform-settings e2e suite
+        run: npm run test:e2e:settings -w apps/api
+
       - name: API logs on failure
         if: failure()
         run: tail -80 api.log || true
