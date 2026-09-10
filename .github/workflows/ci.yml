@@ -3,7 +3,15 @@ name: CI
 on:
   push:
     branches: [main]
+    # Docs-only pushes spend nothing: there is nothing to test, and on a private
+    # repo every run is metered minutes (the 2026-09-10 billing stop).
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
   pull_request:
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
 
 jobs:
   build:

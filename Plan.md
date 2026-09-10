@@ -130,6 +130,15 @@ with Meta in each of the four languages.
 > checklist of what to look at, and what is inert until `RESEND_API_KEY` and the WhatsApp credentials
 > are set. **Deployed 2026-09-04:** the VPS ran the full sequence (pull/rebuild, seed, demo, snapshot for all six regions, reindex of 50 listings, health ready) and is at `29f1b46` — every step through 28 is live on propertymate.tech. Still unset there: `RESEND_API_KEY` and the WhatsApp credentials.
 
+> **CI billing stop (2026-09-10):** the two docs-only commits after `1a93f14` show red not because
+> anything failed but because **GitHub refused to start the jobs** — zero steps, two seconds, and the
+> check-run annotation "recent account payments have failed or your spending limit needs to be
+> increased." The repo is private and Actions minutes are metered; a fortnight of 25-minute runs
+> spent the month's allowance before the consolidation below took effect. Nothing pushed since
+> `1a93f14` touches code. Fix is on the GitHub account (Settings → Billing & plans); until then no
+> push can honestly be called CI-green. `ci.yml` now skips docs-only pushes so `.md` changes stop
+> spending minutes.
+
 > **CI consolidation (2026-09-04):** with 22 e2e suites each spending a few OTP sends against the
 > §2.4 limit of 5 per minute, the pipeline had grown 21 × `sleep 60` between suites — 21 minutes of
 > a 25-minute run. `AUTH_THROTTLE_BYPASS=1` now switches rate limiting off for a **non-production**
