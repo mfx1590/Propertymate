@@ -6,16 +6,22 @@ import { landingUrl } from '../../components/landing/media';
 import { Reveal } from '../../components/landing/Reveal';
 import { CountUp } from '../../components/landing/CountUp';
 import { VerifySequence } from '../../components/landing/VerifySequence';
+import { ScrollFilm } from '../../components/landing/ScrollFilm';
 import s from '../../components/landing/landing.module.css';
 
 /**
  * The homepage — "dusk over the north coast".
  *
- * A scroll-based editorial landing: cinematic imagery (media bucket,
- * `landing/`), Playfair Display headlines, a pinned verification sequence.
+ * Opens on a scroll-driven three-shot film cut from Mehdi's own footage of
+ * the İskele development (vertical phone clips, expanded to 16:9 and given
+ * cinematic camera moves in Higgsfield). The narrative is the positioning:
+ * shot one carries the promise and the search box, then two beats turn from
+ * what every property site shows you to what this one checks — handing
+ * straight into the verification sequence, which shows it on a listing card.
+ *
  * Every job of the old page is intact and server-rendered — h1, search,
- * region links, trust pitch, how-it-works — and every animation is
- * progressive enhancement over that complete HTML.
+ * region links, trust pitch, how-it-works — and every animation, the film
+ * included, is progressive enhancement over that complete HTML.
  */
 
 /** Fallback when the API is unreachable — notably CI's API-less build. */
@@ -62,11 +68,12 @@ export default async function HomePage({ params: { locale } }: { params: { local
     { value: 90, label: t('home.stats.days') },
   ];
 
-  return (
-    <main className={s.root}>
-      {/* ---- header, floating over the hero ---- */}
-      <header className="absolute inset-x-0 top-0 z-40">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
+  /** Brand mark + nav. Lives inside the film's pinned stage (see ScrollFilm)
+   *  so it holds for the film's full length; the footer carries the locale
+   *  links again once the film has let go. */
+  const topBar = (
+    <header>
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
           <span className={`${s.serif} text-xl font-bold`} style={{ color: 'var(--dark-text)' }}>
             {t('common.appName')}
           </span>
@@ -93,56 +100,72 @@ export default async function HomePage({ params: { locale } }: { params: { local
           </nav>
         </div>
       </header>
+  );
 
-      {/* ---- hero ---- */}
-      <section className={s.hero}>
-        {/* eslint-disable-next-line @next/next/no-img-element -- bucket media */}
-        <img
-          src={landingUrl('hero-coast.webp')}
-          alt=""
-          className={s.heroImg}
-          fetchPriority="high"
-          decoding="async"
-        />
-        <div className={s.heroScrim} />
-        <div className={s.grain} />
+  return (
+    <main className={s.root}>
+      {/* ---- the opening film ---- */}
+      <ScrollFilm
+        topBar={topBar}
+        scrollCue={t('home.film.scrollCue')}
+        shots={[
+          { id: 'film-1-sea', focus: '50% 46%' },
+          { id: 'film-2-dusk', focus: '50% 42%' },
+          { id: 'film-3-home', focus: '50% 50%' },
+        ]}
+        hero={
+          <div className="mx-auto w-full max-w-6xl">
+            <div className="max-w-2xl">
+              <p className={s.kicker} style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}>
+                {t('home.heroKicker')}
+              </p>
+              <h1
+                className={`${s.serif} mt-5 text-[2.6rem] font-semibold leading-[1.06] sm:text-6xl`}
+                style={{ color: 'var(--dark-text)', textShadow: '0 2px 30px rgba(0,0,0,0.5)' }}
+              >
+                {t('home.heroTitle')}
+              </h1>
+              <p
+                className="mt-6 max-w-xl text-lg leading-relaxed"
+                style={{ color: 'var(--muted-on-dark)' }}
+              >
+                {t('home.heroSubtitle')}
+              </p>
 
-        <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-5 pb-28 pt-32">
-          <div className="max-w-2xl">
-            <p className={s.kicker} style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}>
-              {t('home.heroKicker')}
-            </p>
-            <h1
-              className={`${s.serif} mt-5 text-[2.6rem] font-semibold leading-[1.08] sm:text-6xl`}
-              style={{ color: 'var(--dark-text)' }}
-            >
-              {t('home.heroTitle')}
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed" style={{ color: 'var(--muted-on-dark)' }}>
-              {t('home.heroSubtitle')}
-            </p>
+              <form
+                action={`/${locale}/search`}
+                className={`${s.heroSearch} mt-9 flex max-w-xl gap-2 rounded-2xl p-2`}
+              >
+                <input
+                  name="q"
+                  className="w-full rounded-xl bg-transparent px-4 py-3 outline-none"
+                  style={{ color: 'var(--dark-text)' }}
+                  placeholder={t('home.searchPlaceholder')}
+                />
+                <button type="submit" className={`${s.goldBtn} shrink-0 rounded-xl px-6 py-3`}>
+                  {t('common.search')}
+                </button>
+              </form>
 
-            <form action={`/${locale}/search`} className={`${s.heroSearch} mt-9 flex max-w-xl gap-2 rounded-2xl p-2`}>
-              <input
-                name="q"
-                className="w-full rounded-xl bg-transparent px-4 py-3 outline-none"
-                style={{ color: 'var(--dark-text)' }}
-                placeholder={t('home.searchPlaceholder')}
-              />
-              <button type="submit" className={`${s.goldBtn} shrink-0 rounded-xl px-6 py-3`}>
-                {t('common.search')}
-              </button>
-            </form>
-
-            <div className="mt-7 flex flex-wrap gap-x-7 gap-y-2.5">
-              <span className={s.chip}>{t('home.check.deed')}</span>
-              <span className={s.chip}>{t('home.check.seller')}</span>
-              <span className={s.chip}>{t('home.check.fresh')}</span>
+              <div className="mt-7 flex flex-wrap gap-x-7 gap-y-2.5">
+                <span className={s.chip}>{t('home.check.deed')}</span>
+                <span className={s.chip}>{t('home.check.seller')}</span>
+                <span className={s.chip}>{t('home.check.fresh')}</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div className={s.scrollCue} aria-hidden />
-      </section>
+        }
+        beats={[
+          <div key="b1" className="mx-auto w-full max-w-6xl">
+            <p className={`${s.serif} ${s.beatText}`}>{t('home.film.beat1')}</p>
+          </div>,
+          <div key="b2" className="mx-auto w-full max-w-6xl">
+            <p className={`${s.serif} ${s.beatTextSmall}`}>
+              {t('home.film.beat2')}
+            </p>
+          </div>,
+        ]}
+      />
 
       {/* ---- stats band ---- */}
       <section style={{ background: 'var(--ink)', color: 'var(--dark-text)' }}>
@@ -197,10 +220,10 @@ export default async function HomePage({ params: { locale } }: { params: { local
         ]}
       />
 
-      {/* ---- visual breather: the terrace ---- */}
+      {/* ---- visual breather: the island itself, from Mehdi's own footage ---- */}
       <section className={s.band} style={{ height: 'min(58vh, 560px)' }}>
         {/* eslint-disable-next-line @next/next/no-img-element -- bucket media */}
-        <img src={landingUrl('band-terrace.webp')} alt="" className={s.bandImg} loading="lazy" decoding="async" />
+        <img src={landingUrl('band-golf.webp')} alt="" className={s.bandImg} loading="lazy" decoding="async" />
       </section>
 
       {/* ---- regions ---- */}
@@ -273,13 +296,28 @@ export default async function HomePage({ params: { locale } }: { params: { local
         </div>
       </section>
 
+      {/* ---- footer: carries the locale links, since the film's top bar
+              goes with the film ---- */}
       <footer style={{ background: 'var(--ink)', borderTop: '1px solid var(--hairline-dark)' }}>
         <div
-          className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-8 text-sm"
+          className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-sm"
           style={{ color: 'var(--muted-on-dark)' }}
         >
           <span className={s.serif}>{t('common.appName')}</span>
-          <span>{t('common.tagline')}</span>
+          <span className="order-3 w-full sm:order-2 sm:w-auto">{t('common.tagline')}</span>
+          <div className="order-2 flex gap-3 sm:order-3">
+            {LOCALES.map((l) => (
+              <Link
+                key={l}
+                href="/"
+                locale={l}
+                className={l === locale ? 'font-bold' : ''}
+                style={l === locale ? { color: 'var(--gold)' } : undefined}
+              >
+                {l.toUpperCase()}
+              </Link>
+            ))}
+          </div>
         </div>
       </footer>
     </main>

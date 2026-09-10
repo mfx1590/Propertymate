@@ -804,6 +804,11 @@
       "deed": "Tapu senedi",
       "seller": "Satıcı kimliği",
       "fresh": "Hâlâ satışta"
+    },
+    "film": {
+      "beat1": "Herkes size manzarayı gösterir.",
+      "beat2": "Biz tapuyu, mal sahibini ve en son ne zaman doğrulandığını gösteriyoruz.",
+      "scrollCue": "Kaydır"
     }
   },
   "projects": {

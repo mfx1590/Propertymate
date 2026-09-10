@@ -804,6 +804,11 @@
       "deed": "Title deed",
       "seller": "Seller identity",
       "fresh": "Still available"
+    },
+    "film": {
+      "beat1": "Everyone shows you the view.",
+      "beat2": "We show you the deed, the owner, and the date it was last confirmed.",
+      "scrollCue": "Scroll"
     }
   },
   "projects": {

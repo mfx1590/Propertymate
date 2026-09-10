@@ -70,6 +70,207 @@
   color: var(--gold);
 }
 
+/* ---------- the opening film ---------- */
+
+.film {
+  position: relative;
+  background: #041216;
+  color: var(--dark-text);
+}
+
+/* pinned: 300vh of scroll drives three shots (240vh on phones) */
+.filmPinned {
+  height: 300vh;
+}
+@media (max-width: 767px) {
+  .filmPinned {
+    height: 240vh;
+  }
+}
+
+.filmSticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* static path: one viewport for the hero, shorter panels for the beats */
+.filmStatic {
+  min-height: 100svh;
+  overflow: hidden;
+}
+.filmStaticBeat {
+  min-height: 62vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.filmStage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  background: #041216;
+}
+
+.filmShot {
+  position: absolute;
+  inset: 0;
+  will-change: transform, opacity;
+  transform-origin: 50% 55%;
+}
+
+.filmShotImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+/* Legibility scrims. Bottom-weighted, because the type sits low-left — and
+   deliberately heavy enough to carry white text over a lit horizon, which is
+   the worst case in every one of these shots. */
+.filmScrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(4, 18, 22, 0.62) 0%, rgba(4, 18, 22, 0.06) 22%),
+    linear-gradient(180deg, transparent 24%, rgba(4, 18, 22, 0.42) 58%, rgba(4, 18, 22, 0.72) 82%, rgba(4, 18, 22, 0.93) 100%),
+    radial-gradient(95% 78% at 18% 76%, rgba(4, 18, 22, 0.62) 0%, transparent 66%);
+}
+
+/* Phones stack the hero taller, so the type climbs into the bright band. */
+@media (max-width: 767px) {
+  .filmScrim {
+    background:
+      linear-gradient(180deg, rgba(4, 18, 22, 0.66) 0%, rgba(4, 18, 22, 0.1) 18%),
+      linear-gradient(180deg, transparent 12%, rgba(4, 18, 22, 0.5) 44%, rgba(4, 18, 22, 0.78) 74%, rgba(4, 18, 22, 0.94) 100%);
+  }
+}
+
+.filmTopBar {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: 40;
+  background: linear-gradient(180deg, rgba(4, 18, 22, 0.55), transparent);
+}
+
+/* act 1: promise + search, present without scrolling */
+.filmHero {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  padding: 8rem 1.25rem 7rem;
+  will-change: transform, opacity;
+}
+@media (min-width: 768px) {
+  .filmHero {
+    padding: 8rem 2rem 8rem;
+  }
+}
+
+/* acts 2 and 3: the typographic beats */
+.filmBeat,
+.filmBeatStatic {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  padding: 6rem 1.25rem;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.filmBeatStatic {
+  position: relative;
+  padding: 4.5rem 1.25rem;
+}
+@media (min-width: 768px) {
+  .filmBeat,
+  .filmBeatStatic {
+    padding-inline: 2rem;
+  }
+}
+
+.beatText {
+  max-width: 30ch;
+  font-size: clamp(1.9rem, 5.2vw, 4rem);
+  line-height: 1.06;
+  font-weight: 500;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.55);
+}
+.beatTextSmall {
+  max-width: 34ch;
+  font-size: clamp(1.5rem, 3.6vw, 2.9rem);
+  line-height: 1.16;
+  font-weight: 500;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.55);
+}
+.beatAccent {
+  color: var(--gold);
+}
+
+/* three hairlines: which shot is on screen. Editorial, not a scrollbar. */
+.filmRail {
+  position: absolute;
+  z-index: 30;
+  bottom: 2rem;
+  inset-inline-end: 2rem;
+  display: flex;
+  gap: 6px;
+  pointer-events: none;
+}
+.filmRail span {
+  display: block;
+  width: 34px;
+  height: 2px;
+  background: var(--cream);
+  transform-origin: inline-start;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.filmCue {
+  position: absolute;
+  z-index: 30;
+  bottom: 2rem;
+  inset-inline-start: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted-on-dark);
+  pointer-events: none;
+}
+.filmCue i {
+  display: block;
+  width: 48px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  animation: cueLine 2.4s ease-in-out infinite;
+}
+@keyframes cueLine {
+  0%, 100% { opacity: 0.35; transform: scaleX(0.6); }
+  50% { opacity: 1; transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filmCue i {
+    animation: none;
+  }
+}
+
 /* ---------- hero ---------- */
 
 .hero {
