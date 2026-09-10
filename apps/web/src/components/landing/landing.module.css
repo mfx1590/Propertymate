@@ -155,6 +155,15 @@
   }
 }
 
+.filmDip {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  background: #030f13;
+  pointer-events: none;
+  will-change: opacity;
+}
+
 .filmTopBar {
   position: absolute;
   inset-inline: 0;
@@ -179,21 +188,23 @@
   }
 }
 
-/* acts 2 and 3: the typographic beats */
+/* Acts 2 and 3: the typographic beats. Set low, like the hero — the type
+   then always sits in the strongest part of the scrim, and all three acts
+   share one baseline instead of the words wandering up the frame. */
 .filmBeat,
 .filmBeatStatic {
   position: absolute;
   inset: 0;
   z-index: 20;
   display: flex;
-  align-items: center;
-  padding: 6rem 1.25rem;
+  align-items: flex-end;
+  padding: 6rem 1.25rem 7rem;
   pointer-events: none;
   will-change: transform, opacity;
 }
 .filmBeatStatic {
   position: relative;
-  padding: 4.5rem 1.25rem;
+  padding: 5rem 1.25rem 4rem;
 }
 @media (min-width: 768px) {
   .filmBeat,

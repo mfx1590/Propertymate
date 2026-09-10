@@ -35,25 +35,56 @@ const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
 /** local 0→1 progress of p inside [a,b] */
 const span = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
 
-/** Act windows. Shot i owns [start, end]; crossfades overlap by FADE. */
+/**
+ * Act windows. Shot i owns [start, end]; crossfades overlap by FADE.
+ *
+ * Act one is the short one on purpose: its words are on screen from p=0
+ * without any scrolling, so it does not need a third of the film — and an
+ * even split left a long stretch after the hero faded with an image and no
+ * words on it. The rhythm to protect is words, cut, words, cut, words.
+ */
 const ACTS = [
-  { start: 0.0, end: 0.34 },
-  { start: 0.34, end: 0.67 },
-  { start: 0.67, end: 1.0 },
+  { start: 0.0, end: 0.26 },
+  { start: 0.26, end: 0.62 },
+  { start: 0.62, end: 1.0 },
 ];
-const FADE = 0.05;
+/**
+ * Crossfade width. Deliberately short: a wide dissolve leaves two shots
+ * double-exposed for a long stretch of scroll, which reads as mud rather
+ * than as a cut. 0.028 of 300vh is about 8vh of travel.
+ */
+const FADE = 0.028;
 
 function shotOpacity(i: number, p: number): number {
   const a = ACTS[i];
-  const inFade = i === 0 ? 1 : span(p, a.start - FADE, a.start + FADE * 0.4);
-  const outFade = i === ACTS.length - 1 ? 1 : 1 - span(p, a.end - FADE, a.end + FADE * 0.4);
+  const inFade = i === 0 ? 1 : span(p, a.start - FADE, a.start + FADE * 0.3);
+  const outFade = i === ACTS.length - 1 ? 1 : 1 - span(p, a.end - FADE, a.end + FADE * 0.3);
   return Math.min(inFade, outFade);
 }
 
-/** A shot is mounted/played a little before it is due, and released after. */
+/**
+ * A shot's media is attached a good stretch before it is due, so it is
+ * decoded and ready by the time the cut arrives. This is deliberately NOT
+ * the same as being played — see `leadShot`. Attaching early costs a
+ * download; playing early costs a second video decoding at once.
+ */
 function shotActive(i: number, p: number): boolean {
   const a = ACTS[i];
   return p >= a.start - 0.16 && p <= a.end + 0.06;
+}
+
+/** The shot that currently owns the frame — the only one that should play. */
+function leadShot(p: number): number {
+  let best = 0;
+  let bestO = -1;
+  for (let i = 0; i < ACTS.length; i++) {
+    const o = shotOpacity(i, p);
+    if (o > bestO) {
+      bestO = o;
+      best = i;
+    }
+  }
+  return best;
 }
 
 /** Slow push, restarted each act — reads as a camera move, not a zoom. */
@@ -61,11 +92,28 @@ function shotScale(i: number, p: number): number {
   return 1.04 + span(p, ACTS[i].start - FADE, ACTS[i].end) * 0.06;
 }
 
+/**
+ * A partial dip at each cut. A straight dissolve between two very different
+ * compositions shows both at half strength — deepening the cut hides the
+ * mismatch and reads as a deliberate transition. Kept well short of black:
+ * scroll-linked timing means a slow scroller would otherwise sit in the
+ * dark wondering what broke.
+ */
+function dipOpacity(p: number): number {
+  let peak = 0;
+  for (let i = 0; i < ACTS.length - 1; i++) {
+    const t = span(p, ACTS[i].end - FADE, ACTS[i].end + FADE * 0.3);
+    if (t > 0 && t < 1) peak = Math.max(peak, Math.sin(t * Math.PI) * 0.55);
+  }
+  return peak;
+}
+
 function beatStyle(i: number, p: number): { opacity: number; y: number } {
   const a = ACTS[i];
-  const inn = span(p, a.start + 0.02, a.start + 0.11);
-  // the last beat holds to the end; the middle one clears before the next
-  const out = i === ACTS.length - 1 ? 0 : span(p, a.end - 0.09, a.end - 0.005);
+  // in after the incoming cut has finished; out before the outgoing cut
+  // starts — a line of type must never be caught inside a dissolve.
+  const inn = span(p, a.start + 0.02, a.start + 0.1);
+  const out = i === ACTS.length - 1 ? 0 : span(p, a.end - 0.12, a.end - FADE - 0.01);
   return { opacity: inn * (1 - out), y: (1 - inn) * 26 - out * 22 };
 }
 
@@ -98,10 +146,12 @@ export function ScrollFilm({
   const heroEl = useRef<HTMLDivElement>(null);
   const stageEl = useRef<HTMLDivElement>(null);
   const cueEl = useRef<HTMLDivElement>(null);
+  const dipEl = useRef<HTMLDivElement>(null);
   const dotEls = useRef<(HTMLSpanElement | null)[]>([]);
   const progress = useRef(0);
   const raf = useRef(0);
   const activeKey = useRef('0');
+  const leadRef = useRef(0);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -138,12 +188,16 @@ export function ScrollFilm({
     }
 
     if (heroEl.current) {
-      const o = 1 - span(p, 0.03, 0.14);
+      // Holds well into act one: this is the h1 and the search box, the most
+      // useful thing on the page, so it leaves late and only just before the
+      // first cut covers its exit.
+      const o = 1 - span(p, 0.1, 0.22);
       heroEl.current.style.opacity = String(o);
-      heroEl.current.style.transform = `translate3d(0, ${-span(p, 0.03, 0.18) * 40}px, 0)`;
+      heroEl.current.style.transform = `translate3d(0, ${-span(p, 0.1, 0.26) * 40}px, 0)`;
       heroEl.current.style.pointerEvents = o > 0.5 ? 'auto' : 'none';
     }
     if (cueEl.current) cueEl.current.style.opacity = String(1 - span(p, 0.01, 0.06));
+    if (dipEl.current) dipEl.current.style.opacity = String(dipOpacity(p));
 
     // The release: the film shrinks a touch and rounds off, so the page's
     // paper ground appears at the edges before the pin lets go.
@@ -151,6 +205,18 @@ export function ScrollFilm({
       const r = span(p, 0.94, 1);
       stageEl.current.style.transform = `scale(${1 - r * 0.04})`;
       stageEl.current.style.borderRadius = `${r * 22}px`;
+    }
+
+    // Exactly one video decodes: the one that owns the frame. Changed only
+    // at handover, never per frame.
+    const lead = leadShot(p);
+    if (lead !== leadRef.current) {
+      leadRef.current = lead;
+      videoEls.current.forEach((v, i) => {
+        if (!v) return;
+        if (i === lead) void v.play().catch(() => undefined);
+        else v.pause();
+      });
     }
 
     const nowActive = ACTS.map((_, i) => shotActive(i, p));
@@ -185,15 +251,12 @@ export function ScrollFilm({
     };
   }, [enhanced, schedule]);
 
-  // Play the shot that owns the frame; pause the rest so only one video
-  // decodes at a time.
+  // A shot that has just mounted its sources needs starting if it is already
+  // the lead (the play/pause handover itself lives in `apply`).
   useEffect(() => {
     if (!enhanced) return;
-    videoEls.current.forEach((v, i) => {
-      if (!v) return;
-      if (active[i]) void v.play().catch(() => undefined);
-      else v.pause();
-    });
+    const v = videoEls.current[leadRef.current];
+    if (v && v.paused) void v.play().catch(() => undefined);
   }, [active, enhanced]);
 
   // Dev-only synchronous frame driver: rAF stalls in hidden windows, which
@@ -288,6 +351,8 @@ export function ScrollFilm({
           ))}
           <div className={s.filmScrim} style={{ zIndex: 5 }} />
           <div className={s.grain} style={{ zIndex: 6 }} />
+          {/* the dip that deepens each cut */}
+          <div ref={dipEl} className={s.filmDip} style={{ opacity: 0 }} />
         </div>
 
         {/* brand mark + nav: stays for the whole film */}
