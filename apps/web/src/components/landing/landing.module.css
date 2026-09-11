@@ -1,0 +1,817 @@
+/*
+ * Landing design system — "dusk over the north coast".
+ * Ink-teal darks, warm gold, cream paper; Playfair Display (self-hosted,
+ * variable weight, latin + latin-ext + cyrillic) for display type.
+ * Every animation here is decorative and disabled under
+ * prefers-reduced-motion at the bottom of the file.
+ */
+
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('./fonts/playfair-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('./fonts/playfair-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('./fonts/playfair-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+.root {
+  --ink: #071a1f;
+  --ink-2: #0b2229;
+  --ink-3: #10303a;
+  --teal: #0f766e;
+  --gold: #d9a25f;
+  --gold-bright: #ecb87a;
+  --cream: #faf6ee;
+  --cream-2: #f2ebdd;
+  --paper-text: #182b2f;
+  --dark-text: #f4eee1;
+  --muted-on-dark: rgba(244, 238, 225, 0.68);
+  --muted-on-paper: rgba(24, 43, 47, 0.64);
+  --hairline-dark: rgba(244, 238, 225, 0.14);
+  --hairline-paper: rgba(24, 43, 47, 0.12);
+  background: var(--cream);
+  color: var(--paper-text);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+}
+
+.serif {
+  font-family: 'Playfair Display', 'Noto Naskh Arabic', Georgia,
+    'Times New Roman', serif;
+  letter-spacing: -0.01em;
+}
+
+.kicker {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* ---------- the opening film ---------- */
+
+.film {
+  position: relative;
+  background: #041216;
+  color: var(--dark-text);
+}
+
+/* pinned: 300vh of scroll drives three shots (240vh on phones) */
+.filmPinned {
+  height: 300vh;
+}
+@media (max-width: 767px) {
+  .filmPinned {
+    height: 240vh;
+  }
+}
+
+.filmSticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* static path: one viewport for the hero, shorter panels for the beats */
+.filmStatic {
+  min-height: 100svh;
+  overflow: hidden;
+}
+.filmStaticBeat {
+  min-height: 62vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.filmStage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  will-change: transform;
+  background: #041216;
+}
+
+.filmShot {
+  position: absolute;
+  inset: 0;
+  will-change: transform, opacity;
+  transform-origin: 50% 55%;
+}
+
+.filmShotImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+/* Legibility scrims. Bottom-weighted, because the type sits low-left — and
+   deliberately heavy enough to carry white text over a lit horizon, which is
+   the worst case in every one of these shots. */
+.filmScrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(4, 18, 22, 0.62) 0%, rgba(4, 18, 22, 0.06) 22%),
+    linear-gradient(180deg, transparent 24%, rgba(4, 18, 22, 0.42) 58%, rgba(4, 18, 22, 0.72) 82%, rgba(4, 18, 22, 0.93) 100%),
+    radial-gradient(95% 78% at 18% 76%, rgba(4, 18, 22, 0.62) 0%, transparent 66%);
+}
+
+/* Phones stack the hero taller, so the type climbs into the bright band. */
+@media (max-width: 767px) {
+  .filmScrim {
+    background:
+      linear-gradient(180deg, rgba(4, 18, 22, 0.66) 0%, rgba(4, 18, 22, 0.1) 18%),
+      linear-gradient(180deg, transparent 12%, rgba(4, 18, 22, 0.5) 44%, rgba(4, 18, 22, 0.78) 74%, rgba(4, 18, 22, 0.94) 100%);
+  }
+}
+
+.filmDip {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  background: #030f13;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.filmTopBar {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: 40;
+  background: linear-gradient(180deg, rgba(4, 18, 22, 0.55), transparent);
+}
+
+/* act 1: promise + search, present without scrolling */
+.filmHero {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  padding: 8rem 1.25rem 7rem;
+  will-change: transform, opacity;
+}
+@media (min-width: 768px) {
+  .filmHero {
+    padding: 8rem 2rem 8rem;
+  }
+}
+
+/* Acts 2 and 3: the typographic beats. Set low, like the hero — the type
+   then always sits in the strongest part of the scrim, and all three acts
+   share one baseline instead of the words wandering up the frame. */
+.filmBeat,
+.filmBeatStatic {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  padding: 6rem 1.25rem 7rem;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.filmBeatStatic {
+  position: relative;
+  padding: 5rem 1.25rem 4rem;
+}
+@media (min-width: 768px) {
+  .filmBeat,
+  .filmBeatStatic {
+    padding-inline: 2rem;
+  }
+}
+
+.beatText {
+  max-width: 30ch;
+  font-size: clamp(1.9rem, 5.2vw, 4rem);
+  line-height: 1.06;
+  font-weight: 500;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.55);
+}
+.beatTextSmall {
+  max-width: 34ch;
+  font-size: clamp(1.5rem, 3.6vw, 2.9rem);
+  line-height: 1.16;
+  font-weight: 500;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.55);
+}
+.beatAccent {
+  color: var(--gold);
+}
+
+/* three hairlines: which shot is on screen. Editorial, not a scrollbar. */
+.filmRail {
+  position: absolute;
+  z-index: 30;
+  bottom: 2rem;
+  inset-inline-end: 2rem;
+  display: flex;
+  gap: 6px;
+  pointer-events: none;
+}
+.filmRail span {
+  display: block;
+  width: 34px;
+  height: 2px;
+  background: var(--cream);
+  transform-origin: inline-start;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.filmCue {
+  position: absolute;
+  z-index: 30;
+  bottom: 2rem;
+  inset-inline-start: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted-on-dark);
+  pointer-events: none;
+}
+.filmCue i {
+  display: block;
+  width: 48px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  animation: cueLine 2.4s ease-in-out infinite;
+}
+@keyframes cueLine {
+  0%, 100% { opacity: 0.35; transform: scaleX(0.6); }
+  50% { opacity: 1; transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filmCue i {
+    animation: none;
+  }
+}
+
+/* ---------- the climb (the hook) ---------- */
+
+.climbPinned {
+  height: 460vh;
+}
+@media (max-width: 767px) {
+  .climbPinned {
+    height: 380vh;
+  }
+}
+
+/* Lighter than the İskele film's scrim: the monument frames have open sky
+   on the right where the words sit, and the climber must stay readable. */
+.climbScrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(4, 18, 22, 0.55) 0%, rgba(4, 18, 22, 0.02) 22%),
+    linear-gradient(180deg, transparent 52%, rgba(4, 18, 22, 0.42) 82%, rgba(4, 18, 22, 0.86) 100%),
+    linear-gradient(270deg, rgba(4, 18, 22, 0.5) 0%, transparent 42%);
+}
+@media (max-width: 767px) {
+  .climbScrim {
+    background:
+      linear-gradient(180deg, rgba(4, 18, 22, 0.6) 0%, rgba(4, 18, 22, 0.08) 18%),
+      linear-gradient(180deg, transparent 30%, rgba(4, 18, 22, 0.55) 62%, rgba(4, 18, 22, 0.92) 100%);
+  }
+}
+
+/* The words live bottom-RIGHT, physically, in every locale: the climber is
+   on the left of the picture and the picture does not mirror. The text
+   still aligns to its own writing direction inside the block. */
+.climbHero,
+.climbLine,
+.climbClosing {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 8rem 2rem 7rem;
+  will-change: transform, opacity;
+}
+.climbLine,
+.climbClosing {
+  pointer-events: none;
+}
+.climbHero > *,
+.climbLine > *,
+.climbClosing > * {
+  max-width: 31rem;
+  text-align: start;
+}
+/* flex-end is logical: in RTL it lands on the left, on top of the climber.
+   flex-start is the physical right there. */
+[dir='rtl'] .climbHero,
+[dir='rtl'] .climbLine,
+[dir='rtl'] .climbClosing {
+  justify-content: flex-start;
+}
+@media (max-width: 767px) {
+  .climbHero,
+  .climbLine,
+  .climbClosing {
+    justify-content: flex-start;
+    padding: 7rem 1.25rem 6.5rem;
+  }
+  [dir='rtl'] .climbHero,
+  [dir='rtl'] .climbLine,
+  [dir='rtl'] .climbClosing {
+    justify-content: flex-end;
+  }
+}
+
+/* the end card: monument → flat mark → header slot */
+.climbLogo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 45;
+  pointer-events: none;
+  will-change: transform, opacity, width, height;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.35));
+}
+.climbEnd {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  background: #071a1f;
+  pointer-events: none;
+  will-change: opacity;
+}
+/* the slot beside the wordmark that the mark lands in; the static page
+   shows it filled from the start, the film hands it over at the end */
+.brandSlot {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  object-fit: contain;
+  transition: opacity 0.25s ease;
+}
+/* once the mark has landed the header is fixed for the rest of the page,
+   which also keeps the locale switcher in reach on every section */
+.filmTopBarFixed {
+  position: fixed !important;
+  background: rgba(7, 26, 31, 0.86) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--hairline-dark);
+}
+
+/* question widgets: orbit the climber, flip to checks at the ridge */
+.climbWidget {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  pointer-events: none;
+  will-change: transform, opacity;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transform-origin: 50% 50%;
+}
+.climbWidgetQ,
+.climbWidgetA {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+.climbWidgetQ {
+  background: rgba(7, 26, 31, 0.62);
+  border: 1px solid rgba(244, 238, 225, 0.22);
+  color: var(--dark-text);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.climbWidgetDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--gold);
+  box-shadow: 0 0 10px rgba(217, 162, 95, 0.95);
+}
+.climbWidgetA {
+  position: absolute;
+  inset: 0;
+  justify-content: center;
+  background: rgba(15, 118, 110, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #f1fbf8;
+  opacity: 0;
+  transform: scale(0.9) rotate(-2deg);
+}
+.climbWidget[data-flipped='true'] .climbWidgetQ {
+  opacity: 0;
+  transform: scale(1.06);
+}
+.climbWidget[data-flipped='true'] .climbWidgetA {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+@media (max-width: 767px) {
+  .climbWidget {
+    font-size: 0.74rem;
+  }
+  .climbWidgetQ,
+  .climbWidgetA {
+    padding: 0.4rem 0.7rem;
+  }
+}
+
+.climbLines {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.climbLines line {
+  stroke: var(--gold);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  transition: opacity 0.3s ease;
+}
+
+/* static path: the five checks as a plain list */
+.climbStaticChecks {
+  background: var(--ink);
+  color: var(--dark-text);
+  padding: 4rem 1.25rem;
+}
+.climbStaticLine {
+  max-width: 34ch;
+  margin: 0 auto;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  line-height: 1.15;
+  font-weight: 500;
+}
+.climbStaticList {
+  list-style: none;
+  margin: 2rem auto;
+  padding: 0;
+  max-width: 44rem;
+  display: grid;
+  gap: 0.6rem;
+}
+.climbStaticList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--hairline-dark);
+  border-radius: 12px;
+}
+.climbStaticQ {
+  color: var(--muted-on-dark);
+}
+.climbStaticA {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #9fe3d6;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.climbClosingStatic {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  padding: 4.5rem 2rem;
+}
+
+/* ---------- hero ---------- */
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  background:
+    radial-gradient(120% 85% at 50% 108%, #b96d3a 0%, #6a3c2b 26%, transparent 58%),
+    linear-gradient(180deg, #05161b 0%, #0a2630 46%, #14424a 72%, #2a5a58 100%);
+  color: var(--dark-text);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.heroImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 42%;
+  animation: kenburns 36s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes kenburns {
+  from { transform: scale(1) translateY(0); }
+  to { transform: scale(1.07) translateY(-1.4%); }
+}
+
+/* legibility scrims over the photo */
+.heroScrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(5, 18, 22, 0.62) 0%, rgba(5, 18, 22, 0.05) 26%),
+    linear-gradient(180deg, transparent 40%, rgba(5, 18, 22, 0.52) 78%, rgba(5, 18, 22, 0.9) 100%),
+    radial-gradient(90% 70% at 18% 78%, rgba(5, 18, 22, 0.55) 0%, transparent 62%);
+}
+
+/* film grain — kills flat-gradient banding, adds texture */
+.grain {
+  position: absolute;
+  inset: -50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  animation: grain 1.6s steps(4) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-2%, 1%); }
+  50% { transform: translate(1%, -2%); }
+  75% { transform: translate(-1%, -1%); }
+  100% { transform: translate(2%, 2%); }
+}
+
+.heroSearch {
+  background: rgba(9, 28, 33, 0.55);
+  border: 1px solid rgba(244, 238, 225, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+}
+
+.goldBtn {
+  background: linear-gradient(180deg, var(--gold-bright), var(--gold));
+  color: #221507;
+  font-weight: 600;
+  box-shadow: 0 6px 24px rgba(217, 162, 95, 0.35);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s;
+}
+.goldBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(217, 162, 95, 0.45);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  color: var(--muted-on-dark);
+}
+.chip::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--gold);
+  box-shadow: 0 0 8px rgba(217, 162, 95, 0.9);
+}
+
+.scrollCue {
+  position: absolute;
+  bottom: 1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 42px;
+  border: 1.5px solid rgba(244, 238, 225, 0.4);
+  border-radius: 999px;
+}
+.scrollCue::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  width: 4px;
+  height: 8px;
+  margin-left: -2px;
+  border-radius: 999px;
+  background: var(--gold);
+  animation: cue 2.2s ease-in-out infinite;
+}
+@keyframes cue {
+  0%, 100% { transform: translateY(0); opacity: 1; }
+  60% { transform: translateY(14px); opacity: 0; }
+}
+
+/* ---------- reveal-on-scroll ---------- */
+
+.revealHidden {
+  opacity: 0;
+  transform: translateY(26px);
+}
+.revealShown {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- verification sequence ---------- */
+
+.stageDim {
+  opacity: 0.3;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.stageLit {
+  opacity: 1;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.docCard {
+  background: #fffdf8;
+  border: 1px solid var(--hairline-paper);
+  box-shadow:
+    0 1px 2px rgba(24, 43, 47, 0.05),
+    0 24px 60px -18px rgba(24, 43, 47, 0.25);
+}
+
+.checkRow {
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.checkRowOff {
+  opacity: 0.22;
+  transform: translateX(6px);
+}
+
+.tick {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 118, 110, 0.12);
+  color: var(--teal);
+  flex: none;
+}
+
+.stamp {
+  border: 2.5px solid var(--teal);
+  color: var(--teal);
+  border-radius: 10px;
+  padding: 0.35rem 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  transform: rotate(-7deg) scale(1);
+  opacity: 1;
+  transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
+  box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.25);
+}
+.stampOff {
+  opacity: 0;
+  transform: rotate(-14deg) scale(1.5);
+}
+
+/* ---------- image bands & region cards ---------- */
+
+.band {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink-2);
+}
+.bandImg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.regionCard {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--ink-3);
+  aspect-ratio: 4 / 3;
+  isolation: isolate;
+}
+.regionCard img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.regionCard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(200deg, rgba(7, 26, 31, 0) 42%, rgba(7, 26, 31, 0.82) 88%);
+  z-index: 1;
+}
+.regionCard:hover img {
+  transform: scale(1.05);
+}
+.regionName {
+  position: absolute;
+  inset-inline: 1.1rem;
+  bottom: 1rem;
+  z-index: 2;
+  color: var(--dark-text);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* ---------- steps ---------- */
+
+.stepNum {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.6rem;
+  line-height: 1;
+  color: var(--gold);
+}
+
+/* ---------- CTA ---------- */
+
+.cta {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--dark-text);
+  isolation: isolate;
+}
+.ctaScrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(5, 18, 22, 0.78) 0%, rgba(5, 18, 22, 0.35) 45%, rgba(5, 18, 22, 0.82) 100%);
+}
+
+/* ---------- reduced motion: everything decorative stops ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .heroImg,
+  .grain,
+  .scrollCue::after {
+    animation: none;
+  }
+  .revealHidden {
+    opacity: 1;
+    transform: none;
+  }
+  .regionCard img,
+  .goldBtn {
+    transition: none;
+  }
+}

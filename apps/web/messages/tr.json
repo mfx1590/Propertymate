@@ -789,7 +789,51 @@
         "answerBody": "İlan sahibi her 90 günde bir mülkün hâlâ müsait olduğunu onaylamak zorunda. Onaylamazsa ilan aramadan otomatik olarak kalkar; yani gördüğünüz her sonucun arkasında bu çeyrekte biri durmuş demektir."
       }
     },
-    "whyFooter": "Doğrulama belgeye dayalı bir kontroldür; hukuki danışmanlık ya da tapu garantisi değildir. Ne gördüğümüzü size açıkça söyleriz ve imzadan önce yine de kendi avukatınıza danışmanızı öneririz."
+    "whyFooter": "Doğrulama belgeye dayalı bir kontroldür; hukuki danışmanlık ya da tapu garantisi değildir. Ne gördüğümüzü size açıkça söyleriz ve imzadan önce yine de kendi avukatınıza danışmanızı öneririz.",
+    "heroKicker": "Kuzey Kıbrıs, doğrulanmış",
+    "stats": {
+      "regions": "bölge, tek doğrulama standardı",
+      "deeds": "tapu türü her ilanda okunur ve etiketlenir",
+      "days": "günde bir, her ilan hâlâ gerçek olduğunu onaylamalı"
+    },
+    "regionsSub": "Altı bölge, tek söz: açtığınız her ilan kontrol edilmiştir.",
+    "ctaTitle": "Manzara sizin. Evraklar ise çoktan kontrol edildi.",
+    "ctaButton": "Doğrulanmış evlere göz atın",
+    "stamp": "Doğrulandı",
+    "check": {
+      "deed": "Tapu senedi",
+      "seller": "Satıcı kimliği",
+      "fresh": "Hâlâ satışta"
+    },
+    "film": {
+      "beat1": "Herkes size manzarayı gösterir.",
+      "beat2": "Biz tapuyu, mal sahibini ve en son ne zaman doğrulandığını gösteriyoruz.",
+      "scrollCue": "Kaydır"
+    },
+    "climb": {
+      "title": "Kuzey Kıbrıs’ta ev almak bir tırmanış olmamalı.",
+      "sub": "Sorular gerçek. Bir ilan yayına girmeden önce her birini biz yanıtlıyoruz — oradan sonrası eve kadar yokuş aşağı.",
+      "questions": {
+        "deed": "Tapu gerçek mi?",
+        "owner": "Satıcı gerçekten sahibi mi?",
+        "type": "Hangi tür tapu?",
+        "fresh": "Hâlâ satılık mı?",
+        "trust": "Bu işte kime güvenebilirim?"
+      },
+      "answers": {
+        "deed": "Tapu ekibimizce kontrol edildi",
+        "owner": "Mal sahibi tapuyla eşleştirildi",
+        "type": "Her ilanda tapu türü",
+        "fresh": "Son 90 günde onaylandı",
+        "trust": "Doğrulanmış danışmanlar ve avukatlar"
+      },
+      "ridge": "Her birini kontrol ediyoruz — ilan yayına girmeden önce.",
+      "descent": "Bu yüzden iniş kolay."
+    },
+    "place": {
+      "kicker": "Mekân",
+      "title": "Bir de adanın kendisi var."
+    }
   },
   "projects": {
     "status": {

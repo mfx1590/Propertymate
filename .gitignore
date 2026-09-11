@@ -43,3 +43,7 @@ test-results/
 # Tesseract language data — fetched by `npm run ocr:fetch -w apps/api` (step 28)
 apps/api/ocr/*.traineddata
 apps/api/ocr/*.traineddata.gz
+
+# source footage for the landing film — stays local, lives in the media
+# bucket under landing/ once encoded (public repo: never commit raw media)
+/assest/

@@ -1,131 +1,380 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { LOCALES } from '@propverify/shared';
+import { API_BASE } from '../../lib/listings';
 import { Link } from '../../i18n/routing';
+import { landingUrl } from '../../components/landing/media';
+import { Reveal } from '../../components/landing/Reveal';
+import { CountUp } from '../../components/landing/CountUp';
+import { VerifySequence } from '../../components/landing/VerifySequence';
+import { ScrollFilm } from '../../components/landing/ScrollFilm';
+import { ClimbFilm } from '../../components/landing/ClimbFilm';
+import s from '../../components/landing/landing.module.css';
 
-const REGIONS = [
-  { slug: 'kyrenia', en: 'Kyrenia (Girne)' },
-  { slug: 'famagusta', en: 'Famagusta (Gazimağusa)' },
-  { slug: 'iskele', en: 'İskele' },
-  { slug: 'nicosia', en: 'Nicosia (Lefkoşa)' },
-  { slug: 'guzelyurt', en: 'Güzelyurt' },
-  { slug: 'lefke', en: 'Lefke' },
-];
+/**
+ * The homepage — "dusk over the north coast".
+ *
+ * Opens on a scroll-driven three-shot film cut from Mehdi's own footage of
+ * the İskele development (vertical phone clips, expanded to 16:9 and given
+ * cinematic camera moves in Higgsfield). The narrative is the positioning:
+ * shot one carries the promise and the search box, then two beats turn from
+ * what every property site shows you to what this one checks — handing
+ * straight into the verification sequence, which shows it on a listing card.
+ *
+ * Every job of the old page is intact and server-rendered — h1, search,
+ * region links, trust pitch, how-it-works — and every animation, the film
+ * included, is progressive enhancement over that complete HTML.
+ */
+
+/** Fallback when the API is unreachable — notably CI's API-less build. */
+const REGION_SLUGS = ['kyrenia', 'famagusta', 'iskele', 'nicosia', 'guzelyurt', 'lefke'] as const;
+
+interface Region {
+  slug: string;
+  nameI18n: Record<string, string>;
+}
+
+/** Rendered on demand and cached five minutes, like every public page. */
+export const revalidate = 300;
+
+async function fetchRegions(): Promise<Region[] | null> {
+  try {
+    const res = await fetch(`${API_BASE}/regions`, { next: { revalidate: 300 } });
+    if (!res.ok) return null;
+    const json = (await res.json()) as Region[];
+    return Array.isArray(json) && json.length > 0 ? json : null;
+  } catch {
+    return null;
+  }
+}
 
 export default async function HomePage({ params: { locale } }: { params: { locale: string } }) {
   setRequestLocale(locale);
   const t = await getTranslations();
+  const regions = (await fetchRegions()) ?? REGION_SLUGS.map((slug) => ({ slug, nameI18n: {} }));
 
-  return (
-    <main>
-      {/* header */}
-      <header className="border-b border-gray-100">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <span className="text-xl font-bold text-brand-600">{t('common.appName')}</span>
-          <nav className="flex items-center gap-4 text-sm">
-            {/* locale switcher */}
-            <div className="flex gap-2 text-gray-500">
+  /** Catalogue name first (dual EN/TR forms, fixed RU/FA), API as fallback. */
+  const regionName = (r: Region) => {
+    try {
+      const fromCatalogue = t(`regionPage.names.${r.slug}`);
+      if (fromCatalogue && !fromCatalogue.startsWith('regionPage.')) return fromCatalogue;
+    } catch {
+      /* not one of the six top-level regions */
+    }
+    return r.nameI18n[locale] || r.nameI18n.en || r.slug;
+  };
+
+  const stats = [
+    { value: 6, label: t('home.stats.regions') },
+    { value: 4, label: t('home.stats.deeds') },
+    { value: 90, label: t('home.stats.days') },
+  ];
+
+  /** Brand mark + nav. Lives inside the film's pinned stage (see ScrollFilm)
+   *  so it holds for the film's full length; the footer carries the locale
+   *  links again once the film has let go. */
+  const topBar = (
+    <header>
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
+          <span className="flex items-center gap-2.5">
+            {/* the mark: shown from the start on the static page; the film
+                delivers it here at its end (ClimbFilm) */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- bucket media */}
+            <img src={landingUrl('logo-mark.png')} alt="" className={s.brandSlot} data-brand-slot decoding="async" />
+            <span className={`${s.serif} text-xl font-bold`} style={{ color: 'var(--dark-text)' }}>
+              {t('common.appName')}
+            </span>
+          </span>
+          <nav className="flex items-center gap-3 text-sm sm:gap-5">
+            <div className="flex gap-2.5 text-xs sm:gap-3 sm:text-sm" style={{ color: 'var(--muted-on-dark)' }}>
               {LOCALES.map((l) => (
-                <Link key={l} href="/" locale={l} className={l === locale ? 'font-bold text-brand-600' : ''}>
+                <Link
+                  key={l}
+                  href="/"
+                  locale={l}
+                  className={l === locale ? 'font-bold' : ''}
+                  style={l === locale ? { color: 'var(--gold)' } : undefined}
+                >
                   {l.toUpperCase()}
                 </Link>
               ))}
             </div>
-            <Link href="/auth" className="text-gray-700">
+            <Link href="/auth" className="hidden sm:inline" style={{ color: 'var(--dark-text)' }}>
               {t('common.signIn')}
             </Link>
-            <Link href="/auth" className="rounded-lg bg-brand-600 px-4 py-2 font-medium text-white">
+            <Link href="/auth" className={`${s.goldBtn} rounded-full px-4 py-2 text-xs sm:px-5 sm:text-sm`}>
               {t('common.register')}
             </Link>
           </nav>
         </div>
       </header>
+  );
 
-      {/* hero */}
-      <section className="bg-brand-50">
-        <div className="mx-auto max-w-6xl px-4 py-20 text-center">
-          <h1 className="mx-auto max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl">
-            {t('home.heroTitle')}
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">{t('home.heroSubtitle')}</p>
-          <form action={`/${locale}/search`} className="mx-auto mt-8 flex max-w-xl gap-2">
-            <input
-              name="q"
-              className="w-full rounded-lg border border-gray-300 px-4 py-3"
-              placeholder={t('home.searchPlaceholder')}
-            />
-            <button type="submit" className="rounded-lg bg-brand-600 px-6 py-3 font-medium text-white">
-              {t('common.search')}
-            </button>
-          </form>
-        </div>
-      </section>
+  /** The search box. On screen at the first frame of the climb and again at
+   *  the last, so nobody has to finish the film to use the site. */
+  const searchForm = (
+    <form action={`/${locale}/search`} className={`${s.heroSearch} mt-8 flex max-w-xl gap-2 rounded-2xl p-2`}>
+      <input
+        name="q"
+        className="w-full rounded-xl bg-transparent px-4 py-3 outline-none"
+        style={{ color: 'var(--dark-text)' }}
+        placeholder={t('home.searchPlaceholder')}
+      />
+      <button type="submit" className={`${s.goldBtn} shrink-0 rounded-xl px-6 py-3`}>
+        {t('common.search')}
+      </button>
+    </form>
+  );
 
-      {/* why verification exists — the premise of the whole product. "How it
-          works" below describes the mechanics; a first-time visitor needs the
-          stakes before the mechanics mean anything. Claims here are limited to
-          what the verification engine actually does (Plan §4), and whyFooter
-          keeps the promise honest: a documentary check is not legal advice. */}
-      <section className="border-b border-gray-100">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <p className="text-sm font-semibold uppercase tracking-wide text-brand-600">
-            {t('home.whyEyebrow')}
-          </p>
-          <h2 className="mt-2 max-w-3xl text-3xl font-bold tracking-tight">{t('home.whyTitle')}</h2>
-          <p className="mt-4 max-w-3xl text-gray-600">{t('home.whyBody')}</p>
+  const climbQuestions = (['deed', 'owner', 'type', 'fresh', 'trust'] as const).map((key) => ({
+    key,
+    question: t(`home.climb.questions.${key}`),
+    answer: t(`home.climb.answers.${key}`),
+  }));
 
-          <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-gray-200 bg-gray-200 sm:grid-cols-3">
-            {(['deed', 'seller', 'stale'] as const).map((risk) => (
-              <div key={risk} className="bg-white p-6">
-                <p className="text-sm font-medium text-gray-400">
-                  {t(`home.risk.${risk}.question`)}
+  return (
+    <main className={s.root}>
+      {/* ---- the hook: "The Climb" (STORY.md) ---- */}
+      <ClimbFilm
+        topBar={topBar}
+        scrollCue={t('home.film.scrollCue')}
+        shots={[
+          // focus aims the phone crop at the climber: he moves from the
+          // frame's left foot to its centre over the five shots
+          { id: 'climb-1-foot', focus: '8% 62%', seconds: 5 },
+          { id: 'climb-2-climb', focus: '39% 45%', seconds: 8 },
+          { id: 'climb-3-ridge', focus: '50% 25%', seconds: 5 },
+          { id: 'climb-4-descent', focus: '54% 30%', seconds: 6 },
+          { id: 'climb-5-home', focus: '50% 50%', seconds: 6 },
+        ]}
+        questions={climbQuestions}
+        ridgeLine={t('home.climb.ridge')}
+        descentLine={t('home.climb.descent')}
+        hero={
+          <div>
+            <p className={s.kicker} style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}>
+              {t('home.heroKicker')}
+            </p>
+            <h1
+              className={`${s.serif} mt-5 text-[2.4rem] font-semibold leading-[1.06] sm:text-5xl`}
+              style={{ color: 'var(--dark-text)', textShadow: '0 2px 30px rgba(0,0,0,0.5)' }}
+            >
+              {t('home.climb.title')}
+            </h1>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed" style={{ color: 'var(--muted-on-dark)' }}>
+              {t('home.climb.sub')}
+            </p>
+            {searchForm}
+          </div>
+        }
+        closing={
+          <div>
+            <p
+              className={`${s.serif} text-[2.2rem] font-semibold leading-[1.08] sm:text-5xl`}
+              style={{ color: 'var(--dark-text)', textShadow: '0 2px 30px rgba(0,0,0,0.5)' }}
+            >
+              {t('home.heroTitle')}
+            </p>
+            <p className="mt-4 max-w-xl text-lg leading-relaxed" style={{ color: 'var(--muted-on-dark)' }}>
+              {t('home.heroSubtitle')}
+            </p>
+            {searchForm}
+            <div className="mt-6 flex flex-wrap gap-x-7 gap-y-2.5">
+              <span className={s.chip}>{t('home.check.deed')}</span>
+              <span className={s.chip}>{t('home.check.seller')}</span>
+              <span className={s.chip}>{t('home.check.fresh')}</span>
+            </div>
+          </div>
+        }
+      />
+
+      {/* ---- stats band ---- */}
+      <section style={{ background: 'var(--ink)', color: 'var(--dark-text)' }}>
+        <div className="mx-auto grid max-w-6xl gap-10 px-5 py-16 sm:grid-cols-3">
+          {stats.map((st, i) => (
+            <Reveal key={i} delay={i * 120}>
+              <div
+                className="sm:px-6"
+                style={i > 0 ? { borderInlineStart: '1px solid var(--hairline-dark)' } : undefined}
+              >
+                <p className={`${s.serif} text-5xl font-semibold`} style={{ color: 'var(--gold)' }}>
+                  <CountUp value={st.value} />
                 </p>
-                <p className="mt-3 font-semibold text-brand-600">
-                  {t(`home.risk.${risk}.answerTitle`)}
-                </p>
-                <p className="mt-1.5 text-sm leading-relaxed text-gray-600">
-                  {t(`home.risk.${risk}.answerBody`)}
+                <p className="mt-3 max-w-[16rem] text-sm leading-relaxed" style={{ color: 'var(--muted-on-dark)' }}>
+                  {st.label}
                 </p>
               </div>
-            ))}
-          </div>
-
-          <p className="mt-6 max-w-3xl text-sm text-gray-500">{t('home.whyFooter')}</p>
-        </div>
-      </section>
-
-      {/* regions */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <h2 className="text-2xl font-bold">{t('home.browseByRegion')}</h2>
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {REGIONS.map((r) => (
-            <Link
-              key={r.slug}
-              href={`/region/${r.slug}`}
-              className="rounded-xl border border-gray-200 p-6 font-medium transition hover:border-brand-500 hover:shadow-sm"
-            >
-              {r.en}
-            </Link>
+            </Reveal>
           ))}
         </div>
       </section>
 
-      {/* how it works */}
-      <section className="bg-gray-50">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <h2 className="text-2xl font-bold">{t('home.howItWorks')}</h2>
-          <div className="mt-6 grid gap-6 sm:grid-cols-3">
-            {(['step1', 'step2', 'step3'] as const).map((step) => (
-              <div key={step} className="rounded-xl bg-white p-6 shadow-sm">
-                <h3 className="font-semibold text-brand-600">{t(`home.${step}Title`)}</h3>
-                <p className="mt-2 text-sm text-gray-600">{t(`home.${step}Body`)}</p>
-              </div>
+      {/* ---- why verification exists: the pinned sequence. Claims stay
+              limited to what the engine actually does (Plan §4); the honest
+              footnote rides with the closing CTA below. ---- */}
+      <VerifySequence
+        eyebrow={t('home.whyEyebrow')}
+        title={t('home.whyTitle')}
+        body={t('home.whyBody')}
+        stamp={t('home.stamp')}
+        thumbSrc={landingUrl('region-kyrenia.webp')}
+        stages={[
+          {
+            question: t('home.risk.deed.question'),
+            answerTitle: t('home.risk.deed.answerTitle'),
+            answerBody: t('home.risk.deed.answerBody'),
+            checkLabel: t('home.check.deed'),
+            chip: t('search.deed.turkish'),
+          },
+          {
+            question: t('home.risk.seller.question'),
+            answerTitle: t('home.risk.seller.answerTitle'),
+            answerBody: t('home.risk.seller.answerBody'),
+            checkLabel: t('home.check.seller'),
+          },
+          {
+            question: t('home.risk.stale.question'),
+            answerTitle: t('home.risk.stale.answerTitle'),
+            answerBody: t('home.risk.stale.answerBody'),
+            checkLabel: t('home.check.fresh'),
+          },
+        ]}
+      />
+
+      {/* ---- chapter: the place. The İskele film that used to open the page
+              — it now runs after the promise has been made and shown, as the
+              reward rather than the hook. No header, no h1: a chapter title. ---- */}
+      <ScrollFilm
+        heightVh={220}
+        eagerFirst={false}
+        shots={[
+          { id: 'film-1-sea', focus: '50% 46%' },
+          { id: 'film-2-dusk', focus: '50% 42%' },
+          { id: 'film-3-home', focus: '50% 50%' },
+        ]}
+        hero={
+          <div className="mx-auto w-full max-w-6xl">
+            <div className="max-w-2xl">
+              <p className={s.kicker} style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}>
+                {t('home.place.kicker')}
+              </p>
+              <h2
+                className={`${s.serif} mt-5 text-[2.4rem] font-semibold leading-[1.06] sm:text-5xl`}
+                style={{ color: 'var(--dark-text)', textShadow: '0 2px 30px rgba(0,0,0,0.5)' }}
+              >
+                {t('home.place.title')}
+              </h2>
+            </div>
+          </div>
+        }
+        beats={[
+          <div key="b1" className="mx-auto w-full max-w-6xl">
+            <p className={`${s.serif} ${s.beatText}`}>{t('home.film.beat1')}</p>
+          </div>,
+          <div key="b2" className="mx-auto w-full max-w-6xl">
+            <p className={`${s.serif} ${s.beatTextSmall}`}>{t('home.film.beat2')}</p>
+          </div>,
+        ]}
+      />
+
+      {/* ---- visual breather: the island itself, from Mehdi's own footage ---- */}
+      <section className={s.band} style={{ height: 'min(58vh, 560px)' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- bucket media */}
+        <img src={landingUrl('band-golf.webp')} alt="" className={s.bandImg} loading="lazy" decoding="async" />
+      </section>
+
+      {/* ---- regions ---- */}
+      <section className="mx-auto max-w-6xl px-5 py-24">
+        <Reveal>
+          <h2 className={`${s.serif} text-3xl font-semibold sm:text-4xl`}>{t('home.browseByRegion')}</h2>
+          <p className="mt-3 max-w-xl" style={{ color: 'var(--muted-on-paper)' }}>
+            {t('home.regionsSub')}
+          </p>
+        </Reveal>
+        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {regions.map((r, i) => (
+            <Reveal key={r.slug} delay={(i % 3) * 100}>
+              <Link href={`/region/${r.slug}`} className={s.regionCard}>
+                {/* eslint-disable-next-line @next/next/no-img-element -- bucket media */}
+                <img src={landingUrl(`region-${r.slug}.webp`)} alt="" loading="lazy" decoding="async" />
+                <span className={s.regionName}>
+                  <span className={`${s.serif} text-xl font-semibold`}>{regionName(r)}</span>
+                  <span aria-hidden style={{ color: 'var(--gold)' }}>
+                    →
+                  </span>
+                </span>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ---- how it works ---- */}
+      <section style={{ background: 'var(--cream-2)' }}>
+        <div className="mx-auto max-w-6xl px-5 py-24">
+          <Reveal>
+            <h2 className={`${s.serif} text-3xl font-semibold sm:text-4xl`}>{t('home.howItWorks')}</h2>
+          </Reveal>
+          <div className="mt-12 grid gap-10 sm:grid-cols-3">
+            {(['step1', 'step2', 'step3'] as const).map((step, i) => (
+              <Reveal key={step} delay={i * 130}>
+                <div style={{ borderTop: '1px solid var(--hairline-paper)' }} className="pt-6">
+                  <p className={s.stepNum}>{String(i + 1).padStart(2, '0')}</p>
+                  <h3 className="mt-4 text-lg font-semibold">{t(`home.${step}Title`)}</h3>
+                  <p className="mt-2.5 text-sm leading-relaxed" style={{ color: 'var(--muted-on-paper)' }}>
+                    {t(`home.${step}Body`)}
+                  </p>
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
       </section>
 
-      <footer className="border-t border-gray-100 py-8 text-center text-sm text-gray-400">
-        {t('common.appName')} — {t('common.tagline')}
+      {/* ---- closing CTA: the doorway ---- */}
+      <section className={s.cta}>
+        {/* eslint-disable-next-line @next/next/no-img-element -- bucket media */}
+        <img src={landingUrl('cta-doorway.webp')} alt="" className={s.bandImg} loading="lazy" decoding="async" />
+        <div className={s.ctaScrim} />
+        <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center px-5 py-36 text-center">
+          <Reveal>
+            <h2 className={`${s.serif} text-3xl font-semibold leading-tight sm:text-5xl`}>
+              {t('home.ctaTitle')}
+            </h2>
+            <div className="mt-9">
+              <Link href="/search" className={`${s.goldBtn} inline-block rounded-full px-8 py-3.5`}>
+                {t('home.ctaButton')}
+              </Link>
+            </div>
+            <p className="mx-auto mt-10 max-w-xl text-xs leading-relaxed" style={{ color: 'var(--muted-on-dark)' }}>
+              {t('home.whyFooter')}
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ---- footer: carries the locale links, since the film's top bar
+              goes with the film ---- */}
+      <footer style={{ background: 'var(--ink)', borderTop: '1px solid var(--hairline-dark)' }}>
+        <div
+          className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-sm"
+          style={{ color: 'var(--muted-on-dark)' }}
+        >
+          <span className={s.serif}>{t('common.appName')}</span>
+          <span className="order-3 w-full sm:order-2 sm:w-auto">{t('common.tagline')}</span>
+          <div className="order-2 flex gap-3 sm:order-3">
+            {LOCALES.map((l) => (
+              <Link
+                key={l}
+                href="/"
+                locale={l}
+                className={l === locale ? 'font-bold' : ''}
+                style={l === locale ? { color: 'var(--gold)' } : undefined}
+              >
+                {l.toUpperCase()}
+              </Link>
+            ))}
+          </div>
+        </div>
       </footer>
     </main>
   );
