@@ -55,7 +55,8 @@ at all.
 | 1 · The climb | 10–42% | He climbs the steep slab, straining; the questions surface around him one by one and crowd in, tethered to him | the five questions |
 | 2 · The ridge | 42–58% | He hauls himself onto the apex; the sun breaks behind him | each question flips to its check and dissolves · "We check every one of them — before a listing goes live." |
 | 3 · The easy way | 58–80% | Over the ridge, the far side is the P's teal curve; he walks it, then glides down it, jacket over his shoulder | "So the way down is easy." |
-| 4 · Home | 80–100% | The curve delivers him into the warm room inside the P; he drops onto the sofa, coffee in hand; pull back to the full logo | "Every listing verified. Every seller real." + search |
+| 4 · Home | 80–89% | The curve delivers him into the warm room inside the P; he drops onto the sofa, coffee in hand; pull back to the full logo | — (the picture carries it) |
+| 5 · The mark | 89–100% | The flat PropVerify mark fades in over the monument (the 3D set becomes the logo), then flies up to the slot beside the wordmark while the picture dips to ink; the header goes fixed from that moment, so the mark the film delivered stays for the rest of the page | "Every listing verified. Every seller real." + search — rising only once the mark has left the frame |
 
 The search box is on screen at the first frame and again at the last, so
 nobody has to finish the film to use the site.
@@ -124,6 +125,21 @@ of Sₙ₊₁): same pose, same light, every time. Keyframe chaining works.
   spec's resource-selection algorithm and fetches it. Every "pause the
   others" goes through `safePause`, which skips `NETWORK_EMPTY` elements.
   Found by measuring bytes, not by reading code.
+- **Handovers.** Each cut mixes two near-identical frames (the shots are
+  chained), over 0.03 of the film (~14vh). One seek in flight per video —
+  a new `currentTime` every frame while the decoder is still landing the
+  last one is what judders; the latest target waits for `seeked`. A shot
+  with no decoded frame never fades in: the nearest ready shot holds at
+  full strength instead, so a slow connection shows a still, not a flash.
+- **The end card.** `logo-mark.png` (the flat mark, keyed from Mehdi's
+  concept frame; GPT Image 2 was the model that removed the man and icons
+  without redrawing the mark) is an `<img>` inside the header layer. It
+  fades in over the monument's box (`MONUMENT_BOX`, raw-frame fractions,
+  mapped through the crop like the widgets), fit by width, apex to apex,
+  then flies to `[data-brand-slot]` beside the wordmark. At `END.fix` the
+  slot's own image takes over and the header goes `position: fixed` — the
+  flying mark lives in the header layer precisely so it travels with it.
+  The closing line only rises after the mark has left the frame.
 - **Words physically right.** The climber is on the left of the picture and
   the picture does not mirror, so the text block is on the physical right in
   every locale (`flex-end` is logical — RTL needs `flex-start`).

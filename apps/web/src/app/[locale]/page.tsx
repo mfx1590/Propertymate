@@ -75,8 +75,14 @@ export default async function HomePage({ params: { locale } }: { params: { local
   const topBar = (
     <header>
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
-          <span className={`${s.serif} text-xl font-bold`} style={{ color: 'var(--dark-text)' }}>
-            {t('common.appName')}
+          <span className="flex items-center gap-2.5">
+            {/* the mark: shown from the start on the static page; the film
+                delivers it here at its end (ClimbFilm) */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- bucket media */}
+            <img src={landingUrl('logo-mark.png')} alt="" className={s.brandSlot} data-brand-slot decoding="async" />
+            <span className={`${s.serif} text-xl font-bold`} style={{ color: 'var(--dark-text)' }}>
+              {t('common.appName')}
+            </span>
           </span>
           <nav className="flex items-center gap-3 text-sm sm:gap-5">
             <div className="flex gap-2.5 text-xs sm:gap-3 sm:text-sm" style={{ color: 'var(--muted-on-dark)' }}>

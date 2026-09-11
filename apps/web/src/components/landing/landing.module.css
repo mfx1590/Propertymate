@@ -358,6 +358,45 @@
   }
 }
 
+/* the end card: monument → flat mark → header slot */
+.climbLogo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 45;
+  pointer-events: none;
+  will-change: transform, opacity, width, height;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.35));
+}
+.climbEnd {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  background: #071a1f;
+  pointer-events: none;
+  will-change: opacity;
+}
+/* the slot beside the wordmark that the mark lands in; the static page
+   shows it filled from the start, the film hands it over at the end */
+.brandSlot {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  object-fit: contain;
+  transition: opacity 0.25s ease;
+}
+/* once the mark has landed the header is fixed for the rest of the page,
+   which also keeps the locale switcher in reach on every section */
+.filmTopBarFixed {
+  position: fixed !important;
+  background: rgba(7, 26, 31, 0.86) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--hairline-dark);
+}
+
 /* question widgets: orbit the climber, flip to checks at the ridge */
 .climbWidget {
   position: absolute;

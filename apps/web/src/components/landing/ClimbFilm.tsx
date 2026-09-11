@@ -70,7 +70,32 @@ const ACTS = [
   { start: 0.58, end: 0.8 }, // the easy way — down the P's curve
   { start: 0.8, end: 1.0 }, // home — inside the logo
 ];
-const FADE = 0.018;
+/**
+ * Dissolve width at each handover. The shots are keyframe-chained, so the
+ * two frames being mixed are near-identical — a wider mix hides generation
+ * drift and, more importantly, gives the incoming shot's first frame time to
+ * land on screen before the outgoing one is gone. 0.03 of 460vh ≈ 14vh.
+ */
+const FADE = 0.03;
+
+/** Where the monument sits in the last keyframe, raw-frame fractions:
+ *  the box the flat logo mark fades in over before it flies to the header. */
+const MONUMENT_BOX = { x: 0.3, y: 0.055, w: 0.38, h: 0.93 };
+
+/**
+ * The end card, in order: the room beat plays out (0.80–0.89); the flat
+ * mark fades in over the monument (converts); it flies to the slot beside
+ * the wordmark while the picture dips to ink; only then does the closing
+ * line rise — so the words never sit on top of the mark, on any screen.
+ */
+const END = {
+  fadeIn: [0.89, 0.93] as const,
+  fly: [0.93, 0.975] as const,
+  fix: 0.965,
+  closing: [0.945, 0.99] as const,
+};
+
+const smooth = (t: number) => t * t * (3 - 2 * t);
 
 /**
  * Where the climber is in the frame, as a fraction of the stage, per act
@@ -152,7 +177,10 @@ function shotOpacity(i: number, p: number): number {
  */
 function shotActive(i: number, p: number): boolean {
   const a = ACTS[i];
-  return p >= a.start - (i === 0 ? 1 : 0.06) && p <= a.end + 0.05;
+  // shot 2's lead stays short so first paint is one video; the later shots
+  // (up to 4 MB in HD) get ~74vh of lead so a brisk scroll never outruns them
+  const lead = i === 0 ? 1 : i === 1 ? 0.07 : 0.16;
+  return p >= a.start - lead && p <= a.end + 0.05;
 }
 
 function leadShot(p: number): number {
@@ -233,6 +261,10 @@ export function ClimbFilm({
   const closingEl = useRef<HTMLDivElement>(null);
   const cueEl = useRef<HTMLDivElement>(null);
   const dotEls = useRef<(HTMLSpanElement | null)[]>([]);
+  const topBarEl = useRef<HTMLDivElement>(null);
+  const logoEl = useRef<HTMLImageElement>(null);
+  const endEl = useRef<HTMLDivElement>(null);
+  const slotEl = useRef<HTMLElement | null>(null);
   const progress = useRef(0);
   const raf = useRef(0);
   const activeKey = useRef('10000');
@@ -258,14 +290,31 @@ export function ClimbFilm({
     };
   }, []);
 
-  /** Seek a shot to act-local progress. Guarded on metadata being there. */
+  /**
+   * Seek a shot to act-local progress. One seek in flight per video: firing
+   * a new currentTime every frame while the decoder is still landing the
+   * last one is what makes scrubbing judder. While a seek is pending the
+   * latest target is remembered and applied on `seeked`.
+   */
+  const pendingSeek = useRef<(number | undefined)[]>([]);
   const seek = useCallback((i: number, local: number) => {
     const v = videoEls.current[i];
     if (!v || v.readyState < 1) return;
     const dur = Number.isFinite(v.duration) && v.duration > 0 ? v.duration : shots[i].seconds;
     const t = clamp01(local) * Math.max(0, dur - 0.05);
-    // a frame's worth of tolerance keeps the seek queue from thrashing
-    if (Math.abs(v.currentTime - t) > 1 / 30) v.currentTime = t;
+    if (Math.abs(v.currentTime - t) <= 1 / 48) return;
+    if (v.seeking) {
+      pendingSeek.current[i] = t;
+      if (!v.onseeked) {
+        v.onseeked = () => {
+          const next = pendingSeek.current[i];
+          pendingSeek.current[i] = undefined;
+          if (next !== undefined && Math.abs(v.currentTime - next) > 1 / 48) v.currentTime = next;
+        };
+      }
+      return;
+    }
+    v.currentTime = t;
   }, [shots]);
 
   const apply = useCallback(() => {
@@ -275,10 +324,29 @@ export function ClimbFilm({
     const W = stage?.clientWidth ?? 1;
     const H = stage?.clientHeight ?? 1;
 
+    // Shot opacities, with one rule on top of the timeline: a shot that has
+    // no decoded frame yet never fades in. Its predecessor holds at full
+    // strength instead, so a slow connection shows a still, not a flash of
+    // poster or black. The scroll timeline is unchanged; only the mix waits.
+    const opacities = ACTS.map((_, i) => shotOpacity(i, p));
+    const isReady = (i: number) =>
+      i === 0 || (videoEls.current[i]?.readyState ?? 0) >= HTMLMediaElement.HAVE_CURRENT_DATA;
+    for (let i = 1; i < ACTS.length; i++) {
+      if (isReady(i) || opacities[i] <= 0) continue;
+      opacities[i] = 0;
+      // hold the nearest shot that does have a frame, not merely the
+      // previous one — after a cold jump that may be several acts back
+      for (let j = i - 1; j >= 0; j--) {
+        if (isReady(j)) {
+          opacities[j] = 1;
+          break;
+        }
+      }
+    }
     for (let i = 0; i < ACTS.length; i++) {
       const el = shotEls.current[i];
       if (el) {
-        const o = shotOpacity(i, p);
+        const o = opacities[i];
         el.style.opacity = String(o);
         el.style.visibility = o <= 0.001 ? 'hidden' : 'visible';
       }
@@ -364,12 +432,56 @@ export function ClimbFilm({
       descentEl.current.style.transform = `translate3d(0, ${(1 - span(p, 0.63, 0.69)) * 22}px, 0)`;
     }
     if (closingEl.current) {
-      const o = span(p, 0.86, 0.93);
+      const o = span(p, END.closing[0], END.closing[1]);
       closingEl.current.style.opacity = String(o);
       closingEl.current.style.transform = `translate3d(0, ${(1 - o) * 26}px, 0)`;
       closingEl.current.style.pointerEvents = o > 0.5 ? 'auto' : 'none';
     }
     if (cueEl.current) cueEl.current.style.opacity = String(1 - span(p, 0.01, 0.05));
+
+    // The end card. The flat mark fades in over the monument, then flies to
+    // the slot beside the wordmark while the picture dips to ink — and the
+    // header goes fixed, so the logo it just delivered stays for the rest
+    // of the page.
+    if (logoEl.current && topBarEl.current) {
+      if (!slotEl.current) slotEl.current = topBarEl.current.querySelector('[data-brand-slot]');
+      const slot = slotEl.current;
+      const fadeIn = span(p, END.fadeIn[0], END.fadeIn[1]);
+      const fly = smooth(span(p, END.fly[0], END.fly[1]));
+      const f5 = parseFocus(shots[shots.length - 1].focus);
+      const [mx, my] = rawToStage(MONUMENT_BOX.x, MONUMENT_BOX.y, W, H, f5);
+      const [mx2, my2] = rawToStage(MONUMENT_BOX.x + MONUMENT_BOX.w, MONUMENT_BOX.y + MONUMENT_BOX.h, W, H, f5);
+      const from = { x: mx, y: my, w: mx2 - mx, h: my2 - my };
+      const to = slot
+        ? (() => {
+            const r = slot.getBoundingClientRect();
+            const b = topBarEl.current!.getBoundingClientRect();
+            return { x: r.left - b.left, y: r.top - b.top, w: r.width, h: r.height };
+          })()
+        : from;
+      // Keep the mark's aspect. Fit the monument's WIDTH (the roof span is
+      // the silhouette the eye matches), apex to apex, centred — and never
+      // wider than the stage, which the phone crop would otherwise produce.
+      const aspect = logoEl.current.naturalWidth && logoEl.current.naturalHeight
+        ? logoEl.current.naturalWidth / logoEl.current.naturalHeight
+        : MONUMENT_BOX.w / MONUMENT_BOX.h;
+      const fromW = Math.min(from.w, W * 0.92);
+      const fromH = fromW / aspect;
+      const fromX = from.x + (from.w - fromW) / 2;
+      const x = lerp(fromX, to.x, fly);
+      const y = lerp(from.y, to.y, fly);
+      const h = lerp(fromH, to.h, fly);
+      const w = h * aspect;
+      const landed = p >= END.fix;
+      logoEl.current.style.opacity = landed ? '0' : String(fadeIn);
+      logoEl.current.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      logoEl.current.style.width = `${w}px`;
+      logoEl.current.style.height = `${h}px`;
+      logoEl.current.style.visibility = fadeIn <= 0 || landed ? 'hidden' : 'visible';
+      if (slot) slot.style.opacity = landed ? '1' : '0';
+      topBarEl.current.classList.toggle(s.filmTopBarFixed, landed);
+    }
+    if (endEl.current) endEl.current.style.opacity = String(span(p, END.fly[0], END.fly[1]) * 0.94);
 
     const nowActive = ACTS.map((_, i) => shotActive(i, p));
     const key = nowActive.map((a) => (a ? 1 : 0)).join('');
@@ -540,6 +652,8 @@ export function ClimbFilm({
           ))}
           <div className={s.climbScrim} style={{ zIndex: 6 }} />
           <div className={s.grain} style={{ zIndex: 7 }} />
+          {/* the picture dips to ink under the end card */}
+          <div ref={endEl} className={s.climbEnd} style={{ opacity: 0 }} />
 
           {/* tethers from each question to the climber, in stage pixels */}
           <svg className={s.climbLines} aria-hidden>
@@ -582,7 +696,20 @@ export function ClimbFilm({
           ))}
         </div>
 
-        <div className={s.filmTopBar}>{topBar}</div>
+        <div ref={topBarEl} className={s.filmTopBar}>
+          {topBar}
+          {/* the flying mark lives in the header layer, so when the header
+              goes fixed at the end the logo it delivered goes with it */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- bucket media */}
+          <img
+            ref={logoEl}
+            src={landingUrl('logo-mark.png')}
+            alt=""
+            className={s.climbLogo}
+            style={{ opacity: 0, visibility: 'hidden' }}
+            decoding="async"
+          />
+        </div>
 
         <div ref={heroEl} className={s.climbHero}>
           {hero}
