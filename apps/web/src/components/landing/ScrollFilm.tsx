@@ -32,6 +32,13 @@ export interface Shot {
 }
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+
+/** pause() on a never-loaded video fetches it (spec: resource selection runs
+ *  when networkState is EMPTY) — so only pause what was actually started. */
+const safePause = (v: HTMLVideoElement) => {
+  if (v.networkState !== HTMLMediaElement.NETWORK_EMPTY) v.pause();
+};
+
 /** local 0→1 progress of p inside [a,b] */
 const span = (p: number, a: number, b: number) => clamp01((p - a) / (b - a));
 
@@ -123,21 +130,30 @@ export function ScrollFilm({
   hero,
   beats,
   scrollCue,
+  heightVh = 300,
+  eagerFirst = true,
 }: {
   shots: [Shot, Shot, Shot];
   /**
    * Brand mark and nav. Rendered inside the pinned stage so it stays put for
-   * the film's whole 300vh rather than scrolling away on the first shot.
+   * the film's whole length rather than scrolling away on the first shot.
+   * Omitted when the film runs as a mid-page chapter under another header.
    */
-  topBar: React.ReactNode;
-  /** server-rendered h1 + sub + search form */
+  topBar?: React.ReactNode;
+  /** act one's words — the h1 + search when this opens the page, or a
+   *  chapter title when it runs mid-page */
   hero: React.ReactNode;
   /** the two typographic beats, server-rendered */
   beats: [React.ReactNode, React.ReactNode];
-  scrollCue: string;
+  scrollCue?: string;
+  /** pinned scroll length; a chapter earns less than the opening did */
+  heightVh?: number;
+  /** preload the first shot at page load — true for the page opener, false
+   *  for a chapter further down, which should cost nothing until reached */
+  eagerFirst?: boolean;
 }) {
   const [enhanced, setEnhanced] = useState(false);
-  const [active, setActive] = useState<boolean[]>([true, false, false]);
+  const [active, setActive] = useState<boolean[]>([eagerFirst, false, false]);
 
   const sectionRef = useRef<HTMLElement>(null);
   const shotEls = useRef<(HTMLDivElement | null)[]>([]);
@@ -152,6 +168,7 @@ export function ScrollFilm({
   const raf = useRef(0);
   const activeKey = useRef('0');
   const leadRef = useRef(0);
+  const nearRef = useRef(eagerFirst);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -209,17 +226,18 @@ export function ScrollFilm({
 
     // Exactly one video decodes: the one that owns the frame. Changed only
     // at handover, never per frame.
+    const near = nearRef.current;
     const lead = leadShot(p);
-    if (lead !== leadRef.current) {
+    if (lead !== leadRef.current || !near) {
       leadRef.current = lead;
       videoEls.current.forEach((v, i) => {
         if (!v) return;
-        if (i === lead) void v.play().catch(() => undefined);
-        else v.pause();
+        if (i === lead && near) void v.play().catch(() => undefined);
+        else safePause(v);
       });
     }
 
-    const nowActive = ACTS.map((_, i) => shotActive(i, p));
+    const nowActive = ACTS.map((_, i) => near && shotActive(i, p));
     const key = nowActive.map((a) => (a ? 1 : 0)).join('');
     if (key !== activeKey.current) {
       activeKey.current = key;
@@ -239,6 +257,9 @@ export function ScrollFilm({
       const rect = el.getBoundingClientRect();
       const total = rect.height - window.innerHeight;
       progress.current = total > 0 ? clamp01(-rect.top / total) : 0;
+      // A chapter well below the fold must cost nothing: no media attaches
+      // and nothing plays until the section is within a viewport of arriving.
+      nearRef.current = rect.top < window.innerHeight * 1.2 && rect.bottom > 0;
       schedule();
     };
     onScroll();
@@ -255,6 +276,7 @@ export function ScrollFilm({
   // the lead (the play/pause handover itself lives in `apply`).
   useEffect(() => {
     if (!enhanced) return;
+    if (!nearRef.current) return;
     const v = videoEls.current[leadRef.current];
     if (v && v.paused) void v.play().catch(() => undefined);
   }, [active, enhanced]);
@@ -285,13 +307,14 @@ export function ScrollFilm({
               alt=""
               className={s.filmShotImg}
               style={{ objectPosition: shots[0].focus }}
-              fetchPriority="high"
+              fetchPriority={eagerFirst ? 'high' : 'auto'}
+              loading={eagerFirst ? 'eager' : 'lazy'}
               decoding="async"
             />
             <div className={s.filmScrim} />
             <div className={s.grain} />
           </div>
-          <div className={s.filmTopBar}>{topBar}</div>
+          {topBar && <div className={s.filmTopBar}>{topBar}</div>}
           <div className={s.filmHero}>{hero}</div>
         </section>
         {[1, 2].map((i) => (
@@ -317,7 +340,12 @@ export function ScrollFilm({
 
   // ---- enhanced path: the pinned film ----------------------------------
   return (
-    <section ref={sectionRef} className={`${s.film} ${s.filmPinned}`} data-film="pinned">
+    <section
+      ref={sectionRef}
+      className={`${s.film} ${s.filmPinned}`}
+      style={{ height: `${heightVh}vh` }}
+      data-film="pinned"
+    >
       <div className={s.filmSticky}>
         <div ref={stageEl} className={s.filmStage}>
           {shots.map((shot, i) => (
@@ -338,9 +366,9 @@ export function ScrollFilm({
                 muted
                 loop
                 playsInline
-                autoPlay={i === 0}
-                preload={i === 0 ? 'auto' : 'none'}
-                poster={i === 0 || active[i] ? landingUrl(`${shot.id}.webp`) : undefined}
+                autoPlay={i === 0 && eagerFirst}
+                preload={i === 0 && eagerFirst ? 'auto' : 'none'}
+                poster={(i === 0 && eagerFirst) || active[i] ? landingUrl(`${shot.id}.webp`) : undefined}
               >
                 {/* H.264 only, deliberately: at matched quality it came out
                     smaller than VP9 for this footage, and one universally
@@ -356,7 +384,7 @@ export function ScrollFilm({
         </div>
 
         {/* brand mark + nav: stays for the whole film */}
-        <div className={s.filmTopBar}>{topBar}</div>
+        {topBar && <div className={s.filmTopBar}>{topBar}</div>}
 
         {/* act 1: the promise and the search box, available without scrolling */}
         <div ref={heroEl} className={s.filmHero}>
@@ -390,10 +418,12 @@ export function ScrollFilm({
           ))}
         </div>
 
-        <div ref={cueEl} className={s.filmCue} aria-hidden>
-          <span>{scrollCue}</span>
-          <i />
-        </div>
+        {scrollCue && (
+          <div ref={cueEl} className={s.filmCue} aria-hidden>
+            <span>{scrollCue}</span>
+            <i />
+          </div>
+        )}
       </div>
     </section>
   );

@@ -7,6 +7,7 @@ import { Reveal } from '../../components/landing/Reveal';
 import { CountUp } from '../../components/landing/CountUp';
 import { VerifySequence } from '../../components/landing/VerifySequence';
 import { ScrollFilm } from '../../components/landing/ScrollFilm';
+import { ClimbFilm } from '../../components/landing/ClimbFilm';
 import s from '../../components/landing/landing.module.css';
 
 /**
@@ -102,69 +103,82 @@ export default async function HomePage({ params: { locale } }: { params: { local
       </header>
   );
 
+  /** The search box. On screen at the first frame of the climb and again at
+   *  the last, so nobody has to finish the film to use the site. */
+  const searchForm = (
+    <form action={`/${locale}/search`} className={`${s.heroSearch} mt-8 flex max-w-xl gap-2 rounded-2xl p-2`}>
+      <input
+        name="q"
+        className="w-full rounded-xl bg-transparent px-4 py-3 outline-none"
+        style={{ color: 'var(--dark-text)' }}
+        placeholder={t('home.searchPlaceholder')}
+      />
+      <button type="submit" className={`${s.goldBtn} shrink-0 rounded-xl px-6 py-3`}>
+        {t('common.search')}
+      </button>
+    </form>
+  );
+
+  const climbQuestions = (['deed', 'owner', 'type', 'fresh', 'trust'] as const).map((key) => ({
+    key,
+    question: t(`home.climb.questions.${key}`),
+    answer: t(`home.climb.answers.${key}`),
+  }));
+
   return (
     <main className={s.root}>
-      {/* ---- the opening film ---- */}
-      <ScrollFilm
+      {/* ---- the hook: "The Climb" (STORY.md) ---- */}
+      <ClimbFilm
         topBar={topBar}
         scrollCue={t('home.film.scrollCue')}
         shots={[
-          { id: 'film-1-sea', focus: '50% 46%' },
-          { id: 'film-2-dusk', focus: '50% 42%' },
-          { id: 'film-3-home', focus: '50% 50%' },
+          // focus aims the phone crop at the climber: he moves from the
+          // frame's left foot to its centre over the five shots
+          { id: 'climb-1-foot', focus: '8% 62%', seconds: 5 },
+          { id: 'climb-2-climb', focus: '39% 45%', seconds: 8 },
+          { id: 'climb-3-ridge', focus: '50% 25%', seconds: 5 },
+          { id: 'climb-4-descent', focus: '54% 30%', seconds: 6 },
+          { id: 'climb-5-home', focus: '50% 50%', seconds: 6 },
         ]}
+        questions={climbQuestions}
+        ridgeLine={t('home.climb.ridge')}
+        descentLine={t('home.climb.descent')}
         hero={
-          <div className="mx-auto w-full max-w-6xl">
-            <div className="max-w-2xl">
-              <p className={s.kicker} style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}>
-                {t('home.heroKicker')}
-              </p>
-              <h1
-                className={`${s.serif} mt-5 text-[2.6rem] font-semibold leading-[1.06] sm:text-6xl`}
-                style={{ color: 'var(--dark-text)', textShadow: '0 2px 30px rgba(0,0,0,0.5)' }}
-              >
-                {t('home.heroTitle')}
-              </h1>
-              <p
-                className="mt-6 max-w-xl text-lg leading-relaxed"
-                style={{ color: 'var(--muted-on-dark)' }}
-              >
-                {t('home.heroSubtitle')}
-              </p>
-
-              <form
-                action={`/${locale}/search`}
-                className={`${s.heroSearch} mt-9 flex max-w-xl gap-2 rounded-2xl p-2`}
-              >
-                <input
-                  name="q"
-                  className="w-full rounded-xl bg-transparent px-4 py-3 outline-none"
-                  style={{ color: 'var(--dark-text)' }}
-                  placeholder={t('home.searchPlaceholder')}
-                />
-                <button type="submit" className={`${s.goldBtn} shrink-0 rounded-xl px-6 py-3`}>
-                  {t('common.search')}
-                </button>
-              </form>
-
-              <div className="mt-7 flex flex-wrap gap-x-7 gap-y-2.5">
-                <span className={s.chip}>{t('home.check.deed')}</span>
-                <span className={s.chip}>{t('home.check.seller')}</span>
-                <span className={s.chip}>{t('home.check.fresh')}</span>
-              </div>
+          <div>
+            <p className={s.kicker} style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}>
+              {t('home.heroKicker')}
+            </p>
+            <h1
+              className={`${s.serif} mt-5 text-[2.4rem] font-semibold leading-[1.06] sm:text-5xl`}
+              style={{ color: 'var(--dark-text)', textShadow: '0 2px 30px rgba(0,0,0,0.5)' }}
+            >
+              {t('home.climb.title')}
+            </h1>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed" style={{ color: 'var(--muted-on-dark)' }}>
+              {t('home.climb.sub')}
+            </p>
+            {searchForm}
+          </div>
+        }
+        closing={
+          <div>
+            <p
+              className={`${s.serif} text-[2.2rem] font-semibold leading-[1.08] sm:text-5xl`}
+              style={{ color: 'var(--dark-text)', textShadow: '0 2px 30px rgba(0,0,0,0.5)' }}
+            >
+              {t('home.heroTitle')}
+            </p>
+            <p className="mt-4 max-w-xl text-lg leading-relaxed" style={{ color: 'var(--muted-on-dark)' }}>
+              {t('home.heroSubtitle')}
+            </p>
+            {searchForm}
+            <div className="mt-6 flex flex-wrap gap-x-7 gap-y-2.5">
+              <span className={s.chip}>{t('home.check.deed')}</span>
+              <span className={s.chip}>{t('home.check.seller')}</span>
+              <span className={s.chip}>{t('home.check.fresh')}</span>
             </div>
           </div>
         }
-        beats={[
-          <div key="b1" className="mx-auto w-full max-w-6xl">
-            <p className={`${s.serif} ${s.beatText}`}>{t('home.film.beat1')}</p>
-          </div>,
-          <div key="b2" className="mx-auto w-full max-w-6xl">
-            <p className={`${s.serif} ${s.beatTextSmall}`}>
-              {t('home.film.beat2')}
-            </p>
-          </div>,
-        ]}
       />
 
       {/* ---- stats band ---- */}
@@ -217,6 +231,42 @@ export default async function HomePage({ params: { locale } }: { params: { local
             answerBody: t('home.risk.stale.answerBody'),
             checkLabel: t('home.check.fresh'),
           },
+        ]}
+      />
+
+      {/* ---- chapter: the place. The İskele film that used to open the page
+              — it now runs after the promise has been made and shown, as the
+              reward rather than the hook. No header, no h1: a chapter title. ---- */}
+      <ScrollFilm
+        heightVh={220}
+        eagerFirst={false}
+        shots={[
+          { id: 'film-1-sea', focus: '50% 46%' },
+          { id: 'film-2-dusk', focus: '50% 42%' },
+          { id: 'film-3-home', focus: '50% 50%' },
+        ]}
+        hero={
+          <div className="mx-auto w-full max-w-6xl">
+            <div className="max-w-2xl">
+              <p className={s.kicker} style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}>
+                {t('home.place.kicker')}
+              </p>
+              <h2
+                className={`${s.serif} mt-5 text-[2.4rem] font-semibold leading-[1.06] sm:text-5xl`}
+                style={{ color: 'var(--dark-text)', textShadow: '0 2px 30px rgba(0,0,0,0.5)' }}
+              >
+                {t('home.place.title')}
+              </h2>
+            </div>
+          </div>
+        }
+        beats={[
+          <div key="b1" className="mx-auto w-full max-w-6xl">
+            <p className={`${s.serif} ${s.beatText}`}>{t('home.film.beat1')}</p>
+          </div>,
+          <div key="b2" className="mx-auto w-full max-w-6xl">
+            <p className={`${s.serif} ${s.beatTextSmall}`}>{t('home.film.beat2')}</p>
+          </div>,
         ]}
       />
 

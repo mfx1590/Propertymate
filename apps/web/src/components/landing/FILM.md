@@ -1,6 +1,12 @@
-# The opening film — assets and how to remake them
+# "The place" — the İskele film, and how to remake it
 
-The homepage opens on a three-shot scroll-driven film. The shots came from
+> Since 2026-09-11 this film is the page's mid-page **chapter**, not its
+> opening: the hook is now "The Climb" (see STORY.md). It runs after the
+> verification sequence as the reward — the island itself — at 220vh, with a
+> chapter title instead of the h1, no header, and nothing fetched until the
+> reader is within a viewport of it (`eagerFirst={false}`).
+
+The three-shot scroll-driven film. The shots came from
 **Mehdi's own footage of the İskele development** (`assest/`, 14 vertical
 phone clips), taken through Higgsfield rather than used raw — so what is on
 screen is really the development, but with cinematic camera language and one

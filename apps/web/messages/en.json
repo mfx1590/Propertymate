@@ -809,6 +809,30 @@
       "beat1": "Everyone shows you the view.",
       "beat2": "We show you the deed, the owner, and the date it was last confirmed.",
       "scrollCue": "Scroll"
+    },
+    "climb": {
+      "title": "Buying a home in Northern Cyprus shouldn't be a climb.",
+      "sub": "The questions are real. We answer every one before a listing goes live — so from there, it is downhill all the way home.",
+      "questions": {
+        "deed": "Is the title deed real?",
+        "owner": "Does the seller actually own it?",
+        "type": "Which kind of deed is it?",
+        "fresh": "Is it even still for sale?",
+        "trust": "Who can I trust with this?"
+      },
+      "answers": {
+        "deed": "Deed checked by our team",
+        "owner": "Owner matched to the deed",
+        "type": "Deed type on every listing",
+        "fresh": "Confirmed in the last 90 days",
+        "trust": "Verified agents and lawyers"
+      },
+      "ridge": "We check every one of them — before a listing goes live.",
+      "descent": "So the way down is easy."
+    },
+    "place": {
+      "kicker": "The place",
+      "title": "Then there is the island itself."
     }
   },
   "projects": {

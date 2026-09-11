@@ -282,6 +282,212 @@
   }
 }
 
+/* ---------- the climb (the hook) ---------- */
+
+.climbPinned {
+  height: 460vh;
+}
+@media (max-width: 767px) {
+  .climbPinned {
+    height: 380vh;
+  }
+}
+
+/* Lighter than the İskele film's scrim: the monument frames have open sky
+   on the right where the words sit, and the climber must stay readable. */
+.climbScrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(4, 18, 22, 0.55) 0%, rgba(4, 18, 22, 0.02) 22%),
+    linear-gradient(180deg, transparent 52%, rgba(4, 18, 22, 0.42) 82%, rgba(4, 18, 22, 0.86) 100%),
+    linear-gradient(270deg, rgba(4, 18, 22, 0.5) 0%, transparent 42%);
+}
+@media (max-width: 767px) {
+  .climbScrim {
+    background:
+      linear-gradient(180deg, rgba(4, 18, 22, 0.6) 0%, rgba(4, 18, 22, 0.08) 18%),
+      linear-gradient(180deg, transparent 30%, rgba(4, 18, 22, 0.55) 62%, rgba(4, 18, 22, 0.92) 100%);
+  }
+}
+
+/* The words live bottom-RIGHT, physically, in every locale: the climber is
+   on the left of the picture and the picture does not mirror. The text
+   still aligns to its own writing direction inside the block. */
+.climbHero,
+.climbLine,
+.climbClosing {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 8rem 2rem 7rem;
+  will-change: transform, opacity;
+}
+.climbLine,
+.climbClosing {
+  pointer-events: none;
+}
+.climbHero > *,
+.climbLine > *,
+.climbClosing > * {
+  max-width: 31rem;
+  text-align: start;
+}
+/* flex-end is logical: in RTL it lands on the left, on top of the climber.
+   flex-start is the physical right there. */
+[dir='rtl'] .climbHero,
+[dir='rtl'] .climbLine,
+[dir='rtl'] .climbClosing {
+  justify-content: flex-start;
+}
+@media (max-width: 767px) {
+  .climbHero,
+  .climbLine,
+  .climbClosing {
+    justify-content: flex-start;
+    padding: 7rem 1.25rem 6.5rem;
+  }
+  [dir='rtl'] .climbHero,
+  [dir='rtl'] .climbLine,
+  [dir='rtl'] .climbClosing {
+    justify-content: flex-end;
+  }
+}
+
+/* question widgets: orbit the climber, flip to checks at the ridge */
+.climbWidget {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  pointer-events: none;
+  will-change: transform, opacity;
+  white-space: nowrap;
+  font-size: 0.86rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transform-origin: 50% 50%;
+}
+.climbWidgetQ,
+.climbWidgetA {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+.climbWidgetQ {
+  background: rgba(7, 26, 31, 0.62);
+  border: 1px solid rgba(244, 238, 225, 0.22);
+  color: var(--dark-text);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+.climbWidgetDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--gold);
+  box-shadow: 0 0 10px rgba(217, 162, 95, 0.95);
+}
+.climbWidgetA {
+  position: absolute;
+  inset: 0;
+  justify-content: center;
+  background: rgba(15, 118, 110, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #f1fbf8;
+  opacity: 0;
+  transform: scale(0.9) rotate(-2deg);
+}
+.climbWidget[data-flipped='true'] .climbWidgetQ {
+  opacity: 0;
+  transform: scale(1.06);
+}
+.climbWidget[data-flipped='true'] .climbWidgetA {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+@media (max-width: 767px) {
+  .climbWidget {
+    font-size: 0.74rem;
+  }
+  .climbWidgetQ,
+  .climbWidgetA {
+    padding: 0.4rem 0.7rem;
+  }
+}
+
+.climbLines {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.climbLines line {
+  stroke: var(--gold);
+  stroke-width: 1;
+  stroke-dasharray: 3 5;
+  transition: opacity 0.3s ease;
+}
+
+/* static path: the five checks as a plain list */
+.climbStaticChecks {
+  background: var(--ink);
+  color: var(--dark-text);
+  padding: 4rem 1.25rem;
+}
+.climbStaticLine {
+  max-width: 34ch;
+  margin: 0 auto;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  line-height: 1.15;
+  font-weight: 500;
+}
+.climbStaticList {
+  list-style: none;
+  margin: 2rem auto;
+  padding: 0;
+  max-width: 44rem;
+  display: grid;
+  gap: 0.6rem;
+}
+.climbStaticList li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--hairline-dark);
+  border-radius: 12px;
+}
+.climbStaticQ {
+  color: var(--muted-on-dark);
+}
+.climbStaticA {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #9fe3d6;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.climbClosingStatic {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  justify-content: flex-end;
+  padding: 4.5rem 2rem;
+}
+
 /* ---------- hero ---------- */
 
 .hero {
