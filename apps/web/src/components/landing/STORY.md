@@ -101,8 +101,9 @@ light.
 |---|---|---|
 | K0 foot, K2 two-thirds, K3 apex, K4 curve, K5 home | `nano_banana_2` 2k, refs = anchor (+ concept frame) | K1 is the anchor itself |
 | S1…S5 | `cinematic_studio_video_v2`, `start_image`=Kᵢ, `end_image`=Kᵢ₊₁, pro, sound off, `speedramp: linear`, `cfg_scale: 0.6`, `genre: auto` | 5/8/5/6/6 s. `genre: intimate` and some prompts trigger a preset recommendation instead of a job — resubmit with `declined_preset_id`. |
-| Encode | H.264 1280×720 CRF 26, `keyint=6:min-keyint=6:scenecut=0` | dense keyframes so scrubbing seeks land within a quarter-second of decode; 6.1 MB for all five, ~1 MB at first paint |
-| Posters | first frame of each shot; the last shot's is its END frame (home), because that is what the static page shows | |
+| Upscale | `upscale_video` provider `topaz`, 2160p | The cinema model renders natively at 1344×768 and hands back its own soft 1928-wide upscale; a real AI upscale to 4K is what makes a 1080p encode look sharp. First cut skipped this and Mehdi saw it immediately. |
+| Encode | Two per shot from the Topaz master. `-hd`: 1920×1080 CRF 21, `keyint=12`, for stages ≥ 1024px wide (2.9–4.1 MB each). Plain: 1280×720 CRF 23, `keyint=8`, for phones (1.4–2.1 MB). Dense keyframes are what make scrub seeks instant; they cost bits, which is why the CRF has to be low. | ClimbFilm picks the file at mount from `innerWidth` |
+| Posters | 1920×1080 q84 from the keyframe originals (2752 wide) — first frame of each shot; the last shot's is its END frame (home), because that is what the static page shows | |
 
 The seams were checked frame-to-frame (last frame of Sₙ beside first frame
 of Sₙ₊₁): same pose, same light, every time. Keyframe chaining works.

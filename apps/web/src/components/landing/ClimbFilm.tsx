@@ -211,6 +211,14 @@ export function ClimbFilm({
 }) {
   const [enhanced, setEnhanced] = useState(false);
   const [scrub, setScrub] = useState(false);
+  /**
+   * Two encodes per shot. Wide stages get the 1080p `-hd` file (Topaz-
+   * upscaled source, low CRF): on a 1440-wide or retina screen the 720p
+   * encode reads soft, and a soft hero is the one thing a brand film can't
+   * be. Phones keep 720p — a quarter of the frame is on screen at a time and
+   * the bytes matter more than the pixels.
+   */
+  const [hd, setHd] = useState(false);
   const [active, setActive] = useState<boolean[]>([true, false, false, false, false]);
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -239,6 +247,7 @@ export function ClimbFilm({
     const update = () => {
       setEnhanced(!motion.matches);
       setScrub(fine.matches);
+      setHd(window.innerWidth >= 1024);
     };
     update();
     motion.addEventListener('change', update);
@@ -525,7 +534,7 @@ export function ClimbFilm({
                 preload={i === 0 ? 'auto' : 'none'}
                 poster={i === 0 || active[i] ? landingUrl(`${shot.id}.webp`) : undefined}
               >
-                <source src={landingUrl(`${shot.id}.mp4`)} type="video/mp4" />
+                <source src={landingUrl(`${shot.id}${hd ? '-hd' : ''}.mp4`)} type="video/mp4" />
               </video>
             </div>
           ))}
